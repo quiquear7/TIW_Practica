@@ -16,20 +16,13 @@ import javax.servlet.http.HttpSession;
 @WebServlet("/ControladorServlet")
 public class ControladorServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-       
-    /**
-     * @see HttpServlet#HttpServlet()
-     */
-    public ControladorServlet() {
-        super();
-        // TODO Auto-generated constructor stub
-    }
-
+      
 	/**
 	 * @see Servlet#init(ServletConfig)
 	 */
 	public void init(ServletConfig config) throws ServletException {
 		// TODO Auto-generated method stub
+		
 	}
 
 	/**
@@ -44,8 +37,8 @@ public class ControladorServlet extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		doGet(request, response);
+		RequestDispatcher reqDis = request.getRequestDispatcher("informacion.jsp");
+		reqDis.forward(request, response);
 	}
 
 }

@@ -22,7 +22,7 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 
 
-	<title>Tienda Móvil</title>
+	<title>Tienda Movil</title>
 
 	<!-- Google font -->
 	<link href="https://fonts.googleapis.com/css?family=Hind:400,700" rel="stylesheet">
