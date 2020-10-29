@@ -1,8 +1,9 @@
-<%@page import="javaPackage.Usuario"%>
+<%@page import="Usuario"%>
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
     pageEncoding="ISO-8859-1"%>
 
-    	<%@page import="javaPackage.usuario"%>
+    	<%@page import="Usuario"%>
+
     <%@page import="java.sql.ResultSet"
       import="javax.naming.Context"
       import="javax.naming.InitialContext"
@@ -20,9 +21,9 @@
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
 
-
-	<title>Tienda Móvil</title>
+	<title>Mobile shop</title>
 
 	<!-- Google font -->
 	<link href="https://fonts.googleapis.com/css?family=Hind:400,700" rel="stylesheet">
@@ -95,36 +96,35 @@
                 <a class="text-uppercase">Bievenido,<%= currUser.getName() %></a>
                 <% }%>
                 <ul class="custom-menu">
-                <% if(login=="false"){ %>
-                <li><a href="login.html"><i class="fa fa-unlock-alt"></i> Login</a></li>
-                <li><a href="register.html"><i class="fa fa-user-plus"></i> Crear una cuenta</a></li>
-                <% }
-                else{
-                    Object objuser=session.getAttribute("user");
-                    Usuario currUser=(Usuario) objuser;
-                    if(currUser.getRole().compareTo("Cliente")==0){%>
-                            <li><a href="profile.html"><i class="fa fa-user-o"></i> Mi Cuenta</a></li>
-                            <li><a href="view-wishlist.html"><i class="fa fa-heart-o"></i> Mi Lista de Deseos</a></li>
-                            <li><a href="sendMessage.html"><i class="fa fa-exchange"></i> Enviar un mensaje</a></li>
-                            <li><a href="readMessages.html"><i class="fa fa-exchange"></i> Leer los mensajes</a></li>
-                            <li><a href="myorders.html"><i class="fa fa-check"></i> Mis pedidos</a></li>
-                            <li><a href="logout.html"><i class="fa fa-user-plus"></i> Log Out</a></li>
-                                <% }%>
-                              <%if(currUser.getRole().compareTo("Vendedor")==0){%>
-                            <li><a href="profile.html"><i class="fa fa-user-o"></i> Mi Cuenta</a></li>
-                            <li><a href="sendMessage.html"><i class="fa fa-exchange"></i> Enviar un mensaje</a></li>
-                            <li><a href="readMessages.html"><i class="fa fa-exchange"></i> Leer los mensajes</a></li>
-                            <li><a href="register-product.html"><i class="fa fa-user-plus"></i>Add Productos</a></li>
-                            <li><a href="productlist.html"><i class="fa fa-user-plus"></i>Lista de Productos</a></li>
-                            <li><a href="logout.html"><i class="fa fa-user-plus"></i> Log Out</a></li>
-                            <% }%>
-                            <%if(currUser.getRole().compareTo("Administrador")==0){%>
-                            <li><a href="profile.html"><i class="fa fa-user-o"></i> Mi Cuenta</a></li>
-                            <li><a href="sendMessage.html"><i class="fa fa-exchange"></i> Enviar un mensaje</a></li>
-                            <li><a href="readMessages.html"><i class="fa fa-exchange"></i> Leer los mensajes</a></li>
-                            <li><a href="userlist.html"><i class="fa fa-heart-o"></i>Gestión de Usuarios</a></li>
-                            <li><a href="productlist.html"><i class="fa fa-heart-o"></i> Gestión de Productos</a></li>
-                            <li><a href="logout.html"><i class="fa fa-user-plus"></i> Log Out</a></li>
+                  <% if(login1=="false"){ %>
+  								<li><a href="login.html"><i class="fa fa-unlock-alt"></i> Login</a></li>
+  								<li><a href="register.html"><i class="fa fa-user-plus"></i> Crear una Cuenta</a></li>
+                  <%}else{
+                    Object objuser1=session.getAttribute("user");
+                      Usuario currUser1=(Usuario) objuser1;
+                      if(currUser.getRole().compareTo("Cliente")==0){%>
+                      <li><a href="profile.html"><i class="fa fa-user-o"></i> Mi Cuenta</a></li>
+                      <li><a href="view-wishlist.html"><i class="fa fa-heart-o"></i> Mi Lista de Deseos</a></li>
+                      <li><a href="sendMessage.html"><i class="fa fa-exchange"></i> Enviar un Mensaje</a></li>
+                      <li><a href="readMessages.html"><i class="fa fa-exchange"></i> Leer los Mensajes</a></li>
+                      <li><a href="myorders.html"><i class="fa fa-check"></i> Mis Pedidos</a></li>
+                      <li><a href="logout.html"><i class="fa fa-user-plus"></i> Log Out</a></li>
+                        <% }%>
+                        <%if(currUser.getRole().compareTo("Vendedor")==0){%>
+                      <li><a href="profile.html"><i class="fa fa-user-o"></i> Mi Cuenta</a></li>
+                      <li><a href="sendMessage.html"><i class="fa fa-exchange"></i> Enivar un Mensaje</a></li>
+                      <li><a href="readMessages.html"><i class="fa fa-exchange"></i> Leer los Mensajes</a></li>
+                      <li><a href="register-product.html"><i class="fa fa-user-plus"></i>Añadir productos</a></li>
+                      <li><a href="productlist.html"><i class="fa fa-user-plus"></i>Lista de Productos</a></li>
+                      <li><a href="logout.html"><i class="fa fa-user-plus"></i> Log Out</a></li>
+                      <% }%>
+                      <%if(currUser.getRole().compareTo("Administrador")==0){%>
+                      <li><a href="profile.html"><i class="fa fa-user-o"></i> Mi Cuenta</a></li>
+                      <li><a href="sendMessage.html"><i class="fa fa-exchange"></i> Enivar un Mensaje</a></li>
+                      <li><a href="readMessages.html"><i class="fa fa-exchange"></i> Leer los Mensajes</a></li>
+                      <li><a href="userlist.html"><i class="fa fa-heart-o"></i>Gestión de Usuarios</a></li>
+                      <li><a href="productlist.html"><i class="fa fa-heart-o"></i> Gestión de Productos</a></li>
+                      <li><a href="logout.html"><i class="fa fa-user-plus"></i> Log Out</a></li>
                             <% }%>
                   <% }%>
               </ul>
@@ -136,7 +136,9 @@
             if(login!="false"){
             Usuario aux = (Usuario) session.getAttribute("user");
             if (aux!=null){
-              if (aux.getRole().equals("Cliente")){
+              if (aux.getRole().equals("Client")){
+
+
             %>
             <li class="header-cart dropdown default-dropdown">
               <a class="dropdown-toggle" data-toggle="dropdown" aria-expanded="true">
@@ -191,7 +193,7 @@
 
 				<!-- menu nav -->
 				<div class="menu-nav">
-					<span class="menu-header">Menú <i class="fa fa-bars"></i></span>
+					<span class="menu-header">Menu <i class="fa fa-bars"></i></span>
 					<ul class="menu-list">
 					<!-- <li><a href="listarusuarios">administrar usuario</a></li> -->
 
@@ -235,7 +237,7 @@
 
             <div class="header-search" style="float:right">
               <form method="POST" action="search.html">
-                <input style="border: 2px solid black" type="text" name="Palabra Clave" placeholder="Introduzca alguna palabra clave para buscar">
+                <input style="border: 2px solid black" type="text" name="keyword" placeholder="Introduzca palabra para buscar">
 
                 <input type="submit" style="display:none "value="">
 
@@ -259,8 +261,8 @@
 	<div id="breadcrumb">
 		<div class="container">
 			<ul class="breadcrumb">
-				<li><a href="index.html">Inicio</a></li>
-				<li class="active">Registro</li>
+				<li><a href="#">Incio</a></li>
+				<li class="active">Login</li>
 			</ul>
 		</div>
 	</div>
@@ -279,23 +281,13 @@
 	</div>
 	<!-- /section -->
 
-	<!--SECCION DEL REGISTRO -->
-	<form method="POST" action="register-result.html">
-		Nombre:  <input class="form-wt" type="text" name="nombre" value="Nombre"><br>
-		Apellido:  <input class="form-wt" type="text" name="apellido" value="Apellido"><br>
-		Direccion:  <input class="form-wt" type="text" name="direccion" value="Direccion"><br>
-		Email:  <input class="form-wt" type="email" name="email" value="Email"><br>
-		Contraseña:  <input class="form-wt" type="password" name="contraseña" value="Contraseña">
-		<h4>Seleccionar la Categoría:</h4>
-		<select name="rol">
-			<option value="Cliente">Cliente</option>
-			<option value="Vendedor">Vendedor</option>
-			<option value="Administrador">Admin</option>
-		</select>
-
-		<br></br>
-		<input type="submit" value="Aceptar">
-	</form>
+	<!-- Left column: Login -->
+	<h2 style="width:80%">Lo sentimos, alguno de los datos introducidos no son correctos.
+	Seguramente haya ocurrido un error.
+	Por favor, <a href="login.html">intentelo de nuevo</a>.
+	Si no está registrado, <a href="register.html">pinche aquí</a>.</h2>
+	<h2><a href="index.html">Inicio</a>.</h2>
+	<br></br>
 
 
   	<!-- FOOTER -->
@@ -315,7 +307,7 @@
   						</div>
   						<!-- /footer logo -->
 
-  						<p>ajajdasdkjasdkasd</p>
+  						<p>akshdaslkdasjfa</p>
 
   						<!-- footer social -->
   						<ul class="footer-social">
@@ -341,31 +333,31 @@
   								<li><a href="login.html"><i class="fa fa-unlock-alt"></i> Login</a></li>
   								<li><a href="register.html"><i class="fa fa-user-plus"></i> Crear una Cuenta</a></li>
                   <%}else{
-                    Object objuser1=session.getAttribute("usuario");
+                    Object objuser1=session.getAttribute("user");
                       Usuario currUser1=(Usuario) objuser1;
-                      if(currUser1.getRole().compareTo("Cliente")==0){%>
-                              <li><a href="profile.html"><i class="fa fa-user-o"></i> Mi Cuenta</a></li>
-                              <li><a href="view-wishlist.html"><i class="fa fa-heart-o"></i> Mi Lista de Deseos</a></li>
-                              <li><a href="sendMessage.html"><i class="fa fa-exchange"></i> Enviar un mensaje</a></li>
-                              <li><a href="readMessages.html"><i class="fa fa-exchange"></i> Leer los mensajes</a></li>
-                              <li><a href="myorders.html"><i class="fa fa-check"></i> Mis pedidos</a></li>
-                              <li><a href="logout.html"><i class="fa fa-user-plus"></i> Log Out</a></li>
-                                <% }%>
-                                <%if(currUser1.getRole().compareTo("Vendedor")==0){%>
-                              <li><a href="profile.html"><i class="fa fa-user-o"></i> Mi Cuenta</a></li>
-                              <li><a href="sendMessage.html"><i class="fa fa-exchange"></i> Enviar un mensaje</a></li>
-                              <li><a href="readMessages.html"><i class="fa fa-exchange"></i> Leer los mensajes</a></li>
-                              <li><a href="register-product.html"><i class="fa fa-user-plus"></i>Añadir Productos</a></li>
-                              <li><a href="productlist.html"><i class="fa fa-user-plus"></i>Lista de Productos</a></li>
-                              <li><a href="logout.html"><i class="fa fa-user-plus"></i> Log Out</a></li>
-                              <% }%>
-                              <%if(currUser1.getRole().compareTo("Administrador")==0){%>
-                              <li><a href="profile.html"><i class="fa fa-user-o"></i> Mi Cuenta</a></li>
-                              <li><a href="sendMessage.html"><i class="fa fa-exchange"></i> Enviar un mensaje</a></li>
-                              <li><a href="readMessages.html"><i class="fa fa-exchange"></i> Leer los mensajes</a></li>
-                              <li><a href="userlist.html"><i class="fa fa-heart-o"></i>Gestión de Usuarios</a></li>
-                              <li><a href="productlist.html"><i class="fa fa-heart-o"></i> Gestión de Productos</a></li>
-                              <li><a href="logout.html"><i class="fa fa-user-plus"></i> Log Out</a></li>
+                      if(currUser.getRole().compareTo("Cliente")==0){%>
+                      <li><a href="profile.html"><i class="fa fa-user-o"></i> Mi Cuenta</a></li>
+                      <li><a href="view-wishlist.html"><i class="fa fa-heart-o"></i> Mi Lista de Deseos</a></li>
+                      <li><a href="sendMessage.html"><i class="fa fa-exchange"></i> Enviar un Mensaje</a></li>
+                      <li><a href="readMessages.html"><i class="fa fa-exchange"></i> Leer los Mensajes</a></li>
+                      <li><a href="myorders.html"><i class="fa fa-check"></i> Mis Pedidos</a></li>
+                      <li><a href="logout.html"><i class="fa fa-user-plus"></i> Log Out</a></li>
+                        <% }%>
+                        <%if(currUser.getRole().compareTo("Vendedor")==0){%>
+                      <li><a href="profile.html"><i class="fa fa-user-o"></i> Mi Cuenta</a></li>
+                      <li><a href="sendMessage.html"><i class="fa fa-exchange"></i> Enivar un Mensaje</a></li>
+                      <li><a href="readMessages.html"><i class="fa fa-exchange"></i> Leer los Mensajes</a></li>
+                      <li><a href="register-product.html"><i class="fa fa-user-plus"></i>Añadir productos</a></li>
+                      <li><a href="productlist.html"><i class="fa fa-user-plus"></i>Lista de Productos</a></li>
+                      <li><a href="logout.html"><i class="fa fa-user-plus"></i> Log Out</a></li>
+                      <% }%>
+                      <%if(currUser.getRole().compareTo("Administrador")==0){%>
+                      <li><a href="profile.html"><i class="fa fa-user-o"></i> Mi Cuenta</a></li>
+                      <li><a href="sendMessage.html"><i class="fa fa-exchange"></i> Enivar un Mensaje</a></li>
+                      <li><a href="readMessages.html"><i class="fa fa-exchange"></i> Leer los Mensajes</a></li>
+                      <li><a href="userlist.html"><i class="fa fa-heart-o"></i>Gestión de Usuarios</a></li>
+                      <li><a href="productlist.html"><i class="fa fa-heart-o"></i> Gestión de Productos</a></li>
+                      <li><a href="logout.html"><i class="fa fa-user-plus"></i> Log Out</a></li>
                               <% }%>
                     <% }%>
 
@@ -380,27 +372,27 @@
   				<!-- footer widget -->
   				<div class="col-md-3 col-sm-6 col-xs-6">
   					<div class="footer">
-  						<h3 class="footer-header">Servicio del Cliente</h3>
+              <h3 class="footer-header">Servicio al Cliente</h3>
   						<ul class="list-links">
   							<li><a href="#">Sobre Nosotros</a></li>
-  							<li><a href="#">Distribución & Retorno</a></li>
-  							<li><a href="#">Guía de Distribución</a></li>
+  							<li><a href="#">Envíos y Devoluciones</a></li>
+  							<li><a href="#">Guía de Envío</a></li>
   							<li><a href="#">FAQ</a></li>
   						</ul>
   					</div>
   				</div>
   				<!-- /footer widget -->
 
-  				<!-- footer suscripcion -->
+  				<!-- footer subscribe -->
   				<div class="col-md-3 col-sm-6 col-xs-6">
   					<div class="footer">
-  						<h3 class="footer-header">Mantente Conectado</h3>
-  						<p>Suscríbase a nuestra revista para ofertas y promociones</p>
-  						<form>
-  							<div class="form-group">
-  								<input class="input" placeholder="Enter Email Address">
-  							</div>
-  							<button class="primary-btn">Suscribirse a nuestra revista</button>
+              <h3 class="footer-header">Mantente Conectado</h3>
+              <p>Suscríbase a nuestra revista para descuentos y promociones</p>
+              <form>
+                <div class="form-group">
+                  <input class="input" placeholder="Introduzca direccion de email">
+                </div>
+                <button class="primary-btn">Suscríbase a nuestra revista</button>
   						</form>
   					</div>
   				</div>
