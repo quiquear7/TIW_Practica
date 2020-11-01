@@ -1,8 +1,8 @@
-<%@page import="javaPackage.Usuario"%>
+<%@page import="servlet.Usuario"%>
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
     pageEncoding="ISO-8859-1"%>
 
-    	<%@page import="javaPackage.usuario"%>
+    	<%@page import="servlet.Usuario"%>
     <%@page import="java.sql.ResultSet"
       import="javax.naming.Context"
       import="javax.naming.InitialContext"
@@ -92,7 +92,7 @@
                 else{
                 Object objuser=session.getAttribute("user");
                 Usuario currUser=(Usuario) objuser; %>
-                <a class="text-uppercase">Bievenido,<%= currUser.getName() %></a>
+                <a class="text-uppercase">Bievenido,<%= currUser.getNombre() %></a>
                 <% }%>
                 <ul class="custom-menu">
                 <% if(login=="false"){ %>
@@ -102,7 +102,7 @@
                 else{
                     Object objuser=session.getAttribute("user");
                     Usuario currUser=(Usuario) objuser;
-                    if(currUser.getRole().compareTo("Cliente")==0){%>
+                    if(currUser.getRol().compareTo("Cliente")==0){%>
                             <li><a href="profile.html"><i class="fa fa-user-o"></i> Mi Cuenta</a></li>
                             <li><a href="view-wishlist.html"><i class="fa fa-heart-o"></i> Mi Lista de Deseos</a></li>
                             <li><a href="sendMessage.html"><i class="fa fa-exchange"></i> Enviar un mensaje</a></li>
@@ -110,7 +110,7 @@
                             <li><a href="myorders.html"><i class="fa fa-check"></i> Mis pedidos</a></li>
                             <li><a href="logout.html"><i class="fa fa-user-plus"></i> Log Out</a></li>
                                 <% }%>
-                              <%if(currUser.getRole().compareTo("Vendedor")==0){%>
+                              <%if(currUser.getRol().compareTo("Vendedor")==0){%>
                             <li><a href="profile.html"><i class="fa fa-user-o"></i> Mi Cuenta</a></li>
                             <li><a href="sendMessage.html"><i class="fa fa-exchange"></i> Enviar un mensaje</a></li>
                             <li><a href="readMessages.html"><i class="fa fa-exchange"></i> Leer los mensajes</a></li>
@@ -118,7 +118,7 @@
                             <li><a href="productlist.html"><i class="fa fa-user-plus"></i>Lista de Productos</a></li>
                             <li><a href="logout.html"><i class="fa fa-user-plus"></i> Log Out</a></li>
                             <% }%>
-                            <%if(currUser.getRole().compareTo("Administrador")==0){%>
+                            <%if(currUser.getRol().compareTo("Administrador")==0){%>
                             <li><a href="profile.html"><i class="fa fa-user-o"></i> Mi Cuenta</a></li>
                             <li><a href="sendMessage.html"><i class="fa fa-exchange"></i> Enviar un mensaje</a></li>
                             <li><a href="readMessages.html"><i class="fa fa-exchange"></i> Leer los mensajes</a></li>
@@ -136,7 +136,7 @@
             if(login!="false"){
             Usuario aux = (Usuario) session.getAttribute("user");
             if (aux!=null){
-              if (aux.getRole().equals("Cliente")){
+              if (aux.getRol().equals("Cliente")){
             %>
             <li class="header-cart dropdown default-dropdown">
               <a class="dropdown-toggle" data-toggle="dropdown" aria-expanded="true">
@@ -343,7 +343,7 @@
                   <%}else{
                     Object objuser1=session.getAttribute("usuario");
                       Usuario currUser1=(Usuario) objuser1;
-                      if(currUser1.getRole().compareTo("Cliente")==0){%>
+                      if(currUser1.getRol().compareTo("Cliente")==0){%>
                               <li><a href="profile.html"><i class="fa fa-user-o"></i> Mi Cuenta</a></li>
                               <li><a href="view-wishlist.html"><i class="fa fa-heart-o"></i> Mi Lista de Deseos</a></li>
                               <li><a href="sendMessage.html"><i class="fa fa-exchange"></i> Enviar un mensaje</a></li>
@@ -351,7 +351,7 @@
                               <li><a href="myorders.html"><i class="fa fa-check"></i> Mis pedidos</a></li>
                               <li><a href="logout.html"><i class="fa fa-user-plus"></i> Log Out</a></li>
                                 <% }%>
-                                <%if(currUser1.getRole().compareTo("Vendedor")==0){%>
+                                <%if(currUser1.getRol().compareTo("Vendedor")==0){%>
                               <li><a href="profile.html"><i class="fa fa-user-o"></i> Mi Cuenta</a></li>
                               <li><a href="sendMessage.html"><i class="fa fa-exchange"></i> Enviar un mensaje</a></li>
                               <li><a href="readMessages.html"><i class="fa fa-exchange"></i> Leer los mensajes</a></li>
@@ -359,7 +359,7 @@
                               <li><a href="productlist.html"><i class="fa fa-user-plus"></i>Lista de Productos</a></li>
                               <li><a href="logout.html"><i class="fa fa-user-plus"></i> Log Out</a></li>
                               <% }%>
-                              <%if(currUser1.getRole().compareTo("Administrador")==0){%>
+                              <%if(currUser1.getRol().compareTo("Administrador")==0){%>
                               <li><a href="profile.html"><i class="fa fa-user-o"></i> Mi Cuenta</a></li>
                               <li><a href="sendMessage.html"><i class="fa fa-exchange"></i> Enviar un mensaje</a></li>
                               <li><a href="readMessages.html"><i class="fa fa-exchange"></i> Leer los mensajes</a></li>

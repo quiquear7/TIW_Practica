@@ -2,6 +2,7 @@ package servlet;
 
 import java.io.IOException;
 import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -10,35 +11,56 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.http.HttpSession;
 
+import servlet.Usuario;
+
 /**
  * Servlet implementation class ControladorServlet
  */
 @WebServlet("/ControladorServlet")
 public class ControladorServlet extends HttpServlet {
+
+	/**
+	 * 
+	 */
 	private static final long serialVersionUID = 1L;
-      
-	/**
-	 * @see Servlet#init(ServletConfig)
-	 */
-	public void init(ServletConfig config) throws ServletException {
-		// TODO Auto-generated method stub
+
+	ServletContext miServletContex = null;
+
+	String strAutor;
+
+	public void init() {
+
+		ServletContext miServletContex = getServletContext();
+
+		// Cogemos el par�metro de inicializaci�n
+		miServletContex.setAttribute("autor", miServletContex.getInitParameter("autor"));
+
+	}
+
+	public void doGet(HttpServletRequest req, HttpServletResponse resp)
+		throws ServletException, IOException {
+
+	}
+
+	public void doPost(HttpServletRequest req, HttpServletResponse resp)
+		throws ServletException, IOException {
 		
-	}
+		
+		Usuario _usuario= new Usuario();
+		
+		
+		
+		
 
-	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
-	 */
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		response.getWriter().append("Served at: ").append(request.getContextPath());
-	}
-
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
-	 */
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		RequestDispatcher reqDis = request.getRequestDispatcher("informacion.jsp");
-		reqDis.forward(request, response);
+		_usuario.setNombre(req.getParameter("nombre"));
+		_usuario.setApellido(req.getParameter("apellido"));
+		_usuario.setDireccion(req.getParameter("direccion"));
+		_usuario.setEmail(req.getParameter("email"));
+		_usuario.setContrasenia(req.getParameter("contrasenia"));
+		_usuario.setRol(req.getParameter("rol"));
+		
+		HttpSession session = req.getSession(true);
+		session.setAttribute("user", _usuario);
 	}
 
 }

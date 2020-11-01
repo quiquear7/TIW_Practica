@@ -123,14 +123,14 @@
 				<!-- Produc Slick -->
 				<div class="col-md-9 col-sm-6 col-xs-6">
 					
-					<form method="GET" action="login-result.html">
-						Nombre:  <input class="form-wt" type="text" name="name" value=""><br>
-						Apellido:  <input class="form-wt" type="text" name="surname" value=""><br>
-						Dirección:  <input class="form-wt" type="text" name="address" value=""><br>
+					<form method="POST" action="ControladorServlet">
+						Nombre:  <input class="form-wt" type="text" name="nombre" value=""><br>
+						Apellido:  <input class="form-wt" type="text" name="apellido" value=""><br>
+						Dirección:  <input class="form-wt" type="text" name="direccion" value=""><br>
 						Correo:  <input class="form-wt" type="email" name="email" value=""><br>
-						Contraseña:  <input class="form-wt" type="password" name="password" value="">
+						Contraseña:  <input class="form-wt" type="password" name="contrasenia" value="">
 						<h4>Tipo de Usuario:</h4>
-						<select name="role">
+						<select name="rol">
 							<option value="Client">Cliente</option>
 							<option value="Seller">Vendedor</option>
 							<option value="Administrator">Administrador</option>
