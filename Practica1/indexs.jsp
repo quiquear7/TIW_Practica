@@ -1,8 +1,8 @@
-<%@page import="Usuario"%>
+<%@page import="servlet.Usuario"%>
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
     pageEncoding="ISO-8859-1"%>
 
-    	<%@page import="Usuario"%>
+    	<%@page import="servlet.Usuario"%>
 
     <%@page import="java.sql.ResultSet"
             import="javax.naming.InitialContext"
@@ -24,7 +24,7 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
 
-	<title>Mobile shop</title>
+	<title>Vinted</title>
 
 	<!-- Google font -->
 	<link href="https://fonts.googleapis.com/css?family=Hind:400,700" rel="stylesheet">
@@ -91,7 +91,7 @@
 								else{
 								Object objuser=session.getAttribute("usuario");
 								Usuario currUser=(Usuario) objuser; %>
-								<a class="text-uppercase">Welcome,<%= currUser.getName() %></a>
+								<a class="text-uppercase">Welcome,<%= currUser.getNombre() %></a>
 								<% }%>
 								<ul class="custom-menu">
 								<% if(login=="false"){ %>
@@ -101,7 +101,7 @@
 								else{
                   Object objuser1=session.getAttribute("usuario");
                     Usuario currUser1=(Usuario) objuser1;
-                    if(currUser1.getRole().compareTo("Cliente")==0){%>
+                    if(currUser1.getRol().compareTo("Cliente")==0){%>
                             <li><a href="profile.html"><i class="fa fa-user-o"></i> Mi Cuenta</a></li>
                             <li><a href="view-wishlist.html"><i class="fa fa-heart-o"></i> Mi Lista de Deseos</a></li>
                             <li><a href="sendMessage.html"><i class="fa fa-exchange"></i> Enviar un mensaje</a></li>
@@ -109,7 +109,7 @@
                             <li><a href="myorders.html"><i class="fa fa-check"></i> Mis pedidos</a></li>
                             <li><a href="logout.html"><i class="fa fa-user-plus"></i> Log Out</a></li>
                               <% }%>
-                              <%if(currUser1.getRole().compareTo("Vendedor")==0){%>
+                              <%if(currUser1.getRol().compareTo("Vendedor")==0){%>
                             <li><a href="profile.html"><i class="fa fa-user-o"></i> Mi Cuenta</a></li>
                             <li><a href="sendMessage.html"><i class="fa fa-exchange"></i> Enviar un mensaje</a></li>
                             <li><a href="readMessages.html"><i class="fa fa-exchange"></i> Leer los mensajes</a></li>
@@ -117,7 +117,7 @@
                             <li><a href="productlist.html"><i class="fa fa-user-plus"></i>Lista de Productos</a></li>
                             <li><a href="logout.html"><i class="fa fa-user-plus"></i> Log Out</a></li>
                             <% }%>
-                            <%if(currUser1.getRole().compareTo("Administrador")==0){%>
+                            <%if(currUser1.getRol().compareTo("Administrador")==0){%>
                             <li><a href="profile.html"><i class="fa fa-user-o"></i> Mi Cuenta</a></li>
                             <li><a href="sendMessage.html"><i class="fa fa-exchange"></i> Enviar un mensaje</a></li>
                             <li><a href="readMessages.html"><i class="fa fa-exchange"></i> Leer los mensajes</a></li>
@@ -135,7 +135,7 @@
             if(login!="false"){
 						Usuario aux = (Usuario) session.getAttribute("user");
 						if (aux!=null){
-							if (aux.getRole().equals("Cliente")){
+							if (aux.getRol().equals("Cliente")){
 
 
 						%>
@@ -337,8 +337,8 @@
               				while (rsProduct.next()){
                         if(counter>4) counter=1;
                         counter ++;
-                        product = rsProduct.getString("name");
-                        price = rsProduct.getFloat("price");
+                       // product = rsProduct.getString("name");
+                        //price = rsProduct.getFloat("price");
                         %>
                         <!-- Product Single -->
                         <div class="col-md-3 col-sm-6 col-xs-6">
@@ -435,7 +435,7 @@
 								else{
                   Object objuser1=session.getAttribute("usuario");
                     Usuario currUser1=(Usuario) objuser1;
-                    if(currUser1.getRole().compareTo("Cliente")==0){%>
+                    if(currUser1.getRol().compareTo("Cliente")==0){%>
                             <li><a href="profile.html"><i class="fa fa-user-o"></i> Mi Cuenta</a></li>
                             <li><a href="view-wishlist.html"><i class="fa fa-heart-o"></i> Mi Lista de Deseos</a></li>
                             <li><a href="sendMessage.html"><i class="fa fa-exchange"></i> Enviar un mensaje</a></li>
@@ -443,7 +443,7 @@
                             <li><a href="myorders.html"><i class="fa fa-check"></i> Mis pedidos</a></li>
                             <li><a href="logout.html"><i class="fa fa-user-plus"></i> Log Out</a></li>
                               <% }%>
-                              <%if(currUser1.getRole().compareTo("Vendedor")==0){%>
+                              <%if(currUser1.getRol().compareTo("Vendedor")==0){%>
                             <li><a href="profile.html"><i class="fa fa-user-o"></i> Mi Cuenta</a></li>
                             <li><a href="sendMessage.html"><i class="fa fa-exchange"></i> Enviar un mensaje</a></li>
                             <li><a href="readMessages.html"><i class="fa fa-exchange"></i> Leer los mensajes</a></li>
@@ -451,7 +451,7 @@
                             <li><a href="productlist.html"><i class="fa fa-user-plus"></i>Lista de Productos</a></li>
                             <li><a href="logout.html"><i class="fa fa-user-plus"></i> Log Out</a></li>
                             <% }%>
-                            <%if(currUser1.getRole().compareTo("Administrador")==0){%>
+                            <%if(currUser1.getRol().compareTo("Administrador")==0){%>
                             <li><a href="profile.html"><i class="fa fa-user-o"></i> Mi Cuenta</a></li>
                             <li><a href="sendMessage.html"><i class="fa fa-exchange"></i> Enviar un mensaje</a></li>
                             <li><a href="readMessages.html"><i class="fa fa-exchange"></i> Leer los mensajes</a></li>

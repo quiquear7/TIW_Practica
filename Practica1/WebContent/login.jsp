@@ -1,6 +1,16 @@
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1"%>
+<%@page import="servlet.Usuario"%>
+<%@page import="java.sql.ResultSet"
+        import="javax.naming.InitialContext"
+        import="javax.naming.Context"
+        import="java.sql.Statement"
+        import="javax.sql.DataSource"
+        import="java.sql.SQLException"%>
+<%@page import="java.util.*"%>
+<%@page import="java.util.ArrayList"%>
 <!DOCTYPE html>
-<html lang="en">
-
+<html>
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -55,18 +65,7 @@
 					<!-- /Logo -->
 
 					<!-- Search -->
-					<div class="header-search">
-						<form>
-							<input class="input search-input" type="text" placeholder="Busqueda">
-							<select class="input search-categories">
-								<option value="0">Categorias</option>
-								<option value="1">Ropa</option>
-								<option value="1">Electrónica</option>
-							</select>
-							<button class="search-btn"><i class="fa fa-search"></i></button>
-						</form>
-					</div>
-					<!-- /Search -->
+				
 				</div>
 				<div class="pull-right">
 					<ul class="header-btns">
@@ -78,12 +77,29 @@
 								</div>
 								<strong class="text-uppercase">Mi Cuenta <i class="fa fa-caret-down"></i></strong>
 							</div>
-							<a href="login.html" class="text-uppercase">Login</a> / <a href="registro.html" class="text-uppercase">Unirse</a>
+							<% 
+							Object log = (Object) session.getAttribute("sesion_iniciada");
+							Boolean login = (Boolean) log;
+							System.out.println(login);
+							
+							%>
+							
 							<ul class="custom-menu">
-								<li><a href="#"><i class="fa fa-user-o"></i> Mi Cuenta</a></li>
+							<% if(login == false){%>
 								<li><a href="login.html"><i class="fa fa-unlock-alt"></i>Login</a></li>
 								<li><a href="registro.html"><i class="fa fa-user-plus"></i> Crear Cuenta</a></li>
-							</ul>
+							<%} else{
+								Object user = (Object) session.getAttribute("usuario");
+								Usuario usu = (Usuario) user;
+								System.out.println(usu.getEmail());
+							
+							
+							
+							%>
+								<li><a href="#"><i class="fa fa-user-o"></i> Mi Cuenta</a></li>
+								<li><a href="modificar_usuario.html"><i class="fa fa-unlock-alt"></i>Modificar Usuario</a></li>
+								<li><a href="cerrar_sesion.html"><i class="fa fa-user-plus"></i> Cerrar Sesion</a></li>
+							<%}%>
 						</li>
 						<!-- /Account -->
 
@@ -123,9 +139,9 @@
 				<!-- Produc Slick -->
 				<div class="col-md-9 col-sm-6 col-xs-6">
 					
-					<form method="GET" action="login-result.html">
-						Correo:  <input class="form-wt" type="text" name="email" value=""><br>
-						Contraseña:  <input class="form-wt" type="password" name="password" value="">
+					<form action="analizar-login.html" name="order" id="order" method="post">
+						Correo:  <input class="form-wt" type="email" name="email" value="" required><br>
+						Contrase�a:  <input class="form-wt" type="password" name="contrasenia" value="" required>
 					<br></br>
 					<input type="submit" value="Aceptar">
 					</form>	

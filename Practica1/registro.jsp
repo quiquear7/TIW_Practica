@@ -2,7 +2,7 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
     pageEncoding="ISO-8859-1"%>
 
-    	<%@page import="servlet.Usuario"%>
+    <%@page import="servlet.Usuario"%>
     <%@page import="java.sql.ResultSet"
       import="javax.naming.Context"
       import="javax.naming.InitialContext"
@@ -84,7 +84,8 @@
                 </div>
                 <strong class="text-uppercase">Mi Cuenta <i class="fa fa-caret-down"></i></strong>
               </div>
-              <% 	Object objlog=session.getAttribute("log");
+              <% 	
+              	Object objlog=session.getAttribute("log");
                 String login=(String) objlog;
                 if(login=="false"){ %>
                 <a href="login.html" class="text-uppercase">Login</a>|<a href="register.html" class="text-uppercase">Registro</a>
