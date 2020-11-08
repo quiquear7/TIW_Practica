@@ -82,6 +82,9 @@ public class ControladorServlet extends HttpServlet {
 		else if(path.compareTo("/compras_realizadas.html")==0) {
 			req.getRequestDispatcher("compras_realizadas.jsp").forward(req, resp);
 		}
+		else if(path.compareTo("/add_producto.html")==0) {
+			req.getRequestDispatcher("add_producto.jsp").forward(req, resp);
+		}
 		
 		
 		
