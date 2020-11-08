@@ -64,6 +64,7 @@
 					</div>
 					<!-- /Logo -->
 
+					<!-- Search -->
 				
 				</div>
 				<div class="pull-right">
@@ -74,34 +75,30 @@
 								<div class="header-btns-icon">
 									<i class="fa fa-user-o"></i>
 								</div>
-								<strong class="text-uppercase">Mi Cuenta <i class="fa fa-caret-down"></i></strong>
-							</div>
-							<% 
+								<% 
 							Object log = (Object) session.getAttribute("sesion_iniciada");
 							Boolean login = (Boolean) log;
 							System.out.println(login);
-							
+							Object user = (Object) session.getAttribute("usuario");
+							Usuario usu = (Usuario) user;
 							%>
+							<% if(login == false){%>
+								<strong class="text-uppercase">Mi Cuenta <i class="fa fa-caret-down"></i></strong>
+								<%}else{%>
+									<strong class="text-uppercase"><%=usu.getEmail()%> <i class="fa fa-caret-down"></i></strong>
+								<%}%>
+							</div>
+							
 							
 							<ul class="custom-menu">
 							<% if(login == false){%>
 								<li><a href="login.html"><i class="fa fa-unlock-alt"></i>Login</a></li>
 								<li><a href="registro.html"><i class="fa fa-user-plus"></i> Crear Cuenta</a></li>
-							<%} else{
-								Object user = (Object) session.getAttribute("usuario");
-								Usuario usu = (Usuario) user;
-								System.out.println(usu.getEmail());
-							
-							
-							
-							%>
+							<%} else{ %>
 								<li><a href="#"><i class="fa fa-user-o"></i> Mi Cuenta</a></li>
 								<li><a href="modificar_usuario.html"><i class="fa fa-unlock-alt"></i>Modificar Usuario</a></li>
 								<li><a href="cerrar_sesion.html"><i class="fa fa-user-plus"></i> Cerrar Sesion</a></li>
 							<%}%>
-						</li>
-						<!-- /Account -->
-
 						
 
 					
@@ -139,12 +136,16 @@
 				<div class="col-md-9 col-sm-6 col-xs-6">
 					
 					<form  action="modificar_usuario-correcto.html" action="ControladorServlet" method="post">
-						
-						Email:  <input class="form-wt" type="email" name="email" value="" required><br>
-						Nuevo Nombre:  <input class="form-wt" type="text" name="nombre" value=""><br>
-						Nuevo Apellido:  <input class="form-wt" type="text" name="apellido" value=""><br>
-						Nueva Direccion:  <input class="form-wt" type="text" name="direccion" value=""><br>
-						Nueva Contraseña:  <input class="form-wt" type="password" name="contraseÃ±a" value="">
+						<label for="email">Email:</label><br>    
+						<input class="form-wt" type="email" name="email" value="" required><br>
+						<label for="name"> Nuevo Nombre:</label><br>
+						<input class="form-wt" type="text" name="nombre" value="" required><br>
+						<label for="apellido"> Nuevo Apellido:</label><br>
+						<input class="form-wt" type="text" name="apellido" value="" required><br>
+						<label for="direccion">Nueva Dirección:</label><br>
+						<input class="form-wt" type="text" name="direccion" value="" required><br>
+						<label for="contrasenia">Nueva Contraseña:</label><br>
+						<input class="form-wt" type="password" name="contrasenia" value="" required>
 						<br></br>
 					<input type="submit" value="Aceptar">
 					</form>	

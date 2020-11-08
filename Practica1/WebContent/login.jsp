@@ -75,34 +75,30 @@
 								<div class="header-btns-icon">
 									<i class="fa fa-user-o"></i>
 								</div>
-								<strong class="text-uppercase">Mi Cuenta <i class="fa fa-caret-down"></i></strong>
-							</div>
-							<% 
+								<% 
 							Object log = (Object) session.getAttribute("sesion_iniciada");
 							Boolean login = (Boolean) log;
 							System.out.println(login);
-							
+							Object user = (Object) session.getAttribute("usuario");
+							Usuario usu = (Usuario) user;
 							%>
+							<% if(login == false){%>
+								<strong class="text-uppercase">Mi Cuenta <i class="fa fa-caret-down"></i></strong>
+								<%}else{%>
+									<strong class="text-uppercase"><%=usu.getEmail()%> <i class="fa fa-caret-down"></i></strong>
+								<%}%>
+							</div>
+							
 							
 							<ul class="custom-menu">
 							<% if(login == false){%>
 								<li><a href="login.html"><i class="fa fa-unlock-alt"></i>Login</a></li>
 								<li><a href="registro.html"><i class="fa fa-user-plus"></i> Crear Cuenta</a></li>
-							<%} else{
-								Object user = (Object) session.getAttribute("usuario");
-								Usuario usu = (Usuario) user;
-								System.out.println(usu.getEmail());
-							
-							
-							
-							%>
+							<%} else{ %>
 								<li><a href="#"><i class="fa fa-user-o"></i> Mi Cuenta</a></li>
 								<li><a href="modificar_usuario.html"><i class="fa fa-unlock-alt"></i>Modificar Usuario</a></li>
 								<li><a href="cerrar_sesion.html"><i class="fa fa-user-plus"></i> Cerrar Sesion</a></li>
 							<%}%>
-						</li>
-						<!-- /Account -->
-
 						
 
 					
@@ -140,8 +136,10 @@
 				<div class="col-md-9 col-sm-6 col-xs-6">
 					
 					<form action="analizar-login.html" name="order" id="order" method="post">
-						Correo:  <input class="form-wt" type="email" name="email" value="" required><br>
-						Contraseña:  <input class="form-wt" type="password" name="contrasenia" value="" required>
+						<label for="email">Email:</label><br>
+						<input class="form-wt" type="email" name="email" value="" required><br>
+						<label for="contrasenia">Contraseña:</label><br>
+						<input class="form-wt" type="password" name="contrasenia" value="" required>
 					<br></br>
 					<input type="submit" value="Aceptar">
 					</form>	

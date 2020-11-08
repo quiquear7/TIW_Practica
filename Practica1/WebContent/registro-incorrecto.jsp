@@ -8,11 +8,11 @@
         import="javax.sql.DataSource"
         import="java.sql.SQLException"%>
 <%@page import="java.util.*"%>
-
+<%@page import="java.util.ArrayList"%>
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="utf-8">
+	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
@@ -65,19 +65,7 @@
 					<!-- /Logo -->
 
 					<!-- Search -->
-					<div class="header-search">
-						<form>
-							<input class="input search-input" type="text" placeholder="Busqueda">
-							<select class="input search-categories">
-								<option value="0">Categorias</option>
-								<option value="1">Ropa</option>
-								<option value="2">Electrónica</option>
-								<option value="3">Hogar</option>
-							</select>
-							<button class="search-btn"><i class="fa fa-search"></i></button>
-						</form>
-					</div>
-					<!-- /Search -->
+				
 				</div>
 				<div class="pull-right">
 					<ul class="header-btns">
@@ -111,44 +99,7 @@
 								<li><a href="modificar_usuario.html"><i class="fa fa-unlock-alt"></i>Modificar Usuario</a></li>
 								<li><a href="cerrar_sesion.html"><i class="fa fa-user-plus"></i> Cerrar Sesion</a></li>
 							<%}%>
-								
-							</ul>
-						</li>
-						<!-- /Account -->
-
-						<!-- Cart -->
-						<li class="header-cart dropdown default-dropdown">
-							<a class="dropdown-toggle" data-toggle="dropdown" aria-expanded="true">
-							<div class="header-btns-icon">
-									<i class="fa fa-shopping-cart"></i>
-								</div>
-								<strong class="text-uppercase">Carro</strong>
-								<br>
-								<span>precios</span>
-							</a>
-							<div class="custom-menu">
-								<div id="shopping-cart">
-									<div class="shopping-cart-list">
-										<div class="product product-widget">
-											<div class="product-thumb">
-												<img src="./img/thumb-product01.jpg" alt="">
-											</div>
-											<div class="product-body">
-												<h3 class="product-price">0€ <span class="qty">cantidad</span></h3>
-												<h2 class="product-name"><a href="#">Producto</a></h2>
-											</div>
-											<button class="cancel-btn"><i class="fa fa-trash"></i></button>
-										</div>
-					
-									</div>
-									<div class="shopping-cart-btns">
-										<button class="main-btn">Ver Carro</button>
-										<button class="primary-btn">Pagar <i class="fa fa-arrow-circle-right"></i></button>
-									</div>
-								</div>
-							</div>
-						</li>
-						<!-- /Cart -->
+						
 
 					
 					</ul>
@@ -159,7 +110,6 @@
 		<!-- container -->
 	</header>
 	<!-- /HEADER -->
-
 
 	
 
@@ -172,7 +122,7 @@
 				<!-- section-title -->
 				<div class="col-md-12">
 					<div class="section-title">
-						<h2 class="title">Productos</h2>
+						<h2 class="title">Registro</h2>
 						<div class="pull-right">
 							<div class="product-slick-dots-1 custom-dots"></div>
 						</div>
@@ -183,28 +133,28 @@
 				
 				<!-- Produc Slick -->
 				<div class="col-md-9 col-sm-6 col-xs-6">
-					<div class="row">
-						
-							<!-- Product Single -->
-							<div class="product product-single">
-								<div class="product-thumb">
-									<button class="main-btn quick-view"><i class="fa fa-search-plus"></i> Mas Iformación</button>
-									<img src="./img/product01.jpg" alt="">
-								</div>
-								<div class="product-body">
-									<h3 class="product-price">Precio</h3>
-									
-									<h2 class="product-name"><a href="#"> Nombre Producto</a></h2>
-									<div class="product-btns">
-										<button class="primary-btn add-to-cart"><i class="fa fa-shopping-cart"></i> Añadir al Carro</button>
-									</div>
-								</div>
-							</div>
-							<!-- /Product Single -->
+					<p>No se ha podido realizar el registro correctamente</p>
+					<form  action="analizar-registro.html" action="ControladorServlet" method="post">
+						<label for="name">Nombre:</label><br>
+						<input class="form-wt" type="text" name="nombre" value="" required><br>
+						<label for="apellido">Apellido:</label><br>
+						<input class="form-wt" type="text" name="apellido" value="" required><br>
+						<label for="email">Email:</label><br>    
+						<input class="form-wt" type="email" name="email" value="" required><br>
+						<label for="direccion">Direcci�n:</label><br>
+						<input class="form-wt" type="text" name="direccion" value="" required><br>
+						<label for="contrasenia">Contrase�a:</label><br>
+						<input class="form-wt" type="password" name="contrasenia" value="" required>
+						<h4>Tipo de Usuario:</h4>
+						<select name="rol" required>
+							<option value="Cliente">Cliente</option>
+							<option value="Vendedor">Vendedor</option>
+							<option value="Admin">Administrador</option>
+						</select>
+						<br></br>
+					<input type="submit" value="Aceptar">
+					</form>	
 
-							
-						
-					</div>
 				</div>
 				<!-- /Product Slick -->
 			</div>

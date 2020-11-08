@@ -138,7 +138,15 @@
 				<!-- Produc Slick -->
 				<div class="col-md-9 col-sm-6 col-xs-6">
 					
-					<p>Login  Incorrectamente</p>
+					<p>Login  Incorrecto</p>
+					<form action="analizar-login.html" name="order" id="order" method="post">
+						<label for="email">Email:</label><br>
+						<input class="form-wt" type="email" name="email" value="" required><br>
+						<label for="contrasenia">Contraseña:</label><br>
+						<input class="form-wt" type="password" name="contrasenia" value="" required>
+					<br></br>
+					<input type="submit" value="Aceptar">
+					</form>	
 
 				</div>
 				<!-- /Product Slick -->

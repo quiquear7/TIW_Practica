@@ -65,18 +65,7 @@
 					<!-- /Logo -->
 
 					<!-- Search -->
-					<div class="header-search">
-						<form>
-							<input class="input search-input" type="text" placeholder="Busqueda">
-							<select class="input search-categories">
-								<option value="0">Categorias</option>
-								<option value="1">Ropa</option>
-								<option value="1">Electrónica</option>
-							</select>
-							<button class="search-btn"><i class="fa fa-search"></i></button>
-						</form>
-					</div>
-					<!-- /Search -->
+				
 				</div>
 				<div class="pull-right">
 					<ul class="header-btns">
@@ -86,35 +75,30 @@
 								<div class="header-btns-icon">
 									<i class="fa fa-user-o"></i>
 								</div>
-								<strong class="text-uppercase">Mi Cuenta <i class="fa fa-caret-down"></i></strong>
-							</div>
-							
-							<% 
+								<% 
 							Object log = (Object) session.getAttribute("sesion_iniciada");
 							Boolean login = (Boolean) log;
 							System.out.println(login);
-							
+							Object user = (Object) session.getAttribute("usuario");
+							Usuario usu = (Usuario) user;
 							%>
+							<% if(login == false){%>
+								<strong class="text-uppercase">Mi Cuenta <i class="fa fa-caret-down"></i></strong>
+								<%}else{%>
+									<strong class="text-uppercase"><%=usu.getEmail()%> <i class="fa fa-caret-down"></i></strong>
+								<%}%>
+							</div>
+							
 							
 							<ul class="custom-menu">
 							<% if(login == false){%>
 								<li><a href="login.html"><i class="fa fa-unlock-alt"></i>Login</a></li>
 								<li><a href="registro.html"><i class="fa fa-user-plus"></i> Crear Cuenta</a></li>
-							<%} else{
-								Object user = (Object) session.getAttribute("usuario");
-								Usuario usu = (Usuario) user;
-								System.out.println(usu.getEmail());
-							
-							
-							
-							%>
+							<%} else{ %>
 								<li><a href="#"><i class="fa fa-user-o"></i> Mi Cuenta</a></li>
 								<li><a href="modificar_usuario.html"><i class="fa fa-unlock-alt"></i>Modificar Usuario</a></li>
 								<li><a href="cerrar_sesion.html"><i class="fa fa-user-plus"></i> Cerrar Sesion</a></li>
 							<%}%>
-						</li>
-						<!-- /Account -->
-
 						
 
 					
