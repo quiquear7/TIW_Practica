@@ -76,6 +76,12 @@ public class ControladorServlet extends HttpServlet {
 			sesion.setAttribute("usuario", _usuario);
 			req.getRequestDispatcher("index.jsp").forward(req, resp);
 		}
+		else if(path.compareTo("/cuenta.html")==0) {
+			req.getRequestDispatcher("cuenta.jsp").forward(req, resp);
+		}
+		else if(path.compareTo("/compras_realizadas.html")==0) {
+			req.getRequestDispatcher("compras_realizadas.jsp").forward(req, resp);
+		}
 		
 		
 		
@@ -265,7 +271,50 @@ public class ControladorServlet extends HttpServlet {
 			}
 			
 		}
-		
+		else if(path.compareTo("/eliminar-usuario.html")==0) {
+			try {
+				Context ctx = new InitialContext();
+				System.out.println("iniciamos context");
+				DataSource ds = (DataSource) ctx.lookup("jdbc/practica");
+				System.out.println("ds");
+				Connection con = ds.getConnection();
+				if (con != null) {
+					System.out.println("CONEXION CORRECTA");
+					Statement st = con.createStatement();
+					
+					String script= "DELETE FROM usuario where email like '"+req.getParameter("email")+"'";
+					
+					int correcto = st.executeUpdate(script);
+					st.close();
+					con.close();
+					System.out.println("Connection close");
+					if(correcto==1) {
+						_usuario=null;
+						login = false;
+						sesion.setAttribute("sesion_iniciada", login);
+						sesion.setAttribute("usuario", _usuario);
+						req.getRequestDispatcher("index.jsp").forward(req, resp);
+					}
+					else {
+						req.getRequestDispatcher("eliminar-usuario-incorrecto.jsp").forward(req, resp);
+					}
+					
+				}
+				else {
+					System.out.println("CONEXION INCORRECTA");
+					req.getRequestDispatcher("eliminar-usuario-incorrecto.jsp").forward(req, resp);
+				}
+				
+			} 
+			catch (SQLException e) {
+				
+				System.out.println("Error al Insertar "+e.getMessage());
+				req.getRequestDispatcher("eliminar-usuario-incorrecto.jsp").forward(req, resp);
+			}// complete
+			catch (NamingException e) {
+				req.getRequestDispatcher("eliminar-usuario-incorrecto.jsp").forward(req, resp);
+			}
+		}
 		
 
 		

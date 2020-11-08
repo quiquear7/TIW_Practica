@@ -93,11 +93,11 @@
 							System.out.println(login);
 							Object user = (Object) session.getAttribute("usuario");
 							Usuario usu = (Usuario) user;
-							%>
-							<% if(login == false){%>
+							
+							if(login == false || usu.getEmail() == null){%>
 								<strong class="text-uppercase">Mi Cuenta <i class="fa fa-caret-down"></i></strong>
 								<%}else{%>
-									<strong class="text-uppercase"><%=usu.getEmail()%> <i class="fa fa-caret-down"></i></strong>
+								<strong class="text-uppercase"><%=usu.getEmail()%> <i class="fa fa-caret-down"></i></strong>
 								<%}%>
 							</div>
 							
@@ -107,10 +107,11 @@
 								<li><a href="login.html"><i class="fa fa-unlock-alt"></i>Login</a></li>
 								<li><a href="registro.html"><i class="fa fa-user-plus"></i> Crear Cuenta</a></li>
 							<%} else{ %>
-								<li><a href="#"><i class="fa fa-user-o"></i> Mi Cuenta</a></li>
+								<li><a href="cuenta.html"><i class="fa fa-user-o"></i> Mi Cuenta</a></li>
 								<li><a href="modificar_usuario.html"><i class="fa fa-unlock-alt"></i>Modificar Usuario</a></li>
 								<li><a href="cerrar_sesion.html"><i class="fa fa-user-plus"></i> Cerrar Sesion</a></li>
 							<%}%>
+						
 								
 							</ul>
 						</li>

@@ -101,7 +101,7 @@
 							<%}%>
 						
 
-					</ul>
+						</ul>
 					</ul>
 				</div>
 			</div>
@@ -123,7 +123,7 @@
 				<!-- section-title -->
 				<div class="col-md-12">
 					<div class="section-title">
-						<h2 class="title">Registro</h2>
+						<h2 class="title">Cuenta</h2>
 						<div class="pull-right">
 							<div class="product-slick-dots-1 custom-dots"></div>
 						</div>
@@ -134,26 +134,13 @@
 				
 				<!-- Produc Slick -->
 				<div class="col-md-9 col-sm-6 col-xs-6">
-					
-					<form  action="analizar-registro.html" action="ControladorServlet" method="post">
-						<label for="name">Nombre:</label><br>
-						<input class="form-wt" type="text" name="nombre" value="" required><br>
-						<label for="apellido">Apellido:</label><br>
-						<input class="form-wt" type="text" name="apellido" value="" required><br>
-						<label for="email">Email:</label><br>    
+					<a href="compras_realizadas.html"><i class="fa fa-user-o"></i>Compras Realizadas</a>
+					<label for="email">Eliminar usuario:</label><br> 
+					<form  action="eliminar-usuario.html" action="ControladorServlet" method="post">
+						<label for="email"> Ingresa Email:</label><br>    
 						<input class="form-wt" type="email" name="email" value="" required><br>
-						<label for="direccion">Dirección:</label><br>
-						<input class="form-wt" type="text" name="direccion" value="" required><br>
-						<label for="contrasenia">Contraseña:</label><br>
-						<input class="form-wt" type="password" name="contrasenia" value="" required>
-						<h4>Tipo de Usuario:</h4>
-						<select name="rol" required>
-							<option value="Cliente">Cliente</option>
-							<option value="Vendedor">Vendedor</option>
-							<option value="Admin">Administrador</option>
-						</select>
 						<br></br>
-					<input type="submit" value="Aceptar">
+					<input type="submit" value="Eliminar usuario">
 					</form>	
 
 				</div>
