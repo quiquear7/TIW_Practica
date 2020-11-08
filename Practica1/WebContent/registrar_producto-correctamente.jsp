@@ -136,7 +136,7 @@
 				<!-- section-title -->
 				<div class="col-md-12">
 					<div class="section-title">
-						<h2 class="title">Cuenta</h2>
+						<h2 class="title">Producto Registrado Correctamente</h2>
 						<div class="pull-right">
 							<div class="product-slick-dots-1 custom-dots"></div>
 						</div>
@@ -147,15 +147,8 @@
 				
 				<!-- Produc Slick -->
 				<div class="col-md-9 col-sm-6 col-xs-6">
-					<a href="compras_realizadas.html">Compras Realizadas</a>
-					<br></br>
-					<label for="email">Eliminar usuario:</label><br> 
-					<form  action="eliminar-usuario.html" action="ControladorServlet" method="post">
-						<label for="email"> Ingresa Email:</label><br>    
-						<input class="form-wt" type="email" name="email" value="" required><br>
-						<br></br>
-					<input type="submit" value="Eliminar usuario">
-					</form>	
+					
+					
 
 				</div>
 				<!-- /Product Slick -->

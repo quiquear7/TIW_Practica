@@ -101,7 +101,20 @@
 							<%}%>
 						
 
-					</ul>
+						</ul>
+						<li class="header-account dropdown default-dropdown">
+							
+							
+							 
+						
+						
+						<%if(login == true && usu.getRol().compareTo("Vendedor")==0 ){%>
+					
+							<strong><a href="add_producto.html">Nuevo Producto</a></strong>
+						
+							<%}%>
+							
+						</li>
 					</ul>
 				</div>
 			</div>
@@ -110,8 +123,6 @@
 		<!-- container -->
 	</header>
 	<!-- /HEADER -->
-
-	
 
 	<!-- section -->
 	<div class="section">

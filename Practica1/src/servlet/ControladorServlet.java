@@ -1,5 +1,6 @@
 package servlet;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.*;
@@ -83,7 +84,7 @@ public class ControladorServlet extends HttpServlet {
 			req.getRequestDispatcher("compras_realizadas.jsp").forward(req, resp);
 		}
 		else if(path.compareTo("/add_producto.html")==0) {
-			req.getRequestDispatcher("add_producto.jsp").forward(req, resp);
+			req.getRequestDispatcher("registrar_producto.jsp").forward(req, resp);
 		}
 		
 		
@@ -317,6 +318,71 @@ public class ControladorServlet extends HttpServlet {
 			catch (NamingException e) {
 				req.getRequestDispatcher("eliminar-usuario-incorrecto.jsp").forward(req, resp);
 			}
+		}
+		else if(path.compareTo("/agregar_producto.html")==0) {
+			System.out.println("entramos al path");
+			int referencia = 0;
+			try {
+				Context ctx = new InitialContext();
+				System.out.println("iniciamos context");
+				DataSource ds = (DataSource) ctx.lookup("jdbc/practica");
+				System.out.println("ds");
+				Connection con = ds.getConnection();
+				if (con != null) {
+					System.out.println("CONEXION CORRECTA");
+					Statement st = con.createStatement();
+					ResultSet rs = st.executeQuery("Select referencia from producto");
+				
+					while(rs.next()) {
+						referencia =  rs.getInt(1);
+					}
+					
+					rs.close();
+					st.close();
+					
+					st = con.createStatement();
+					String script= "insert into producto (referencia,nombre,descripcion,categoria,imagen,precio,vendedor, estado) values (?,?,?,?,?,?,?,?)";
+					PreparedStatement ps = con.prepareStatement(script);
+					ps.setInt(1, referencia +1 );
+					ps.setString(2, req.getParameter("nombreProd"));
+					ps.setString(3, req.getParameter("descripcionProd"));
+					ps.setString(4, req.getParameter("categoriaProd"));
+					/*FileInputStream fis = new FileInputStream(req.getParameter("imagenProd"));
+					ps.setBinaryStream(5, fis, (int) imagen.length()); */
+					ps.setString(5, req.getParameter("imagenProd"));
+					ps.setString(6, req.getParameter("precioProd"));
+					Object user = (Object) sesion.getAttribute("usuario");
+					Usuario usu = (Usuario) user;
+					ps.setString(7, usu.getEmail());
+					ps.setBoolean(8, false);
+
+					int correcto = ps.executeUpdate();
+					ps.close();
+					st.close();
+					con.close();
+					System.out.println("Connection close");
+					if(correcto==1) req.getRequestDispatcher("registrar_producto-correctamente.jsp").forward(req, resp);
+					else {
+						req.getRequestDispatcher("registro-incorrecto.jsp").forward(req, resp);
+					}
+					
+				}
+				else {
+					System.out.println("CONEXION iNCORRECTA");
+					req.getRequestDispatcher("registro-incorrecto.jsp").forward(req, resp);
+				}
+				
+			} 
+			catch (SQLException e) {
+				
+				System.out.println("Error al Insertar "+e.getMessage());
+				req.getRequestDispatcher("registro-incorrecto.jsp").forward(req, resp);
+			}// complete
+			catch (NamingException e) {
+				req.getRequestDispatcher("registro-incorrecto.jsp").forward(req, resp);
+			}
+			
+	
 		}
 		
 

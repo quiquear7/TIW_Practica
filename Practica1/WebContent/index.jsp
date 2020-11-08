@@ -73,6 +73,8 @@
 								<option value="1">Ropa</option>
 								<option value="2">Electrónica</option>
 								<option value="3">Hogar</option>
+								<option value="4">Deporte</option>
+								<option value="5">Cultura</option>
 							</select>
 							<button class="search-btn"><i class="fa fa-search"></i></button>
 						</form>

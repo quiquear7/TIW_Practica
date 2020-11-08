@@ -136,7 +136,7 @@
 				<!-- section-title -->
 				<div class="col-md-12">
 					<div class="section-title">
-						<h2 class="title">Cuenta</h2>
+						<h2 class="title">Añadir Nuevo Producto</h2>
 						<div class="pull-right">
 							<div class="product-slick-dots-1 custom-dots"></div>
 						</div>
@@ -147,14 +147,28 @@
 				
 				<!-- Produc Slick -->
 				<div class="col-md-9 col-sm-6 col-xs-6">
-					<a href="compras_realizadas.html">Compras Realizadas</a>
-					<br></br>
-					<label for="email">Eliminar usuario:</label><br> 
-					<form  action="eliminar-usuario.html" action="ControladorServlet" method="post">
-						<label for="email"> Ingresa Email:</label><br>    
-						<input class="form-wt" type="email" name="email" value="" required><br>
+					<p>No se ha podido Registrar el producto</p>
+					
+					<form  action="agregar_producto.html" action="ControladorServlet" method="post">
+						<label for="name">Titulo del Producto:</label><br>
+						<input class="form-wt" type="text" name="nombreProd" value="" required><br>
+						<label for="apellido">Descripción</label><br>
+						<input class="form-wt" type="text" name="descripcionProd" value="" required><br>
+						<label for="email">Precio:</label><br>    
+						<input class="form-wt" type="text" name="precioProd" value="" required><br>
+						<label for="direccion">Imagen:</label><br>
+						<input class="form-wt" type="text" name="imagenProd" value="" required><br>
+						<h4>Categoría:</h4>
+						<select name="categoriaProd" required>
+							<option value="Ropa">Ropa</option>
+							<option value="Electronica">Electrónica</option>
+							<option value="Hogar">Hogar</option>
+							<option value="Deporte">Deporte</option>
+							<option value="Cultura">Cultura</option>
+							
+						</select>
 						<br></br>
-					<input type="submit" value="Eliminar usuario">
+					<input type="submit" value="Aceptar">
 					</form>	
 
 				</div>
