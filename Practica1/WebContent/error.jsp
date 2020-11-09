@@ -4,17 +4,16 @@
 <%@page import="servlet.Producto"%>
 <%@page import="java.sql.ResultSet"
         import="javax.naming.InitialContext"
-        import="java.util.ArrayList"
         import="javax.naming.Context"
         import="java.sql.Statement"
         import="javax.sql.DataSource"
         import="java.sql.SQLException"%>
 <%@page import="java.util.*"%>
-<%@page import="java.util.ArrayList"%>
+
 <!DOCTYPE html>
 <html>
 <head>
-	<meta charset="utf-8">
+<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
@@ -67,7 +66,21 @@
 					<!-- /Logo -->
 
 					<!-- Search -->
-				
+					<div class="header-search">
+						<form>
+							<input class="input search-input" type="text" placeholder="Busqueda">
+							<select class="input search-categories">
+								<option value="0">Categorias</option>
+								<option value="1">Ropa</option>
+								<option value="2">Electrónica</option>
+								<option value="3">Hogar</option>
+								<option value="4">Deporte</option>
+								<option value="5">Cultura</option>
+							</select>
+							<button class="search-btn"><i class="fa fa-search"></i></button>
+						</form>
+					</div>
+					<!-- /Search -->
 				</div>
 				<div class="pull-right">
 					<ul class="header-btns">
@@ -84,12 +97,10 @@
 							Object user = (Object) session.getAttribute("usuario");
 							Usuario usu = (Usuario) user;
 							
-							
-							
 							if(login == false || usu.getEmail() == null){%>
 								<strong class="text-uppercase">Mi Cuenta <i class="fa fa-caret-down"></i></strong>
 								<%}else{%>
-									<strong class="text-uppercase"><%=usu.getEmail()%> <i class="fa fa-caret-down"></i></strong>
+								<strong class="text-uppercase"><%=usu.getEmail()%> <i class="fa fa-caret-down"></i></strong>
 								<%}%>
 							</div>
 							
@@ -104,8 +115,48 @@
 								<li><a href="cerrar_sesion.html"><i class="fa fa-user-plus"></i> Cerrar Sesion</a></li>
 							<%}%>
 						
+								
+							</ul>
+						</li>
+						<!-- /Account -->
 
-						</ul>
+						<!-- Cart -->
+						<% 
+					if(login == true && usu.getRol().compareTo("Cliente")==0){%>
+						<li class="header-cart dropdown default-dropdown">
+							<a class="dropdown-toggle" data-toggle="dropdown" aria-expanded="true">
+							<div class="header-btns-icon">
+									<i class="fa fa-shopping-cart"></i>
+								</div>
+								<strong class="text-uppercase">Carro</strong>
+								<br>
+								<span>precios</span>
+							</a>
+							<div class="custom-menu">
+								<div id="shopping-cart">
+									<div class="shopping-cart-list">
+										<div class="product product-widget">
+											<div class="product-thumb">
+												<img src="./img/thumb-product01.jpg" alt="">
+											</div>
+											<div class="product-body">
+												<h3 class="product-price">0€ <span class="qty">cantidad</span></h3>
+												<h2 class="product-name"><a href="#">Producto</a></h2>
+											</div>
+											<button class="cancel-btn"><i class="fa fa-trash"></i></button>
+										</div>
+					
+									</div>
+									<div class="shopping-cart-btns">
+										<button class="main-btn">Ver Carro</button>
+										<button class="primary-btn">Pagar <i class="fa fa-arrow-circle-right"></i></button>
+									</div>
+								</div>
+							</div>
+						</li>
+						<!-- /Cart -->
+						
+						<%} %>
 						<li class="header-account dropdown default-dropdown">
 							
 							
@@ -119,6 +170,8 @@
 							<%}%>
 							
 						</li>
+						
+						
 					</ul>
 				</div>
 			</div>
@@ -140,68 +193,19 @@
 				<!-- section-title -->
 				<div class="col-md-12">
 					<div class="section-title">
-						<h2 class="title">Productos</h2>
+						<h2 class="title">ERROR</h2>
 						<div class="pull-right">
 							<div class="product-slick-dots-1 custom-dots"></div>
 						</div>
 					</div>
 				</div>
-			</div>
 				<!-- /section-title -->
 
-				<% 
-						
-							ArrayList <Producto> p = (ArrayList<Producto>) session.getAttribute("producto");
-							//Producto productos = (Producto) prod;
-							//Producto productos[]= (Producto) prod;
-							//ArrayList list = new ArrayList();
-							
-							if(login == true) {
-							
-							
-							for (int x = 0; x < p.size(); x++) {
-  							Producto product = p.get(x);%>
-  								
-
-				<!-- Produc Slick -->
-				<div class="row">
-				<div class="col-md-9 col-sm-6 col-xs-6">
-					<div class="row">
-						
-							<!-- Product Single -->
-							<strong>Referencia: <%=product.getReferencia()%></strong>
-							<div class="product product-single">
-								<div class="product-thumb">
-									
-									<!--<img src= alt="<%//product.getImagen()%>">-->
-								</div>
-								<div class="product-body">
-									<h3 class="product-price"><%=product.getPrecio()%>$</h3>
-									
-									<h2 class="product-name"> <%=product.getTitulo()%></h2>
-								</div>
-								<form  action="producto.html" action="ControladorServlet" method="post">
-									<input class="form-wt" type="hidden" name="referenciaM" value=<%=product.getReferencia()%> required>
-								<input type="submit" value="Mostrar producto">
-								</form>	
-								<form  action="eliminar-producto.html" action="ControladorServlet" method="post">
-									<input class="form-wt" type="hidden" name="referenciaE" value=<%=product.getReferencia()%> required>
-								<input type="submit" value="Eliminar producto">
-								</form>	
-							
-							<!-- /Product Single -->
-							
-							
-						
-					</div>
-				</div>
-				</div>
-				</div>
-				<br></br>
-				<%}}
-				session.removeAttribute("producto");%>
-			
+				
+				
+			</div>
 			<!-- /row -->
+
 			
 		</div>
 		<!-- /container -->

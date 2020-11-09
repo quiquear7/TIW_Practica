@@ -151,7 +151,7 @@
 
 				<% 
 						
-							ArrayList <Producto> p = (ArrayList<Producto>) session.getAttribute("producto");
+							ArrayList <Producto> p = (ArrayList<Producto>) session.getAttribute("producto_info");
 							//Producto productos = (Producto) prod;
 							//Producto productos[]= (Producto) prod;
 							//ArrayList list = new ArrayList();
@@ -160,7 +160,13 @@
 							
 							
 							for (int x = 0; x < p.size(); x++) {
-  							Producto product = p.get(x);%>
+  							Producto product = p.get(x);
+  							String estado;
+  							if(product.getEstado()==false){
+  								estado = "En venta";
+  							}else{
+  								estado = "Vendido";
+  							}%>
   								
 
 				<!-- Produc Slick -->
@@ -171,6 +177,7 @@
 							<!-- Product Single -->
 							<strong>Referencia: <%=product.getReferencia()%></strong>
 							<div class="product product-single">
+								<strong>Estado: <%=estado%></strong>
 								<div class="product-thumb">
 									
 									<!--<img src= alt="<%//product.getImagen()%>">-->
@@ -180,15 +187,12 @@
 									
 									<h2 class="product-name"> <%=product.getTitulo()%></h2>
 								</div>
-								<form  action="producto.html" action="ControladorServlet" method="post">
-									<input class="form-wt" type="hidden" name="referenciaM" value=<%=product.getReferencia()%> required>
-								<input type="submit" value="Mostrar producto">
-								</form>	
-								<form  action="eliminar-producto.html" action="ControladorServlet" method="post">
-									<input class="form-wt" type="hidden" name="referenciaE" value=<%=product.getReferencia()%> required>
-								<input type="submit" value="Eliminar producto">
-								</form>	
-							
+								<div>
+								<p>Descripcion:<%=product.getDescripcion()%> </p>
+								<p>Categoria:<%=product.getCategoria()%> </p>
+								</div>
+								
+							</div>
 							<!-- /Product Single -->
 							
 							
@@ -196,12 +200,39 @@
 					</div>
 				</div>
 				</div>
-				</div>
 				<br></br>
 				<%}}
-				session.removeAttribute("producto");%>
+				session.removeAttribute("producto_info");%>
 			
 			<!-- /row -->
+			<div class="row">
+			<p>Para modificar un producto ingresa su número de referencia</p>
+			<form  action="modificar-producto.html" action="ControladorServlet" method="post">
+						<label for="name">Referencia:</label><br>
+						<input class="form-wt" type="text" name="referenciaProd" value="" required><br>
+						<label for="name">Titulo del Producto:</label><br>
+						<input class="form-wt" type="text" name="nombreProd" value="" required><br>
+						<label for="apellido">Descripción</label><br>
+						<input class="form-wt" type="text" name="descripcionProd" value="" required><br>
+						<label for="email">Precio:</label><br>    
+						<input class="form-wt" type="text" name="precioProd" value="" required><br>
+						<label for="direccion">Imagen:</label><br>
+						<input class="form-wt" type="text" name="imagenProd" value="" required><br>
+						<h4>Categoría:</h4>
+						<select name="categoriaProd" required>
+							<option value="Ropa">Ropa</option>
+							<option value="Electronica">Electrónica</option>
+							<option value="Hogar">Hogar</option>
+							<option value="Deporte">Deporte</option>
+							<option value="Cultura">Cultura</option>
+							
+						</select>
+						<br></br>
+					<input type="submit" value="Modificar Producto">
+			</form>	
+	
+			
+			</div>
 			
 		</div>
 		<!-- /container -->

@@ -96,16 +96,19 @@ public class ControladorServlet extends HttpServlet {
 				System.out.println("ds");
 				Connection con = ds.getConnection();
 				if (con != null) {
-					Producto _producto= new Producto();
+					
 					System.out.println("CONEXION CORRECTA");
 					Statement st = con.createStatement();
 					ResultSet rs = st.executeQuery("Select * from producto");
+				
 					Object user = (Object) sesion.getAttribute("usuario");
 					Usuario usu = (Usuario) user;
 					String us = usu.getEmail();
 					ArrayList<Producto> productoList = new ArrayList<Producto>();
+					
 					while(rs.next()) {
 						if(rs.getString(7).compareTo(us)==0) {
+							Producto _producto= new Producto();
 							_producto.setReferencia(rs.getInt(1));
 							_producto.setTitulo(rs.getString(2));
 							_producto.setDescripcion(rs.getString(3));
@@ -115,32 +118,33 @@ public class ControladorServlet extends HttpServlet {
 							_producto.setUser(rs.getString(7));
 							_producto.setEstado(rs.getBoolean(8));
 							productoList.add(_producto);
+		
 						}
+						
 					}
 					sesion.setAttribute("producto", productoList);
 					rs.close();
 					st.close();
 					con.close();
 					System.out.println("Connection close");
-					
+					req.getRequestDispatcher("cuenta-productos.jsp").forward(req, resp);
 				}
 				else {
 					System.out.println("CONEXION iNCORRECTA");
-					req.getRequestDispatcher("registrar_podructo-incorrecto.jsp").forward(req, resp);
+					req.getRequestDispatcher("registrar_producto-incorrecto.jsp").forward(req, resp);
 				}
 				
 			} 
 			catch (SQLException e) {
 				
 				System.out.println("Error al Insertar "+e.getMessage());
-				req.getRequestDispatcher("registrar_podructo-incorrecto.jsp").forward(req, resp);
+				req.getRequestDispatcher("registrar_producto-incorrecto.jsp").forward(req, resp);
 			}// complete
 			catch (NamingException e) {
-				req.getRequestDispatcher("registrar_podructo-incorrecto.jsp").forward(req, resp);
+				req.getRequestDispatcher("registrar_producto-incorrecto.jsp").forward(req, resp);
 			}
-			req.getRequestDispatcher("cuenta-productos.jsp").forward(req, resp);
+			
 		}
-		
 		
 		
 		
@@ -339,23 +343,48 @@ public class ControladorServlet extends HttpServlet {
 				if (con != null) {
 					System.out.println("CONEXION CORRECTA");
 					Statement st = con.createStatement();
-					
-					String script= "DELETE FROM usuario where email like '"+req.getParameter("email")+"'";
-					
-					int correcto = st.executeUpdate(script);
-					st.close();
-					con.close();
-					System.out.println("Connection close");
-					if(correcto==1) {
-						_usuario=null;
-						login = false;
-						sesion.setAttribute("sesion_iniciada", login);
-						sesion.setAttribute("usuario", _usuario);
-						req.getRequestDispatcher("index.jsp").forward(req, resp);
+					Usuario user = (Usuario) sesion.getAttribute("usuario");
+					if(user.getEmail().compareTo(req.getParameter("email"))==0) {
+						String script= "DELETE FROM usuario where email like '"+req.getParameter("email")+"'";
+						
+						int correcto = st.executeUpdate(script);
+						st.close();
+						con.close();
+						System.out.println("Connection close");
+						if(correcto==1) {
+							_usuario=null;
+							login = false;
+							sesion.setAttribute("sesion_iniciada", login);
+							sesion.setAttribute("usuario", _usuario);
+							req.getRequestDispatcher("index.jsp").forward(req, resp);
+						}
+						else {
+							req.getRequestDispatcher("eliminar-usuario-incorrecto.jsp").forward(req, resp);
+						}
+						if(user.getRol().compareTo("Vendedor")==0) {
+							st = con.createStatement();
+							script= "DELETE FROM producto where email like '"+req.getParameter("email")+"'";
+							
+							correcto = st.executeUpdate(script);
+							st.close();
+							con.close();
+							System.out.println("Connection close");
+							if(correcto==1) {
+								_usuario=null;
+								login = false;
+								sesion.setAttribute("sesion_iniciada", login);
+								sesion.setAttribute("usuario", _usuario);
+								req.getRequestDispatcher("index.jsp").forward(req, resp);
+							}
+							else {
+								req.getRequestDispatcher("eliminar-usuario-incorrecto.jsp").forward(req, resp);
+							}
+						}
 					}
 					else {
 						req.getRequestDispatcher("eliminar-usuario-incorrecto.jsp").forward(req, resp);
 					}
+					
 					
 				}
 				else {
@@ -438,7 +467,163 @@ public class ControladorServlet extends HttpServlet {
 			
 	
 		}
+		else if(path.compareTo("/eliminar-producto.html")==0) {
+			try {
+				Context ctx = new InitialContext();
+				System.out.println("iniciamos context");
+				DataSource ds = (DataSource) ctx.lookup("jdbc/practica");
+				System.out.println("ds");
+				Connection con = ds.getConnection();
+				if (con != null) {
+					System.out.println("CONEXION CORRECTA");
+					Statement st = con.createStatement();
+					Usuario user = (Usuario) sesion.getAttribute("usuario");
+					String script= "DELETE FROM producto where referencia like '"+req.getParameter("referenciaE")+"' and vendedor like '"+user.getEmail()+"'";
+					
+					int correcto = st.executeUpdate(script);
+					st.close();
+					con.close();
+					System.out.println("Connection close");
+					if(correcto==1) {
+
+						req.getRequestDispatcher("producto-eliminar-correctamente.jsp").forward(req, resp);
+					}
+					else {
+						req.getRequestDispatcher("producto-eliminar-incorrectamente.jsp").forward(req, resp);
+					}
+					
+				}
+				else {
+					System.out.println("CONEXION INCORRECTA");
+					req.getRequestDispatcher("producto-eliminar-incorrectamente.jsp").forward(req, resp);
+				}
+				
+			} 
+			catch (SQLException e) {
+				
+				System.out.println("Error al Insertar "+e.getMessage());
+				req.getRequestDispatcher("producto-eliminar-incorrectamente.jsp").forward(req, resp);
+			}// complete
+			catch (NamingException e) {
+				req.getRequestDispatcher("producto-eliminar-incorrectamente.jsp").forward(req, resp);
+			}
+		}
+		else if(path.compareTo("/modificar-producto.html")==0) {
+			try {
+				Context ctx = new InitialContext();
+				System.out.println("iniciamos context");
+				DataSource ds = (DataSource) ctx.lookup("jdbc/practica");
+				System.out.println("ds");
+				Connection con = ds.getConnection();
+				
+				
+				if (con != null) {
+					System.out.println("CONEXION CORRECTA");
+					Statement st = con.createStatement();
+					
+					String script= "UPDATE producto SET nombre = ?, descripcion=?, categoria=?, imagen=?, precio=? WHERE referencia = ? and vendedor=?";
+					PreparedStatement ps = con.prepareStatement(script);
+					
+					
+					ps.setString(1, req.getParameter("nombreProd"));
+					ps.setString(2, req.getParameter("descripcionProd"));
+					ps.setString(3, req.getParameter("categoriaProd"));
+					/*FileInputStream fis = new FileInputStream(req.getParameter("imagenProd"));
+					ps.setBinaryStream(5, fis, (int) imagen.length()); */
+					ps.setString(4, req.getParameter("imagenProd"));
+					ps.setString(5, req.getParameter("precioProd"));
+					Usuario user = (Usuario) sesion.getAttribute("usuario");
+					ps.setInt(6,Integer.parseInt( req.getParameter("referenciaProd")));
+					ps.setString(7,user.getEmail());
+					
+
+					int correcto = ps.executeUpdate();
+					ps.close();
+					st.close();
+					con.close();
+					System.out.println("Connection close");
+					if(correcto==1) {
+						req.getRequestDispatcher("modificar_producto-correcto.jsp").forward(req, resp);
+					}
+					else {
+						req.getRequestDispatcher("modificar_producto-incorrecto.jsp").forward(req, resp);
+					}
+					
+				}
+				else {
+					System.out.println("CONEXION INCORRECTA");
+					req.getRequestDispatcher("modificar_producto-incorrecto.jsp").forward(req, resp);
+				}
+				
+			} 
+			catch (SQLException e) {
+				
+				System.out.println("Error al Insertar "+e.getMessage());
+				req.getRequestDispatcher("modificar_producto-incorrecto.jsp").forward(req, resp);
+			}// complete
+			catch (NamingException e) {
+				req.getRequestDispatcher("modificar_producto-incorrecto.jsp").forward(req, resp);
+			}
+			
+		}
+		else if(path.compareTo("/producto.html")==0) {
+			try {
+				Context ctx = new InitialContext();
+				System.out.println("iniciamos context");
+				DataSource ds = (DataSource) ctx.lookup("jdbc/practica");
+				System.out.println("ds");
+				Connection con = ds.getConnection();
+				if (con != null) {
+					
+					System.out.println("CONEXION CORRECTA");
+					Statement st = con.createStatement();
+					String script= "SELECT * FROM producto where referencia like '"+req.getParameter("referenciaM")+"' ";
+					ResultSet rs = st.executeQuery(script);
+				
+					Object user = (Object) sesion.getAttribute("usuario");
+					Usuario usu = (Usuario) user;
+					String us = usu.getEmail();
+					ArrayList<Producto> productoList = new ArrayList<Producto>();
+					
+					while(rs.next()) {
+						if(rs.getString(7).compareTo(us)==0) {
+							Producto _producto= new Producto();
+							_producto.setReferencia(rs.getInt(1));
+							_producto.setTitulo(rs.getString(2));
+							_producto.setDescripcion(rs.getString(3));
+							_producto.setCategoria(rs.getString(4));
+							_producto.setImagen(rs.getString(5));
+							_producto.setPrecio(rs.getFloat(6));
+							_producto.setUser(rs.getString(7));
+							_producto.setEstado(rs.getBoolean(8));
+							productoList.add(_producto);
 		
+						}
+						
+					}
+					sesion.setAttribute("producto_info", productoList);
+					rs.close();
+					st.close();
+					con.close();
+					System.out.println("Connection close");
+					req.getRequestDispatcher("producto.jsp").forward(req, resp);
+				}
+				else {
+					System.out.println("CONEXION iNCORRECTA");
+					req.getRequestDispatcher("error.jsp").forward(req, resp);
+				}
+				
+			} 
+			catch (SQLException e) {
+				
+				System.out.println("Error al Insertar "+e.getMessage());
+				req.getRequestDispatcher("error.jsp").forward(req, resp);
+			}// complete
+			catch (NamingException e) {
+				req.getRequestDispatcher("error.jsp").forward(req, resp);
+			}
+			
+		}
 
 		
 		

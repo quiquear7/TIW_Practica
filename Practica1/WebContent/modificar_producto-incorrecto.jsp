@@ -4,7 +4,6 @@
 <%@page import="servlet.Producto"%>
 <%@page import="java.sql.ResultSet"
         import="javax.naming.InitialContext"
-        import="java.util.ArrayList"
         import="javax.naming.Context"
         import="java.sql.Statement"
         import="javax.sql.DataSource"
@@ -84,8 +83,6 @@
 							Object user = (Object) session.getAttribute("usuario");
 							Usuario usu = (Usuario) user;
 							
-							
-							
 							if(login == false || usu.getEmail() == null){%>
 								<strong class="text-uppercase">Mi Cuenta <i class="fa fa-caret-down"></i></strong>
 								<%}else{%>
@@ -128,7 +125,6 @@
 	</header>
 	<!-- /HEADER -->
 
-
 	
 
 	<!-- section -->
@@ -140,68 +136,25 @@
 				<!-- section-title -->
 				<div class="col-md-12">
 					<div class="section-title">
-						<h2 class="title">Productos</h2>
+						<h2 class="title">Modificar Información</h2>
 						<div class="pull-right">
 							<div class="product-slick-dots-1 custom-dots"></div>
 						</div>
 					</div>
 				</div>
-			</div>
 				<!-- /section-title -->
 
-				<% 
-						
-							ArrayList <Producto> p = (ArrayList<Producto>) session.getAttribute("producto");
-							//Producto productos = (Producto) prod;
-							//Producto productos[]= (Producto) prod;
-							//ArrayList list = new ArrayList();
-							
-							if(login == true) {
-							
-							
-							for (int x = 0; x < p.size(); x++) {
-  							Producto product = p.get(x);%>
-  								
-
+				
 				<!-- Produc Slick -->
-				<div class="row">
 				<div class="col-md-9 col-sm-6 col-xs-6">
-					<div class="row">
-						
-							<!-- Product Single -->
-							<strong>Referencia: <%=product.getReferencia()%></strong>
-							<div class="product product-single">
-								<div class="product-thumb">
-									
-									<!--<img src= alt="<%//product.getImagen()%>">-->
-								</div>
-								<div class="product-body">
-									<h3 class="product-price"><%=product.getPrecio()%>$</h3>
-									
-									<h2 class="product-name"> <%=product.getTitulo()%></h2>
-								</div>
-								<form  action="producto.html" action="ControladorServlet" method="post">
-									<input class="form-wt" type="hidden" name="referenciaM" value=<%=product.getReferencia()%> required>
-								<input type="submit" value="Mostrar producto">
-								</form>	
-								<form  action="eliminar-producto.html" action="ControladorServlet" method="post">
-									<input class="form-wt" type="hidden" name="referenciaE" value=<%=product.getReferencia()%> required>
-								<input type="submit" value="Eliminar producto">
-								</form>	
-							
-							<!-- /Product Single -->
-							
-							
-						
-					</div>
+					
+					<p>Producto No Se Ha Podido Modificar Correctamente.</p>
+
 				</div>
-				</div>
-				</div>
-				<br></br>
-				<%}}
-				session.removeAttribute("producto");%>
-			
+				<!-- /Product Slick -->
+			</div>
 			<!-- /row -->
+
 			
 		</div>
 		<!-- /container -->
