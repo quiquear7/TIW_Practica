@@ -4,6 +4,7 @@
 <%@page import="servlet.Producto"%>
 <%@page import="java.sql.ResultSet"
         import="javax.naming.InitialContext"
+        import="java.util.ArrayList"
         import="javax.naming.Context"
         import="java.sql.Statement"
         import="javax.sql.DataSource"
@@ -83,6 +84,8 @@
 							Object user = (Object) session.getAttribute("usuario");
 							Usuario usu = (Usuario) user;
 							
+							
+							
 							if(login == false || usu.getEmail() == null){%>
 								<strong class="text-uppercase">Mi Cuenta <i class="fa fa-caret-down"></i></strong>
 								<%}else{%>
@@ -137,7 +140,7 @@
 				<!-- section-title -->
 				<div class="col-md-12">
 					<div class="section-title">
-						<h2 class="title">Registro</h2>
+						<h2 class="title">Productos</h2>
 						<div class="pull-right">
 							<div class="product-slick-dots-1 custom-dots"></div>
 						</div>
@@ -145,33 +148,33 @@
 				</div>
 				<!-- /section-title -->
 
-				
+				<% 
+						
+						    ArrayList prod = (ArrayList) session.getAttribute("producto");
+							ArrayList productos = (ArrayList) prod;
+							
+							ArrayList list = new ArrayList();
+							
+							if(login == true) {
+							
+							
+							for (int x = 0; x < productos.size(); x++) {
+  							Producto producto = productos.get(x);%>
+  								
+
 				<!-- Produc Slick -->
 				<div class="col-md-9 col-sm-6 col-xs-6">
+				
+				<strong><%=producto.getTitulo()%></strong>
+				
+				
+				
+					<br></br>
 					
-					<form  action="analizar-registro.html" action="ControladorServlet" method="post">
-						<label for="name">Nombre:</label><br>
-						<input class="form-wt" type="text" name="nombre" value="" required><br>
-						<label for="apellido">Apellido:</label><br>
-						<input class="form-wt" type="text" name="apellido" value="" required><br>
-						<label for="email">Email:</label><br>    
-						<input class="form-wt" type="email" name="email" value="" required><br>
-						<label for="direccion">Dirección:</label><br>
-						<input class="form-wt" type="text" name="direccion" value="" required><br>
-						<label for="contrasenia">Contraseña:</label><br>
-						<input class="form-wt" type="password" name="contrasenia" value="" required>
-						<h4>Tipo de Usuario:</h4>
-						<select name="rol" required>
-							<option value="Cliente">Cliente</option>
-							<option value="Vendedor">Vendedor</option>
-							<option value="Admin">Administrador</option>
-						</select>
-						<br></br>
-					<input type="submit" value="Aceptar">
-					</form>	
 
 				</div>
 				<!-- /Product Slick -->
+				<%}}%>
 			</div>
 			<!-- /row -->
 

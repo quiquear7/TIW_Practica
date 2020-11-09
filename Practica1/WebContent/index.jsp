@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
     pageEncoding="ISO-8859-1"%>
 <%@page import="servlet.Usuario"%>
+<%@page import="servlet.Producto"%>
 <%@page import="java.sql.ResultSet"
         import="javax.naming.InitialContext"
         import="javax.naming.Context"
@@ -120,6 +121,8 @@
 						<!-- /Account -->
 
 						<!-- Cart -->
+						<% 
+					if(login == true && usu.getRol().compareTo("Cliente")==0){%>
 						<li class="header-cart dropdown default-dropdown">
 							<a class="dropdown-toggle" data-toggle="dropdown" aria-expanded="true">
 							<div class="header-btns-icon">
@@ -153,7 +156,7 @@
 						</li>
 						<!-- /Cart -->
 						
-						
+						<%} %>
 						<li class="header-account dropdown default-dropdown">
 							
 							

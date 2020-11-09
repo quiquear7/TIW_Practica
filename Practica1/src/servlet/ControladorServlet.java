@@ -4,6 +4,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.*;
+import java.util.ArrayList;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
@@ -16,7 +17,7 @@ import javax.servlet.RequestDispatcher;
 import javax.servlet.http.HttpSession;
 
 import servlet.Usuario;
-
+import servlet.Producto;
 import javax.annotation.Resource;
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -39,6 +40,7 @@ public class ControladorServlet extends HttpServlet {
 	ServletContext miServletContex = null;
 
 	String strAutor;
+	HttpSession sesion;
 
 	public void init() {
 
@@ -52,7 +54,7 @@ public class ControladorServlet extends HttpServlet {
 	public void doGet(HttpServletRequest req, HttpServletResponse resp)
 		throws ServletException, IOException {
 		
-		HttpSession sesion = req.getSession(true);
+		 sesion = req.getSession(true);
 		sesion.setAttribute("sesion_iniciada", login);
 		
 		String path= req.getServletPath();
@@ -86,6 +88,58 @@ public class ControladorServlet extends HttpServlet {
 		else if(path.compareTo("/add_producto.html")==0) {
 			req.getRequestDispatcher("registrar_producto.jsp").forward(req, resp);
 		}
+		else if(path.compareTo("/cuenta-productos.html")==0) {
+			try {
+				Context ctx = new InitialContext();
+				System.out.println("iniciamos context");
+				DataSource ds = (DataSource) ctx.lookup("jdbc/practica");
+				System.out.println("ds");
+				Connection con = ds.getConnection();
+				if (con != null) {
+					Producto _producto= new Producto();
+					System.out.println("CONEXION CORRECTA");
+					Statement st = con.createStatement();
+					ResultSet rs = st.executeQuery("Select * from producto");
+					Object user = (Object) sesion.getAttribute("usuario");
+					Usuario usu = (Usuario) user;
+					String us = usu.getEmail();
+					ArrayList<Producto> productoList = new ArrayList<Producto>();
+					while(rs.next()) {
+						if(rs.getString(7).compareTo(us)==0) {
+							_producto.setReferencia(rs.getInt(1));
+							_producto.setTitulo(rs.getString(2));
+							_producto.setDescripcion(rs.getString(3));
+							_producto.setCategoria(rs.getString(4));
+							_producto.setImagen(rs.getString(5));
+							_producto.setPrecio(rs.getFloat(6));
+							_producto.setUser(rs.getString(7));
+							_producto.setEstado(rs.getBoolean(8));
+							productoList.add(_producto);
+						}
+					}
+					sesion.setAttribute("producto", productoList);
+					rs.close();
+					st.close();
+					con.close();
+					System.out.println("Connection close");
+					
+				}
+				else {
+					System.out.println("CONEXION iNCORRECTA");
+					req.getRequestDispatcher("registrar_podructo-incorrecto.jsp").forward(req, resp);
+				}
+				
+			} 
+			catch (SQLException e) {
+				
+				System.out.println("Error al Insertar "+e.getMessage());
+				req.getRequestDispatcher("registrar_podructo-incorrecto.jsp").forward(req, resp);
+			}// complete
+			catch (NamingException e) {
+				req.getRequestDispatcher("registrar_podructo-incorrecto.jsp").forward(req, resp);
+			}
+			req.getRequestDispatcher("cuenta-productos.jsp").forward(req, resp);
+		}
 		
 		
 		
@@ -99,7 +153,7 @@ public class ControladorServlet extends HttpServlet {
 	public void doPost(HttpServletRequest req, HttpServletResponse resp)
 		throws ServletException, IOException {
 		
-		HttpSession sesion = req.getSession();
+		sesion = req.getSession();
 		String path=req.getServletPath();
 		
 		Usuario _usuario= new Usuario();
@@ -363,23 +417,23 @@ public class ControladorServlet extends HttpServlet {
 					System.out.println("Connection close");
 					if(correcto==1) req.getRequestDispatcher("registrar_producto-correctamente.jsp").forward(req, resp);
 					else {
-						req.getRequestDispatcher("registro-incorrecto.jsp").forward(req, resp);
+						req.getRequestDispatcher("registrar_podructo-incorrecto.jsp").forward(req, resp);
 					}
 					
 				}
 				else {
 					System.out.println("CONEXION iNCORRECTA");
-					req.getRequestDispatcher("registro-incorrecto.jsp").forward(req, resp);
+					req.getRequestDispatcher("registrar_podructo-incorrecto.jsp").forward(req, resp);
 				}
 				
 			} 
 			catch (SQLException e) {
 				
 				System.out.println("Error al Insertar "+e.getMessage());
-				req.getRequestDispatcher("registro-incorrecto.jsp").forward(req, resp);
+				req.getRequestDispatcher("registrar_podructo-incorrecto.jsp").forward(req, resp);
 			}// complete
 			catch (NamingException e) {
-				req.getRequestDispatcher("registro-incorrecto.jsp").forward(req, resp);
+				req.getRequestDispatcher("registrar_podructo-incorrecto.jsp").forward(req, resp);
 			}
 			
 	

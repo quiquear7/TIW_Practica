@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
     pageEncoding="ISO-8859-1"%>
 <%@page import="servlet.Usuario"%>
+<%@page import="servlet.Producto"%>
 <%@page import="java.sql.ResultSet"
         import="javax.naming.InitialContext"
         import="javax.naming.Context"
@@ -147,7 +148,12 @@
 				
 				<!-- Produc Slick -->
 				<div class="col-md-9 col-sm-6 col-xs-6">
+				<% 
+					if(login == true && usu.getRol().compareTo("Cliente")==0){%>
 					<a href="compras_realizadas.html">Compras Realizadas</a>
+					<%}else if(login == true && usu.getRol().compareTo("Vendedor")==0){%>
+					<a href="cuenta-productos.html">Productos Ofertados</a>
+					<%}%>
 					<br></br>
 					<label for="email">Eliminar usuario:</label><br> 
 					<form  action="eliminar-usuario.html" action="ControladorServlet" method="post">
