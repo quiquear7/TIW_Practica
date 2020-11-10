@@ -2,19 +2,19 @@
     pageEncoding="ISO-8859-1"%>
 <%@page import="servlet.Usuario"%>
 <%@page import="servlet.Producto"%>
-<%@page import="servlet.Carro"%>
 <%@page import="java.sql.ResultSet"
         import="javax.naming.InitialContext"
+        import="java.util.ArrayList"
         import="javax.naming.Context"
         import="java.sql.Statement"
         import="javax.sql.DataSource"
         import="java.sql.SQLException"%>
 <%@page import="java.util.*"%>
-
+<%@page import="java.util.ArrayList"%>
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="utf-8">
+	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
@@ -67,21 +67,7 @@
 					<!-- /Logo -->
 
 					<!-- Search -->
-					<div class="header-search">
-						<form>
-							<input class="input search-input" type="text" placeholder="Busqueda">
-							<select class="input search-categories">
-								<option value="0">Categorias</option>
-								<option value="1">Ropa</option>
-								<option value="2">Electrónica</option>
-								<option value="3">Hogar</option>
-								<option value="4">Deporte</option>
-								<option value="5">Cultura</option>
-							</select>
-							<button class="search-btn"><i class="fa fa-search"></i></button>
-						</form>
-					</div>
-					<!-- /Search -->
+				
 				</div>
 				<div class="pull-right">
 					<ul class="header-btns">
@@ -98,10 +84,12 @@
 							Object user = (Object) session.getAttribute("usuario");
 							Usuario usu = (Usuario) user;
 							
+							
+							
 							if(login == false || usu.getEmail() == null){%>
 								<strong class="text-uppercase">Mi Cuenta <i class="fa fa-caret-down"></i></strong>
 								<%}else{%>
-								<strong class="text-uppercase"><%=usu.getEmail()%> <i class="fa fa-caret-down"></i></strong>
+									<strong class="text-uppercase"><%=usu.getEmail()%> <i class="fa fa-caret-down"></i></strong>
 								<%}%>
 							</div>
 							
@@ -116,75 +104,8 @@
 								<li><a href="cerrar_sesion.html"><i class="fa fa-user-plus"></i> Cerrar Sesion</a></li>
 							<%}%>
 						
-								
-							</ul>
-						</li>
-						<!-- /Account -->
 
-						<!-- Cart -->
-						<% 
-					if(login == true && usu.getRol().compareTo("Cliente")==0){
-					
-						ArrayList <Carro> c = (ArrayList<Carro>) session.getAttribute("carro");
-						float total = 0;
-						
-						if(c!=null){
-							
-						
-					%>
-					
-						<li class="header-cart dropdown default-dropdown">
-							<a class="dropdown-toggle" data-toggle="dropdown" aria-expanded="true">
-							<div class="header-btns-icon">
-									<i class="fa fa-shopping-cart"></i>
-								</div>
-								<strong class="text-uppercase">Carro</strong>
-								<br>
-								
-							</a>
-							<div class="custom-menu">
-								<div id="shopping-cart">
-									<div class="shopping-cart-list">
-									
-									
-									<% for (int x = 0; x < c.size(); x++) {
-		
-									Carro carrito = c.get(x);
-									System.out.println(carrito.getPrecio());
-									total += carrito.getPrecio();	%>
-										<div class="product product-widget">
-											<div class="product-thumb">
-												<img src="./img/thumb-product01.jpg" alt="">
-											</div>
-											<div class="product-body">
-												<h3 class="product-price"><%=carrito.getPrecio()%>$</h3>
-												<h2 class="product-name"><%=carrito.getTitulo()%></h2>
-												<form  action="producto_index.html" action="ControladorServlet" method="post">
-												<input class="form-wt" type="hidden" name="referenciaC" value=<%=carrito.getReferencia()%> required>
-												<input type="submit" class="prod_btn" value="Mas Info">
-											</form>
-											</div>
-											
-	
-											<form  action="eliminar_carro.html" action="ControladorServlet" method="post">
-											<input class="form-wt" type="hidden" name="referenciaC" value=<%=carrito.getReferencia()%> required>
-											<input type="submit" class="cancel-btn" value="X" >
-											</form>
-											
-										</div>
-						<%} %>
-									</div>
-									<div class="shopping-cart-btns">
-										<span>Total a Pagar: <%=total%> $</span>
-										<br></br>
-										<button class="primary-btn">Pagar <i class="fa fa-arrow-circle-right"></i></button>
-									</div>
-								</div>
-							</div>
-						</li>
-						<!-- /Cart -->
-						
-						<%} }%>
+						</ul>
 						<li class="header-account dropdown default-dropdown">
 							
 							
@@ -198,8 +119,6 @@
 							<%}%>
 							
 						</li>
-						
-						
 					</ul>
 				</div>
 			</div>
@@ -221,26 +140,33 @@
 				<!-- section-title -->
 				<div class="col-md-12">
 					<div class="section-title">
-						<h2 class="title">Productos</h2>
+						<h2 class="title">Producto</h2>
 						<div class="pull-right">
 							<div class="product-slick-dots-1 custom-dots"></div>
 						</div>
 					</div>
 				</div>
+			</div>
 				<!-- /section-title -->
 
-				
-				<!-- Produc Slick -->
-				
-					
-					
-					<% 
+				<% 
 						
-							ArrayList <Producto> p = (ArrayList<Producto>) session.getAttribute("productos");
-
+							ArrayList <Producto> p = (ArrayList<Producto>) session.getAttribute("producto_part");
+							//Producto productos = (Producto) prod;
+							//Producto productos[]= (Producto) prod;
+							//ArrayList list = new ArrayList();
+							
+							
+							
+							
 							for (int x = 0; x < p.size(); x++) {
-								System.out.println("Recorremos for el index");
-  							Producto product = p.get(x);%>
+  							Producto product = p.get(x);
+  							String estado;
+  							if(product.getEstado()==false){
+  								estado = "En venta";
+  							}else{
+  								estado = "Vendido";
+  							}%>
   								
 
 				<!-- Produc Slick -->
@@ -249,8 +175,9 @@
 					<div class="row">
 						
 							<!-- Product Single -->
-							
+							<strong>Referencia: <%=product.getReferencia()%></strong>
 							<div class="product product-single">
+								<strong>Estado: <%=estado%></strong>
 								<div class="product-thumb">
 									
 									<!--<img src= alt="<%//product.getImagen()%>">-->
@@ -260,10 +187,10 @@
 									
 									<h2 class="product-name"> <%=product.getTitulo()%></h2>
 								</div>
-								<form  action="producto_index.html" action="ControladorServlet" method="post">
-									<input class="form-wt" type="hidden" name="referenciaM" value=<%=product.getReferencia()%> required>
-								<input type="submit"  class="primary-btn add-to-cart" value="Mas  Informacion">
-								</form>	
+								<div>
+								<p>Descripcion:<%=product.getDescripcion()%> </p>
+								<p>Categoria:<%=product.getCategoria()%> </p>
+								</div>
 								<% if(login == true && usu.getRol().compareTo("Cliente")==0){%>
 								<form  action="agregar_carro.html" action="ControladorServlet" method="post">
 									<input class="form-wt" type="hidden" name="referenciaE" value=<%=product.getReferencia()%> required>
@@ -271,6 +198,8 @@
 								</form>	
 							<%}
 								%>
+								
+							</div>
 							<!-- /Product Single -->
 							
 							
@@ -278,15 +207,12 @@
 					</div>
 				</div>
 				</div>
-				</div>
 				<br></br>
 				<%}
-				%>
-				
-				<!-- /Product Slick -->
-			</div>
+				session.removeAttribute("producto_part");%>
+			
 			<!-- /row -->
-
+		
 			
 		</div>
 		<!-- /container -->

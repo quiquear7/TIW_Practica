@@ -235,13 +235,16 @@ public class ControladorServlet extends HttpServlet {
 					ResultSet rs = st.executeQuery("Select * from usuario");
 					System.out.println("rs");
 					int usuario_existe = 0;
+					String user ="";
 					while(rs.next()) {
 						System.out.println(rs.getString(1));
 						System.out.println(rs.getString(5));
 						if((rs.getString(1).compareTo(req.getParameter("email"))== 0  && rs.getString(5).compareTo(req.getParameter("contrasenia"))==0 )) {
 							usuario_existe = 1;
+							
 							System.out.println("Usuario existe");
 							_usuario.setEmail(rs.getString(1));
+							user = rs.getString(1);
 							_usuario.setNombre(rs.getString(2));
 							_usuario.setApellido(rs.getString(3));
 							_usuario.setDireccion(rs.getString(4));
@@ -252,13 +255,43 @@ public class ControladorServlet extends HttpServlet {
 					}
 					rs.close();
 					st.close();
-					con.close();
+					
 					System.out.println("Connection close");
 					System.out.println("User"+usuario_existe);
 					if(usuario_existe==1) {
 						login = true;
 						sesion.setAttribute("sesion_iniciada", login);
 						sesion.setAttribute("usuario", _usuario);
+						st = con.createStatement();
+						
+						ResultSet rs2 = st.executeQuery("SELECT * FROM carro where usuario like  '"+user+"'");
+						
+						Carro _carro = new Carro();
+						ArrayList<Carro> carrito = new ArrayList<Carro>();
+						
+						while(rs2.next()) {
+							
+							
+							
+							_carro.setReferencia(rs2.getInt(1));
+							_carro.setUser(rs2.getString(2)); 
+							_carro.setPrecio(rs2.getFloat(3));
+							_carro.setTitulo(rs2.getString(4));
+							_carro.setImagen(rs2.getString(5));
+							carrito.add(_carro);
+						}
+						sesion.setAttribute("carro", carrito);
+						
+						rs2.close();
+						st.close();
+						con.close();
+						
+						for (int x = 0; x < carrito.size(); x++) {
+							Carro car = carrito.get(x);
+							System.out.println(car.getPrecio());
+						}
+						System.out.println("Connection close");
+						
 						
 						req.getRequestDispatcher("index.jsp").forward(req, resp);
 					}
@@ -684,7 +717,219 @@ public class ControladorServlet extends HttpServlet {
 			}
 			
 		}
+		else if(path.compareTo("/producto_index.html")==0) {
+			try {
+				Context ctx = new InitialContext();
+				System.out.println("iniciamos context");
+				DataSource ds = (DataSource) ctx.lookup("jdbc/practica");
+				System.out.println("ds");
+				Connection con = ds.getConnection();
+				if (con != null) {
+					
+					System.out.println("CONEXION CORRECTA");
+					Statement st = con.createStatement();
+					String script= "SELECT * FROM producto where referencia like '"+req.getParameter("referenciaC")+"' ";
+					ResultSet rs = st.executeQuery(script);
+				
+					
+					ArrayList<Producto> productoList = new ArrayList<Producto>();
+					
+					while(rs.next()) {
+						Producto _producto= new Producto();
+						_producto.setReferencia(rs.getInt(1));
+						_producto.setTitulo(rs.getString(2));
+						_producto.setDescripcion(rs.getString(3));
+						_producto.setCategoria(rs.getString(4));
+						_producto.setImagen(rs.getString(5));
+						_producto.setPrecio(rs.getFloat(6));
+						_producto.setUser(rs.getString(7));
+						_producto.setEstado(rs.getBoolean(8));
+						productoList.add(_producto);
+					}
+					sesion.setAttribute("producto_part", productoList);
+					rs.close();
+					st.close();
+					con.close();
+					System.out.println("Connection close");
+					req.getRequestDispatcher("producto-index.jsp").forward(req, resp);
+				}
+				else {
+					System.out.println("CONEXION iNCORRECTA");
+					req.getRequestDispatcher("error.jsp").forward(req, resp);
+				}
+				
+			} 
+			catch (SQLException e) {
+				
+				System.out.println("Error al Insertar "+e.getMessage());
+				req.getRequestDispatcher("error.jsp").forward(req, resp);
+			}// complete
+			catch (NamingException e) {
+				req.getRequestDispatcher("error.jsp").forward(req, resp);
+			}
+			
+		}
+		else if(path.compareTo("/agregar_carro.html")==0) {
 
+			try {
+				Context ctx = new InitialContext();
+				System.out.println("iniciamos context");
+				DataSource ds = (DataSource) ctx.lookup("jdbc/practica");
+				System.out.println("ds");
+				Connection con = ds.getConnection();
+				Producto _producto= new Producto();
+				if (con != null) {
+					System.out.println("CONEXION CORRECTA");
+					Statement st = con.createStatement();
+					ResultSet rs = st.executeQuery("SELECT * FROM producto where referencia like '"+req.getParameter("referenciaE")+"' ");
+					
+					
+					while(rs.next()) {
+						
+						_producto.setReferencia(rs.getInt(1));
+						_producto.setTitulo(rs.getString(2));
+						_producto.setDescripcion(rs.getString(3));
+						_producto.setCategoria(rs.getString(4));
+						_producto.setImagen(rs.getString(5));
+						_producto.setPrecio(rs.getFloat(6));
+						_producto.setUser(rs.getString(7));
+						_producto.setEstado(rs.getBoolean(8));
+					}
+					
+					rs.close();	
+					st.close();
+					
+					st = con.createStatement();
+					Usuario us = (Usuario) sesion.getAttribute("usuario");
+					
+					String script= "insert into carro (precio,referencia,usuario,titulo,imagen) values (?,?,?,?,?)";
+					PreparedStatement ps = con.prepareStatement(script);
+					ps.setFloat(1, _producto.getPrecio());
+					ps.setInt(2,Integer.parseInt(req.getParameter("referenciaE")) );
+					ps.setString(3,us.getEmail());
+					ps.setString(4, _producto.getTitulo());
+					ps.setString(5, _producto.getImagen());
+
+					
+					ps.executeUpdate();
+					ps.close();
+					st.close();
+					
+					st = con.createStatement();
+					System.out.println("Usuario: "+us.getEmail());
+					ResultSet rs2 = st.executeQuery("SELECT * FROM carro where usuario like  '"+us.getEmail()+"'");
+					
+					Carro _carro = new Carro();
+					ArrayList<Carro> carrito = new ArrayList<Carro>();
+					
+					while(rs2.next()) {
+						
+						
+						
+						_carro.setReferencia(rs2.getInt(1));
+						_carro.setUser(rs2.getString(2)); 
+						_carro.setPrecio(rs2.getFloat(3));
+						_carro.setTitulo(rs2.getString(4));
+						_carro.setImagen(rs2.getString(5));
+						carrito.add(_carro);
+					}
+					sesion.setAttribute("carro", carrito);
+					
+					rs2.close();
+					st.close();
+					con.close();
+					
+					for (int x = 0; x < carrito.size(); x++) {
+						Carro car = carrito.get(x);
+						System.out.println(car.getPrecio());
+					}
+					System.out.println("Connection close");
+					req.getRequestDispatcher("index.jsp").forward(req, resp);
+					
+				}
+				else {
+					System.out.println("CONEXION iNCORRECTA");
+					req.getRequestDispatcher("index.jsp").forward(req, resp);
+				}
+				
+			} 
+			catch (SQLException e) {
+				
+				System.out.println("Error al Insertar "+e.getMessage());
+				req.getRequestDispatcher("index.jsp").forward(req, resp);
+			}// complete
+			catch (NamingException e) {
+				req.getRequestDispatcher("index.jsp").forward(req, resp);
+			}
+		}
+		else if(path.compareTo("/eliminar_carro.html")==0) {
+
+			try {
+				Context ctx = new InitialContext();
+				System.out.println("iniciamos context");
+				DataSource ds = (DataSource) ctx.lookup("jdbc/practica");
+				System.out.println("ds");
+				Connection con = ds.getConnection();
+				Producto _producto= new Producto();
+				if (con != null) {
+					System.out.println("CONEXION CORRECTA");
+					Statement st = con.createStatement();
+					Usuario us = (Usuario) sesion.getAttribute("usuario");
+					String script= "DELETE FROM carro where referencia like '"+req.getParameter("referenciaC")+"' and usuario like '"+us.getEmail()+"'";
+					
+					st.executeUpdate(script);
+					
+					
+					st.close();
+					
+					st = con.createStatement();
+					System.out.println("Usuario: "+us.getEmail());
+					ResultSet rs2 = st.executeQuery("SELECT * FROM carro where usuario like  '"+us.getEmail()+"'");
+					
+					Carro _carro = new Carro();
+					ArrayList<Carro> carrito = new ArrayList<Carro>();
+					
+					while(rs2.next()) {
+						
+						
+						
+						_carro.setReferencia(rs2.getInt(1));
+						_carro.setUser(rs2.getString(2)); 
+						_carro.setPrecio(rs2.getFloat(3));
+						_carro.setTitulo(rs2.getString(4));
+						_carro.setImagen(rs2.getString(5));
+						carrito.add(_carro);
+					}
+					sesion.setAttribute("carro", carrito);
+					
+					rs2.close();
+					st.close();
+					con.close();
+					
+					for (int x = 0; x < carrito.size(); x++) {
+						Carro car = carrito.get(x);
+						System.out.println(car.getPrecio());
+					}
+					System.out.println("Connection close");
+					req.getRequestDispatcher("index.jsp").forward(req, resp);
+					
+				}
+				else {
+					System.out.println("CONEXION iNCORRECTA");
+					req.getRequestDispatcher("index.jsp").forward(req, resp);
+				}
+				
+			} 
+			catch (SQLException e) {
+				
+				System.out.println("Error al Insertar "+e.getMessage());
+				req.getRequestDispatcher("index.jsp").forward(req, resp);
+			}// complete
+			catch (NamingException e) {
+				req.getRequestDispatcher("index.jsp").forward(req, resp);
+			}
+		}
+		
 		
 		
 		

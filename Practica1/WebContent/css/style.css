@@ -1053,6 +1053,14 @@ textarea.input {
   border: none;
   color: #DADADA;
 }
+.product.product-widget .prod-btn {
+  position: absolute;
+  right: 0px;
+  top: 10px;
+  background-color: transparent;
+  border: none;
+  color: #DADADA;
+}
 
 .product.product-widget .cancel-btn:hover {
   color: #30323A;
