@@ -203,30 +203,60 @@
 
 				
 				<!-- Produc Slick -->
+				
+					
+					
+					<% 
+						
+							ArrayList <Producto> p = (ArrayList<Producto>) session.getAttribute("productos");
+							System.out.println("Recorremos en el index");
+							
+							if(login == true) {
+							
+							
+							for (int x = 0; x < p.size(); x++) {
+								System.out.println("Recorremos for el index");
+  							Producto product = p.get(x);%>
+  								
+
+				<!-- Produc Slick -->
+				<div class="row">
 				<div class="col-md-9 col-sm-6 col-xs-6">
 					<div class="row">
 						
 							<!-- Product Single -->
+							
 							<div class="product product-single">
 								<div class="product-thumb">
-									<button class="main-btn quick-view"><i class="fa fa-search-plus"></i> Mas Iformación</button>
-									<img src="./img/product01.jpg" alt="">
+									
+									<!--<img src= alt="<%//product.getImagen()%>">-->
 								</div>
 								<div class="product-body">
-									<h3 class="product-price">Precio</h3>
+									<h3 class="product-price"><%=product.getPrecio()%>$</h3>
 									
-									<h2 class="product-name"><a href="#"> Nombre Producto</a></h2>
-									<div class="product-btns">
-										<button class="primary-btn add-to-cart"><i class="fa fa-shopping-cart"></i> Añadir al Carro</button>
-									</div>
+									<h2 class="product-name"> <%=product.getTitulo()%></h2>
 								</div>
-							</div>
+								<form  action="producto.html" action="ControladorServlet" method="post">
+									<input class="form-wt" type="hidden" name="referenciaM" value=<%=product.getReferencia()%> required>
+								<input type="submit" value="Mas Informacion">
+								</form>	
+								<form  action="agregar_carro.html" action="ControladorServlet" method="post">
+									<input class="form-wt" type="hidden" name="referenciaE" value=<%=product.getReferencia()%> required>
+								<input type="submit" class="primary-btn add-to-cart" value="Eliminar producto">
+								</form>	
+							
 							<!-- /Product Single -->
-
+							
 							
 						
 					</div>
 				</div>
+				</div>
+				</div>
+				<br></br>
+				<%}}
+				%>
+				
 				<!-- /Product Slick -->
 			</div>
 			<!-- /row -->

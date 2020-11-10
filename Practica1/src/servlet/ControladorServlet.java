@@ -38,7 +38,8 @@ public class ControladorServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
 	ServletContext miServletContex = null;
-
+	
+	
 	String strAutor;
 	HttpSession sesion;
 
@@ -48,15 +49,15 @@ public class ControladorServlet extends HttpServlet {
 
 		// Cogemos el par�metro de inicializaci�n
 		miServletContex.setAttribute("autor", miServletContex.getInitParameter("autor"));*/
+		
 
 	}
 
 	public void doGet(HttpServletRequest req, HttpServletResponse resp)
 		throws ServletException, IOException {
 		
-		 sesion = req.getSession(true);
+		sesion = req.getSession(true);
 		sesion.setAttribute("sesion_iniciada", login);
-		
 		String path= req.getServletPath();
 		
 		
@@ -67,7 +68,62 @@ public class ControladorServlet extends HttpServlet {
 			req.getRequestDispatcher("registro.jsp").forward(req, resp);
 		}
 		else if(path.compareTo("/index.html")==0) {
-			req.getRequestDispatcher("index.jsp").forward(req, resp);
+			System.out.println("Index");
+			try {
+				Context ctx = new InitialContext();
+				System.out.println("iniciamos context");
+				DataSource ds = (DataSource) ctx.lookup("jdbc/practica");
+				System.out.println("ds");
+				Connection con = ds.getConnection();
+				ArrayList<Producto> producto_total = new ArrayList<Producto>();
+				if (con != null) {
+					
+					System.out.println("CONEXION CORRECTA");
+					Statement st = con.createStatement();
+					String script= "SELECT * FROM producto";
+					ResultSet rs = st.executeQuery(script);
+				
+					while(rs.next()) {
+						System.out.println("Recorremos");
+						Producto _producto= new Producto();
+						_producto.setReferencia(rs.getInt(1));
+						_producto.setTitulo(rs.getString(2));
+						_producto.setDescripcion(rs.getString(3));
+						_producto.setCategoria(rs.getString(4));
+						_producto.setImagen(rs.getString(5));
+						_producto.setPrecio(rs.getFloat(6));
+						_producto.setUser(rs.getString(7));
+						_producto.setEstado(rs.getBoolean(8));
+						producto_total.add(_producto);
+					
+					
+					}
+					
+						
+					//sesion.setAttribute("sesion_iniciada", login);
+					//sesion.setAttribute("usuario", Usuario);
+					sesion.setAttribute("productos", producto_total);
+					rs.close();
+					st.close();
+					con.close();
+					System.out.println("Connection close");
+					req.getRequestDispatcher("index.jsp").forward(req, resp);
+				}
+				else {
+					System.out.println("CONEXION iNCORRECTA");
+					req.getRequestDispatcher("error.jsp").forward(req, resp);
+				}
+				
+			} 
+			catch (SQLException e) {
+				
+				System.out.println("Error al Insertar "+e.getMessage());
+				req.getRequestDispatcher("error.jsp").forward(req, resp);
+			}// complete
+			catch (NamingException e) {
+				req.getRequestDispatcher("error.jsp").forward(req, resp);
+			}
+			
 		}
 		else if(path.compareTo("/modificar_usuario.html")==0) {
 			req.getRequestDispatcher("modificar_usuario.jsp").forward(req, resp);
@@ -78,6 +134,8 @@ public class ControladorServlet extends HttpServlet {
 			sesion.setAttribute("sesion_iniciada", login);
 			sesion.setAttribute("usuario", _usuario);
 			req.getRequestDispatcher("index.jsp").forward(req, resp);
+			
+			
 		}
 		else if(path.compareTo("/cuenta.html")==0) {
 			req.getRequestDispatcher("cuenta.jsp").forward(req, resp);
@@ -201,6 +259,7 @@ public class ControladorServlet extends HttpServlet {
 						login = true;
 						sesion.setAttribute("sesion_iniciada", login);
 						sesion.setAttribute("usuario", _usuario);
+						
 						req.getRequestDispatcher("index.jsp").forward(req, resp);
 					}
 					else {
@@ -374,6 +433,7 @@ public class ControladorServlet extends HttpServlet {
 								login = false;
 								sesion.setAttribute("sesion_iniciada", login);
 								sesion.setAttribute("usuario", _usuario);
+								
 								req.getRequestDispatcher("index.jsp").forward(req, resp);
 							}
 							else {

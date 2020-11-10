@@ -152,9 +152,7 @@
 				<% 
 						
 							ArrayList <Producto> p = (ArrayList<Producto>) session.getAttribute("producto");
-							//Producto productos = (Producto) prod;
-							//Producto productos[]= (Producto) prod;
-							//ArrayList list = new ArrayList();
+							
 							
 							if(login == true) {
 							
