@@ -209,9 +209,10 @@
 					<% 
 						
 							ArrayList <Producto> p = (ArrayList<Producto>) session.getAttribute("productos");
+							session.getAttribute("productos");
 							System.out.println("Recorremos en el index");
 							
-							if(login == true) {
+							
 							
 							
 							for (int x = 0; x < p.size(); x++) {
@@ -240,11 +241,13 @@
 									<input class="form-wt" type="hidden" name="referenciaM" value=<%=product.getReferencia()%> required>
 								<input type="submit" value="Mas Informacion">
 								</form>	
+								<% if(login == true && usu.getRol().compareTo("Cliente")==0){%>
 								<form  action="agregar_carro.html" action="ControladorServlet" method="post">
 									<input class="form-wt" type="hidden" name="referenciaE" value=<%=product.getReferencia()%> required>
-								<input type="submit" class="primary-btn add-to-cart" value="Eliminar producto">
+								<input type="submit" class="primary-btn add-to-cart" value="Agregar al Carro">
 								</form>	
-							
+							<%}
+								%>
 							<!-- /Product Single -->
 							
 							
@@ -254,7 +257,7 @@
 				</div>
 				</div>
 				<br></br>
-				<%}}
+				<%}
 				%>
 				
 				<!-- /Product Slick -->
