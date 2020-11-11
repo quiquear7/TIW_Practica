@@ -168,7 +168,7 @@
 							
 						</select>
 						<br></br>
-					<input type="submit" value="Aceptar">
+					<input type="submit" class="primary-btn add-to-cart" value="Aceptar">
 					</form>	
 
 				</div>

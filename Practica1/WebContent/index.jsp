@@ -66,21 +66,24 @@
 					</div>
 					<!-- /Logo -->
 
+					<% 
+							Object log = (Object) session.getAttribute("sesion_iniciada");
+							Boolean login = (Boolean) log;
+							System.out.println(login);
+							Object user = (Object) session.getAttribute("usuario");
+							Usuario usu = (Usuario) user;
+							
+							if(login == true && usu.getRol().compareTo("Cliente")==0){%>
 					<!-- Search -->
 					<div class="header-search">
-						<form>
-							<input class="input search-input" type="text" placeholder="Busqueda">
-							<select class="input search-categories">
-								<option value="0">Categorias</option>
-								<option value="1">Ropa</option>
-								<option value="2">Electrónica</option>
-								<option value="3">Hogar</option>
-								<option value="4">Deporte</option>
-								<option value="5">Cultura</option>
-							</select>
+						<form action="busqueda.html" action="ControladorServlet" method="post">
+							<input class="input search-input" name="name" type="text" placeholder="Busqueda">
 							<button class="search-btn"><i class="fa fa-search"></i></button>
 						</form>
 					</div>
+					<a href="busqueda-avanzada.html">Busqueda Avanzada</a>
+					
+					<% }%>
 					<!-- /Search -->
 				</div>
 				<div class="pull-right">
@@ -92,11 +95,6 @@
 									<i class="fa fa-user-o"></i>
 								</div>
 								<% 
-							Object log = (Object) session.getAttribute("sesion_iniciada");
-							Boolean login = (Boolean) log;
-							System.out.println(login);
-							Object user = (Object) session.getAttribute("usuario");
-							Usuario usu = (Usuario) user;
 							
 							if(login == false || usu.getEmail() == null){%>
 								<strong class="text-uppercase">Mi Cuenta <i class="fa fa-caret-down"></i></strong>

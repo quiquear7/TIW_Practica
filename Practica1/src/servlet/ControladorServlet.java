@@ -203,6 +203,9 @@ public class ControladorServlet extends HttpServlet {
 			}
 			
 		}
+		else if(path.compareTo("/busqueda-avanzada.html")==0) {
+			req.getRequestDispatcher("busqueda-avanzada.jsp").forward(req, resp);
+		}
 		
 		
 		
@@ -912,6 +915,144 @@ public class ControladorServlet extends HttpServlet {
 					}
 					System.out.println("Connection close");
 					req.getRequestDispatcher("index.jsp").forward(req, resp);
+					
+				}
+				else {
+					System.out.println("CONEXION iNCORRECTA");
+					req.getRequestDispatcher("index.jsp").forward(req, resp);
+				}
+				
+			} 
+			catch (SQLException e) {
+				
+				System.out.println("Error al Insertar "+e.getMessage());
+				req.getRequestDispatcher("index.jsp").forward(req, resp);
+			}// complete
+			catch (NamingException e) {
+				req.getRequestDispatcher("index.jsp").forward(req, resp);
+			}
+		}
+		else if(path.compareTo("/busqueda.html")==0) {
+
+			try {
+				Context ctx = new InitialContext();
+				System.out.println("iniciamos context");
+				DataSource ds = (DataSource) ctx.lookup("jdbc/practica");
+				System.out.println("ds");
+				Connection con = ds.getConnection();
+				ArrayList<Producto> producto_total = new ArrayList<Producto>();
+				if (con != null) {
+					System.out.println("CONEXION CORRECTA");
+					Statement st = con.createStatement();
+					ResultSet rs = st.executeQuery("SELECT * FROM producto where nombre like '%"+req.getParameter("name")+"%' or descripcion like '%"+req.getParameter("name")+"%'");
+					
+					
+					while(rs.next()) {
+						Producto _producto= new Producto();
+						_producto.setReferencia(rs.getInt(1));
+						_producto.setTitulo(rs.getString(2));
+						_producto.setDescripcion(rs.getString(3));
+						_producto.setCategoria(rs.getString(4));
+						_producto.setImagen(rs.getString(5));
+						_producto.setPrecio(rs.getFloat(6));
+						_producto.setUser(rs.getString(7));
+						_producto.setEstado(rs.getBoolean(8));
+						producto_total.add(_producto);
+					}
+					
+					sesion.setAttribute("productos-busqueda", producto_total);
+					
+					rs.close();	
+					st.close();
+					con.close();
+					
+					req.getRequestDispatcher("res-busqueda.jsp").forward(req, resp);
+					
+				}
+				else {
+					System.out.println("CONEXION iNCORRECTA");
+					req.getRequestDispatcher("index.jsp").forward(req, resp);
+				}
+				
+			} 
+			catch (SQLException e) {
+				
+				System.out.println("Error al Insertar "+e.getMessage());
+				req.getRequestDispatcher("index.jsp").forward(req, resp);
+			}// complete
+			catch (NamingException e) {
+				req.getRequestDispatcher("index.jsp").forward(req, resp);
+			}
+		}
+		else if(path.compareTo("/buscar_producto.html")==0) {
+
+			try {
+				Context ctx = new InitialContext();
+				System.out.println("iniciamos context");
+				DataSource ds = (DataSource) ctx.lookup("jdbc/practica");
+				System.out.println("ds");
+				Connection con = ds.getConnection();
+				ArrayList<Producto> producto_total = new ArrayList<Producto>();
+				if (con != null) {
+					System.out.println("CONEXION CORRECTA");
+					Statement st = con.createStatement();
+					String name ="";
+					String descripcion = "";
+					String categoria = "";
+					String vendedor = "";
+					String precio = "";
+					int cont = 0;
+					if(req.getParameter("nombreProd").compareTo("")!=0) {
+						name = "nombre like '%"+req.getParameter("nombreProd")+"%'";
+						cont++;
+					}
+					if(req.getParameter("descripcionProd").compareTo("")!=0) {
+						System.out.println(req.getParameter("descripcionProd"));
+						if (cont > 0) descripcion = " and descripcion like '%"+req.getParameter("descripcionProd")+"%'";
+						else descripcion = " descripcion like '%"+req.getParameter("descripcionProd")+"%'";
+						cont++;
+						System.out.println(descripcion);
+					}
+					if(req.getParameter("precioProd").compareTo("")!=0) {
+						if (cont > 0) precio = " and precio like '%"+req.getParameter("precioProd")+"%'";
+						else precio = " precio like '%"+req.getParameter("precioProd")+"%'";
+						cont++;
+					}
+					if(req.getParameter("vendedorProd").compareTo("")!=0) {
+						if (cont > 0) vendedor = " and vendedor like '%"+req.getParameter("vendedorProd")+"%'";
+						else vendedor = " vendedor like '%"+req.getParameter("vendedorProd")+"%'";
+						cont++;
+					}
+					if(req.getParameter("categoriaProd").compareTo("")!=0) {
+						if (cont > 0) categoria = " and categoria like '%"+req.getParameter("categoriaProd")+"%'";
+						else categoria = " categoria like '%"+req.getParameter("categoriaProd")+"%'";
+						cont++;
+					}
+					System.out.println(descripcion);
+					System.out.println("SELECT * FROM producto where "+name+""+descripcion+""+precio+""+categoria);
+					ResultSet rs = st.executeQuery("SELECT * FROM producto where "+name+""+descripcion+""+precio+""+vendedor+""+categoria);
+					
+					
+					while(rs.next()) {
+						Producto _producto= new Producto();
+						_producto.setReferencia(rs.getInt(1));
+						_producto.setTitulo(rs.getString(2));
+						_producto.setDescripcion(rs.getString(3));
+						_producto.setCategoria(rs.getString(4));
+						_producto.setImagen(rs.getString(5));
+						_producto.setPrecio(rs.getFloat(6));
+						_producto.setUser(rs.getString(7));
+						_producto.setEstado(rs.getBoolean(8));
+						producto_total.add(_producto);
+					}
+					
+					sesion.setAttribute("productos-busqueda", producto_total);
+					
+					rs.close();	
+					st.close();
+					con.close();
+					
+					req.getRequestDispatcher("res-busqueda.jsp").forward(req, resp);
 					
 				}
 				else {

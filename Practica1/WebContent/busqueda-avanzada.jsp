@@ -125,6 +125,7 @@
 	</header>
 	<!-- /HEADER -->
 
+
 	
 
 	<!-- section -->
@@ -136,7 +137,7 @@
 				<!-- section-title -->
 				<div class="col-md-12">
 					<div class="section-title">
-						<h2 class="title">Modificar Información</h2>
+						<h2 class="title">Busqueda Avanzada</h2>
 						<div class="pull-right">
 							<div class="product-slick-dots-1 custom-dots"></div>
 						</div>
@@ -148,19 +149,26 @@
 				<!-- Produc Slick -->
 				<div class="col-md-9 col-sm-6 col-xs-6">
 					
-					<form  action="modificar_usuario-correcto.html" action="ControladorServlet" method="post">
-						<label for="email">Email:</label><br>    
-						<input class="form-wt" type="email" name="email" value="" required><br>
-						<label for="name"> Nuevo Nombre:</label><br>
-						<input class="form-wt" type="text" name="nombre" value="" required><br>
-						<label for="apellido"> Nuevo Apellido:</label><br>
-						<input class="form-wt" type="text" name="apellido" value="" required><br>
-						<label for="direccion">Nueva Dirección:</label><br>
-						<input class="form-wt" type="text" name="direccion" value="" required><br>
-						<label for="contrasenia">Nueva Contraseña:</label><br>
-						<input class="form-wt" type="password" name="contrasenia" value="" required>
+					<form  action="buscar_producto.html" action="ControladorServlet" method="post">
+						<label for="name">Titulo del Producto:</label><br>
+						<input class="form-wt" type="text" name="nombreProd"  ><br>
+						<label for="apellido">Descripción</label><br>
+						<input class="form-wt" type="text" name="descripcionProd" ><br>
+						<label for="email">Precio:</label><br>    
+						<input class="form-wt" type="text" name="precioProd"  ><br>
+						<label for="email">Vendedor:</label><br>    
+						<input class="form-wt" type="text" name="vendedorProd"  ><br>
+						<h4>Categoría:</h4>
+						<select name="categoriaProd" >
+							<option value="Ropa">Ropa</option>
+							<option value="Electronica">Electrónica</option>
+							<option value="Hogar">Hogar</option>
+							<option value="Deporte">Deporte</option>
+							<option value="Cultura">Cultura</option>
+							
+						</select>
 						<br></br>
-					<input type="submit" class="primary-btn add-to-cart" value="Aceptar">
+					<input type="submit" class="primary-btn add-to-cart" value="Buscar">
 					</form>	
 
 				</div>

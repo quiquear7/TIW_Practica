@@ -2,6 +2,7 @@
     pageEncoding="ISO-8859-1"%>
 <%@page import="servlet.Usuario"%>
 <%@page import="servlet.Producto"%>
+<%@page import="servlet.Carro"%>
 <%@page import="java.sql.ResultSet"
         import="javax.naming.InitialContext"
         import="javax.naming.Context"
@@ -9,11 +10,11 @@
         import="javax.sql.DataSource"
         import="java.sql.SQLException"%>
 <%@page import="java.util.*"%>
-<%@page import="java.util.ArrayList"%>
+
 <!DOCTYPE html>
 <html>
 <head>
-	<meta charset="utf-8">
+<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
@@ -64,9 +65,24 @@
 						</a>
 					</div>
 					<!-- /Logo -->
-
+					<% 
+							Object log = (Object) session.getAttribute("sesion_iniciada");
+							Boolean login = (Boolean) log;
+							System.out.println(login);
+							Object user = (Object) session.getAttribute("usuario");
+							Usuario usu = (Usuario) user;
+							
+							if(login == true && usu.getRol().compareTo("Cliente")==0){%>
 					<!-- Search -->
-				
+					<div class="header-search">
+						<form action="busqueda.html" action="ControladorServlet" method="post">
+							<input class="input search-input" name="name" type="text" placeholder="Busqueda">
+							<button class="search-btn"><i class="fa fa-search"></i></button>
+						</form>
+					</div>
+					<a href="busqueda-avanzada.html">Busqueda Avanzada</a>
+					<% }%>
+					<!-- /Search -->
 				</div>
 				<div class="pull-right">
 					<ul class="header-btns">
@@ -77,16 +93,12 @@
 									<i class="fa fa-user-o"></i>
 								</div>
 								<% 
-							Object log = (Object) session.getAttribute("sesion_iniciada");
-							Boolean login = (Boolean) log;
-							System.out.println(login);
-							Object user = (Object) session.getAttribute("usuario");
-							Usuario usu = (Usuario) user;
+							
 							
 							if(login == false || usu.getEmail() == null){%>
 								<strong class="text-uppercase">Mi Cuenta <i class="fa fa-caret-down"></i></strong>
 								<%}else{%>
-									<strong class="text-uppercase"><%=usu.getEmail()%> <i class="fa fa-caret-down"></i></strong>
+								<strong class="text-uppercase"><%=usu.getEmail()%> <i class="fa fa-caret-down"></i></strong>
 								<%}%>
 							</div>
 							
@@ -101,8 +113,75 @@
 								<li><a href="cerrar_sesion.html"><i class="fa fa-user-plus"></i> Cerrar Sesion</a></li>
 							<%}%>
 						
+								
+							</ul>
+						</li>
+						<!-- /Account -->
 
-						</ul>
+						<!-- Cart -->
+						<% 
+					if(login == true && usu.getRol().compareTo("Cliente")==0){
+					
+						ArrayList <Carro> c = (ArrayList<Carro>) session.getAttribute("carro");
+						float total = 0;
+						
+						if(c!=null){
+							
+						
+					%>
+					
+						<li class="header-cart dropdown default-dropdown">
+							<a class="dropdown-toggle" data-toggle="dropdown" aria-expanded="true">
+							<div class="header-btns-icon">
+									<i class="fa fa-shopping-cart"></i>
+								</div>
+								<strong class="text-uppercase">Carro</strong>
+								<br>
+								
+							</a>
+							<div class="custom-menu">
+								<div id="shopping-cart">
+									<div class="shopping-cart-list">
+									
+									
+									<% for (int x = 0; x < c.size(); x++) {
+		
+									Carro carrito = c.get(x);
+									System.out.println(carrito.getPrecio());
+									total += carrito.getPrecio();	%>
+										<div class="product product-widget">
+											<div class="product-thumb">
+												<img src="./img/thumb-product01.jpg" alt="">
+											</div>
+											<div class="product-body">
+												<h3 class="product-price"><%=carrito.getPrecio()%>$</h3>
+												<h2 class="product-name"><%=carrito.getTitulo()%></h2>
+												<form  action="producto_index.html" action="ControladorServlet" method="post">
+												<input class="form-wt" type="hidden" name="referenciaC" value=<%=carrito.getReferencia()%> required>
+												<input type="submit" class="prod_btn" value="Mas Info">
+											</form>
+											</div>
+											
+	
+											<form  action="eliminar_carro.html" action="ControladorServlet" method="post">
+											<input class="form-wt" type="hidden" name="referenciaC" value=<%=carrito.getReferencia()%> required>
+											<input type="submit" class="cancel-btn" value="X" >
+											</form>
+											
+										</div>
+						<%} %>
+									</div>
+									<div class="shopping-cart-btns">
+										<span>Total a Pagar: <%=total%> $</span>
+										<br></br>
+										<button class="primary-btn">Pagar <i class="fa fa-arrow-circle-right"></i></button>
+									</div>
+								</div>
+							</div>
+						</li>
+						<!-- /Cart -->
+						
+						<%} }%>
 						<li class="header-account dropdown default-dropdown">
 							
 							
@@ -116,6 +195,8 @@
 							<%}%>
 							
 						</li>
+						
+						
 					</ul>
 				</div>
 			</div>
@@ -124,6 +205,7 @@
 		<!-- container -->
 	</header>
 	<!-- /HEADER -->
+
 
 	
 
@@ -136,7 +218,7 @@
 				<!-- section-title -->
 				<div class="col-md-12">
 					<div class="section-title">
-						<h2 class="title">Modificar Información</h2>
+						<h2 class="title">Productos</h2>
 						<div class="pull-right">
 							<div class="product-slick-dots-1 custom-dots"></div>
 						</div>
@@ -146,24 +228,58 @@
 
 				
 				<!-- Produc Slick -->
-				<div class="col-md-9 col-sm-6 col-xs-6">
+				
 					
-					<form  action="modificar_usuario-correcto.html" action="ControladorServlet" method="post">
-						<label for="email">Email:</label><br>    
-						<input class="form-wt" type="email" name="email" value="" required><br>
-						<label for="name"> Nuevo Nombre:</label><br>
-						<input class="form-wt" type="text" name="nombre" value="" required><br>
-						<label for="apellido"> Nuevo Apellido:</label><br>
-						<input class="form-wt" type="text" name="apellido" value="" required><br>
-						<label for="direccion">Nueva Dirección:</label><br>
-						<input class="form-wt" type="text" name="direccion" value="" required><br>
-						<label for="contrasenia">Nueva Contraseña:</label><br>
-						<input class="form-wt" type="password" name="contrasenia" value="" required>
-						<br></br>
-					<input type="submit" class="primary-btn add-to-cart" value="Aceptar">
-					</form>	
+					
+					<% 
+						
+							ArrayList <Producto> p = (ArrayList<Producto>) session.getAttribute("productos-busqueda");
 
+							for (int x = 0; x < p.size(); x++) {
+								System.out.println("Recorremos for el index");
+  							Producto product = p.get(x);%>
+  								
+
+				<!-- Produc Slick -->
+				<div class="row">
+				<div class="col-md-9 col-sm-6 col-xs-6">
+					<div class="row">
+						
+							<!-- Product Single -->
+							
+							<div class="product product-single">
+								<div class="product-thumb">
+									
+									<!--<img src= alt="<%//product.getImagen()%>">-->
+								</div>
+								<div class="product-body">
+									<h3 class="product-price"><%=product.getPrecio()%>$</h3>
+									
+									<h2 class="product-name"> <%=product.getTitulo()%></h2>
+								</div>
+								<form  action="producto_index.html" action="ControladorServlet" method="post">
+									<input class="form-wt" type="hidden" name="referenciaM" value=<%=product.getReferencia()%> required>
+								<input type="submit"  class="primary-btn add-to-cart" value="Mas  Informacion">
+								</form>	
+								<% if(login == true && usu.getRol().compareTo("Cliente")==0){%>
+								<form  action="agregar_carro.html" action="ControladorServlet" method="post">
+									<input class="form-wt" type="hidden" name="referenciaE" value=<%=product.getReferencia()%> required>
+								<input type="submit" class="primary-btn add-to-cart" value="Agregar a  Carro">
+								</form>	
+							<%}
+								%>
+							<!-- /Product Single -->
+							
+							
+						
+					</div>
 				</div>
+				</div>
+				</div>
+				<br></br>
+				<%}
+				%>
+				
 				<!-- /Product Slick -->
 			</div>
 			<!-- /row -->
