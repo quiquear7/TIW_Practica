@@ -2,8 +2,10 @@
     pageEncoding="ISO-8859-1"%>
 <%@page import="servlet.Usuario"%>
 <%@page import="servlet.Producto"%>
+<%@page import="servlet.Compra"%>
 <%@page import="java.sql.ResultSet"
         import="javax.naming.InitialContext"
+        import="java.util.ArrayList"
         import="javax.naming.Context"
         import="java.sql.Statement"
         import="javax.sql.DataSource"
@@ -83,6 +85,8 @@
 							Object user = (Object) session.getAttribute("usuario");
 							Usuario usu = (Usuario) user;
 							
+							
+							
 							if(login == false || usu.getEmail() == null){%>
 								<strong class="text-uppercase">Mi Cuenta <i class="fa fa-caret-down"></i></strong>
 								<%}else{%>
@@ -137,31 +141,66 @@
 				<!-- section-title -->
 				<div class="col-md-12">
 					<div class="section-title">
-						<h2 class="title">Cuenta</h2>
+						<h2 class="title">Compras</h2>
 						<div class="pull-right">
 							<div class="product-slick-dots-1 custom-dots"></div>
 						</div>
 					</div>
 				</div>
+			</div>
 				<!-- /section-title -->
 
-				
+				<% 
+						
+							ArrayList <Compra> p = (ArrayList<Compra>) session.getAttribute("compras");
+							
+							
+							if(login == true) {
+							
+							
+							for (int x = 0; x < p.size(); x++) {
+  							Compra product = p.get(x);%>
+  								
+
 				<!-- Produc Slick -->
+				<div class="row">
 				<div class="col-md-9 col-sm-6 col-xs-6">
-					<a href="compras_realizadas.html"><i class="fa fa-user-o"></i>Compras Realizadas</a>
-					<label for="email">Eliminar usuario:</label><br> 
-					<form  action="eliminar-usuario.html" action="ControladorServlet" method="post">
-						<label for="email"> Ingresa Email:</label><br>    
-						<input class="form-wt" type="email" name="email" value="" required><br>
-						<br></br>
-					<input type="submit" value="Eliminar usuario">
-					</form>	
-
+					<div class="row">
+						
+							<!-- Product Single -->
+							
+							<div class="product product-single">
+							<strong>Referencia Producto: <%=product.getReferencia()%></strong>
+							<br></br>
+							<strong>Referencia Compra: <%=product.getReferencia_compra()%></strong>
+								<div class="product-thumb">
+									
+									<!--<img src= alt="<%//product.getImagen()%>">-->
+								</div>
+								<div class="product-body">
+									<h2 class="product-name"> <%=product.getTitulo()%></h2>
+									<br></br>
+									<h3 class="product-price"><%=product.getPrecio()%>$</h3>
+									<br></br>
+									<strong>Vendedor: <%=product.getVendedor()%></strong>
+									<br></br>
+									<strong>Fecha Compra: <%=product.getFecha()%></strong>
+								</div>
+								
+							
+							<!-- /Product Single -->
+							
+							
+						
+					</div>
 				</div>
-				<!-- /Product Slick -->
-			</div>
+				</div>
+				</div>
+				<br></br>
+				<%}}
+				session.removeAttribute("producto");%>
+			
 			<!-- /row -->
-
 			
 		</div>
 		<!-- /container -->

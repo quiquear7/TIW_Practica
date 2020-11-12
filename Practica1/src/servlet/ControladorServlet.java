@@ -141,7 +141,61 @@ public class ControladorServlet extends HttpServlet {
 			req.getRequestDispatcher("cuenta.jsp").forward(req, resp);
 		}
 		else if(path.compareTo("/compras_realizadas.html")==0) {
-			req.getRequestDispatcher("compras_realizadas.jsp").forward(req, resp);
+			try {
+				Context ctx = new InitialContext();
+				System.out.println("iniciamos context");
+				DataSource ds = (DataSource) ctx.lookup("jdbc/practica");
+				System.out.println("ds");
+				Connection con = ds.getConnection();
+				ArrayList<Compra> compras = new ArrayList<Compra>();
+				if (con != null) {
+					
+					System.out.println("CONEXION CORRECTA");
+					Statement st = con.createStatement();
+					Usuario user = (Usuario) sesion.getAttribute("usuario");
+					String script= "SELECT * FROM compra where comprador like  '"+user.getEmail()+"'";
+					ResultSet rs = st.executeQuery(script);
+				
+					while(rs.next()) {
+						System.out.println("Recorremos");
+						Compra _producto= new Compra();
+						_producto.setReferencia(rs.getInt(1));
+						_producto.setComprador(rs.getString(2));
+						_producto.setVendedor(rs.getString(3));
+						_producto.setPrecio(rs.getFloat(4));
+						_producto.setDireccion(rs.getString(5));
+						_producto.setFecha(rs.getString(6));
+						_producto.setReferencia_compra(rs.getInt(7)); 
+						_producto.setTitulo(rs.getString(8));
+						//_producto.setImagen(rs.getString(9));
+						compras.add(_producto);
+					}
+					
+						
+					//sesion.setAttribute("sesion_iniciada", login);
+					//sesion.setAttribute("usuario", Usuario);
+					sesion.setAttribute("compras", compras);
+					rs.close();
+					st.close();
+					con.close();
+					System.out.println("Connection close");
+					req.getRequestDispatcher("compras_realizadas.jsp").forward(req, resp);
+				}
+				else {
+					System.out.println("CONEXION iNCORRECTA");
+					req.getRequestDispatcher("error.jsp").forward(req, resp);
+				}
+				
+			} 
+			catch (SQLException e) {
+				
+				System.out.println("Error al Insertar "+e.getMessage());
+				req.getRequestDispatcher("error.jsp").forward(req, resp);
+			}// complete
+			catch (NamingException e) {
+				req.getRequestDispatcher("error.jsp").forward(req, resp);
+			}
+			
 		}
 		else if(path.compareTo("/add_producto.html")==0) {
 			req.getRequestDispatcher("registrar_producto.jsp").forward(req, resp);

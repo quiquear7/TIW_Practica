@@ -180,11 +180,11 @@
 								</div>
 								<form  action="producto.html" action="ControladorServlet" method="post">
 									<input class="form-wt" type="hidden" name="referenciaM" value=<%=product.getReferencia()%> required>
-								<input type="submit" value="Mostrar producto">
+								<input type="submit"  class="primary-btn add-to-cart" value="Mostrar producto">
 								</form>	
 								<form  action="eliminar-producto.html" action="ControladorServlet" method="post">
 									<input class="form-wt" type="hidden" name="referenciaE" value=<%=product.getReferencia()%> required>
-								<input type="submit" value="Eliminar producto">
+								<input type="submit"  class="primary-btn add-to-cart" value="Eliminar producto">
 								</form>	
 							
 							<!-- /Product Single -->
