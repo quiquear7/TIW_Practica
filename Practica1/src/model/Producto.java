@@ -1,4 +1,4 @@
-package servlet;
+package model;
 
 public class Producto {
 	private int referencia;
@@ -12,7 +12,7 @@ public class Producto {
 	  //El atributo email del usuario
 	  private String categoria;
 
-	  private String imagen;
+	  private byte[] imagen;
 	//El atributo contraseña del usuario
 	 private Float precio;
 
@@ -24,7 +24,7 @@ public class Producto {
 	  public Producto() {
 	  }
 
-	  public Producto(int referencia,String titulo,String descripcion, String categoria, String imagen, Float precio, String user, Boolean estado) {
+	  public Producto(int referencia,String titulo,String descripcion, String categoria, byte[] imagen, Float precio, String user, Boolean estado) {
 	    this.referencia = referencia;
 	    this.titulo = titulo;
 	    this.descripcion = descripcion;
@@ -67,11 +67,11 @@ public class Producto {
 		this.categoria = categoria;
 	}
 
-	public String getImagen() {
+	public byte[] getImagen() {
 		return imagen;
 	}
 
-	public void setImagen(String imagen) {
+	public void setImagen(byte[] imagen) {
 		this.imagen = imagen;
 	}
 
@@ -98,8 +98,4 @@ public class Producto {
 	public void setEstado(Boolean estado) {
 		this.estado = estado;
 	}
-
-	 
-
-	  
 }

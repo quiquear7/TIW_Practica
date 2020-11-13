@@ -1,8 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
     pageEncoding="ISO-8859-1"%>
-<%@page import="servlet.Usuario"%>
-<%@page import="servlet.Producto"%>
-<%@page import="servlet.Carro"%>
+<%@page import="model.Usuario"%>
+<%@page import="model.Producto"%>
+<%@page import="model.Carro"%>
 <%@page import="java.sql.ResultSet"
         import="javax.naming.InitialContext"
         import="javax.naming.Context"
@@ -237,7 +237,7 @@
 
 							for (int x = 0; x < p.size(); x++) {
 								System.out.println("Recorremos for el index");
-  							Producto product = p.get(x);%>
+  								Producto product = p.get(x);%>
   								
 
 				<!-- Produc Slick -->

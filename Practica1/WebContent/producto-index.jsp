@@ -1,7 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
     pageEncoding="ISO-8859-1"%>
-<%@page import="servlet.Usuario"%>
-<%@page import="servlet.Producto"%>
+<%@page import="model.Usuario"%>
+<%@page import="model.Producto"%>
 <%@page import="java.sql.ResultSet"
         import="javax.naming.InitialContext"
         import="java.util.ArrayList"
@@ -152,16 +152,17 @@
 				<% 
 						
 							ArrayList <Producto> p = (ArrayList<Producto>) session.getAttribute("producto_part");
-							//Producto productos = (Producto) prod;
-							//Producto productos[]= (Producto) prod;
-							//ArrayList list = new ArrayList();
+						
 							
 							
 							
 							
 							for (int x = 0; x < p.size(); x++) {
+							
   							Producto product = p.get(x);
   							String estado;
+  							byte[] photo = product.getImagen();
+							String bphoto = Base64.getEncoder().encodeToString(photo);
   							if(product.getEstado()==false){
   								estado = "En venta";
   							}else{
@@ -180,7 +181,7 @@
 								<strong>Estado: <%=estado%></strong>
 								<div class="product-thumb">
 									
-									<!--<img src= alt="<%//product.getImagen()%>">-->
+									<img alt="" style="max-width:30%;width:auto;height:auto;"  src="data:image/png;base64,<%=bphoto%>" />
 								</div>
 								<div class="product-body">
 									<h3 class="product-price"><%=product.getPrecio()%>$</h3>

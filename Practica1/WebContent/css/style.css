@@ -60,6 +60,7 @@ Table OF Contents
 	Typography
 \*----------------------------*/
 
+
 body {
   font-family: 'Hind', sans-serif;
   color: #4A4E5A;
@@ -902,10 +903,11 @@ textarea.input {
 .product.product-single .product-thumb {
   position: relative;
   margin-bottom: 15px;
+ 	
 }
 
 .product.product-single .product-thumb>img {
-  width: 100%;
+ 
 }
 
 .product.product-single .product-thumb:after {
@@ -980,6 +982,7 @@ textarea.input {
   font-size: 16px;
 }
 
+
 .product.product-single .product-btns {
   margin-top: 20px;
   opacity: 0;
@@ -1022,7 +1025,10 @@ textarea.input {
 }
 
 .product.product-widget .product-thumb>img {
-  width: 100%;
+  	max-width: 40%;
+	width: auto;
+	height: auto;	
+
 }
 
 .product.product-widget .product-body {

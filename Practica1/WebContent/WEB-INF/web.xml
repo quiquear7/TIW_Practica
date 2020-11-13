@@ -8,7 +8,7 @@
     <description></description>
     <display-name>ControladorServlet</display-name>
     <servlet-name>ControladorServlet</servlet-name>
-    <servlet-class>servlet.ControladorServlet</servlet-class>
+    <servlet-class>controller.ControladorServlet</servlet-class>
   </servlet>
   <servlet-mapping>
     <servlet-name>ControladorServlet</servlet-name>

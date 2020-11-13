@@ -1,4 +1,4 @@
-package servlet;
+package model;
 
 public class Carro {
 	private int referencia;
@@ -10,12 +10,12 @@ public class Carro {
 
 	//El atributo rol del usuario
 	  private String user;
-	  private String imagen;
+	  private byte[] imagen;
 
 	  public Carro() {
 	  }
 
-	  public Carro(int referencia,Float precio, String user,String titulo,String imagen) {
+	  public Carro(int referencia,Float precio, String user,String titulo,byte[] imagen) {
 	    this.referencia = referencia;
 	    this.precio = precio;
 	    this.user = user;
@@ -55,16 +55,14 @@ public class Carro {
 		this.user = user;
 	}
 
-	public String getImagen() {
+	public byte[] getImagen() {
 		return imagen;
 	}
 
-	public void setImagen(String imagen) {
+	public void setImagen(byte[] imagen) {
 		this.imagen = imagen;
-	}  
-	  
-	  
-	
-	
+	}
 
+	
+	  
 }

@@ -1,7 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
     pageEncoding="ISO-8859-1"%>
-<%@page import="servlet.Usuario"%>
-<%@page import="servlet.Producto"%>
+<%@page import="model.Usuario"%>
+<%@page import="model.Producto"%>
 <%@page import="java.sql.ResultSet"
         import="javax.naming.InitialContext"
         import="java.util.ArrayList"
@@ -152,15 +152,15 @@
 				<% 
 						
 							ArrayList <Producto> p = (ArrayList<Producto>) session.getAttribute("producto_info");
-							//Producto productos = (Producto) prod;
-							//Producto productos[]= (Producto) prod;
-							//ArrayList list = new ArrayList();
+							
 							
 							if(login == true) {
 							
 							
 							for (int x = 0; x < p.size(); x++) {
   							Producto product = p.get(x);
+  							byte[] photo = product.getImagen();
+							String bphoto = Base64.getEncoder().encodeToString(photo);
   							String estado;
   							if(product.getEstado()==false){
   								estado = "En venta";
@@ -180,7 +180,7 @@
 								<strong>Estado: <%=estado%></strong>
 								<div class="product-thumb">
 									
-									<!--<img src= alt="<%//product.getImagen()%>">-->
+									<img alt="" style="max-width:30%;width:auto;height:auto;"  src="data:image/png;base64,<%=bphoto%>" />
 								</div>
 								<div class="product-body">
 									<h3 class="product-price"><%=product.getPrecio()%>$</h3>
@@ -217,7 +217,7 @@
 						<label for="email">Precio:</label><br>    
 						<input class="form-wt" type="text" name="precioProd" value="" required><br>
 						<label for="direccion">Imagen:</label><br>
-						<input class="form-wt" type="text" name="imagenProd" value="" required><br>
+						<input id="fotoproducto" class="form-wt" name="fotoproducto" type="file"><br />
 						<h4>Categoría:</h4>
 						<select name="categoriaProd" required>
 							<option value="Ropa">Ropa</option>

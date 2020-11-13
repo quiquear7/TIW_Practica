@@ -1,14 +1,19 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
     pageEncoding="ISO-8859-1"%>
-<%@page import="servlet.Usuario"%>
-<%@page import="servlet.Producto"%>
-<%@page import="servlet.Carro"%>
+<%@page import="model.Usuario"%>
+<%@page import="model.Producto"%>
+<%@page import="model.Carro"%>
 <%@page import="java.sql.ResultSet"
         import="javax.naming.InitialContext"
         import="javax.naming.Context"
+        import=" java.io.OutputStream"
         import="java.sql.Statement"
+        import=" java.util.Base64"
         import="javax.sql.DataSource"
-        import="java.sql.SQLException"%>
+        import="java.sql.SQLException"
+        import=" java.sql.Connection"
+		import ="java.sql.ResultSet"
+		import ="java.sql.Statement"%>
 <%@page import="java.util.*"%>
 
 <!DOCTYPE html>
@@ -149,16 +154,18 @@
 		
 									Carro carrito = c.get(x);
 									System.out.println(carrito.getPrecio());
+									byte[] photo = carrito.getImagen();
+	  								String bphoto = Base64.getEncoder().encodeToString(photo);
 									total += carrito.getPrecio();	%>
 										<div class="product product-widget">
 											<div class="product-thumb">
-												<img src="./img/thumb-product01.jpg" alt="">
+												<img alt="" style="max-width:70%;width:auto;height:auto;"  src="data:image/png;base64,<%=bphoto%>" />
 											</div>
 											<div class="product-body">
 												<h3 class="product-price"><%=carrito.getPrecio()%>$</h3>
 												<h2 class="product-name"><%=carrito.getTitulo()%></h2>
 												<form  action="producto_index.html" action="ControladorServlet" method="post">
-												<input class="form-wt" type="hidden" name="referenciaC" value=<%=carrito.getReferencia()%> required>
+												<input class="form-wt" type="hidden" name="referenciaM" value=<%=carrito.getReferencia()%> required>
 												<input type="submit" class="prod_btn" value="Mas Info">
 											</form>
 											</div>
@@ -230,17 +237,17 @@
 				
 				<!-- Produc Slick -->
 				
-					
-					
+
 					<% 
-						
+
 							ArrayList <Producto> p = (ArrayList<Producto>) session.getAttribute("productos");
 
 							for (int x = 0; x < p.size(); x++) {
-								System.out.println("Recorremos for el index");
-  							Producto product = p.get(x);%>
-  								
-
+  								Producto product = p.get(x);
+  								byte[] photo = product.getImagen();
+  								String bphoto = Base64.getEncoder().encodeToString(photo);
+  							%>
+  											
 				<!-- Produc Slick -->
 				<div class="row">
 				<div class="col-md-9 col-sm-6 col-xs-6">
@@ -251,27 +258,28 @@
 							<div class="product product-single">
 								<div class="product-thumb">
 									
-									<!--<img src= alt="<%//product.getImagen()%>">-->
+									 <img alt="" style="max-width:30%;width:auto;height:auto;"  src="data:image/png;base64,<%=bphoto%>" />
+									  
 								</div>
 								<div class="product-body">
 									<h3 class="product-price"><%=product.getPrecio()%>$</h3>
 									
 									<h2 class="product-name"> <%=product.getTitulo()%></h2>
+									<div class="product-btns">
+										<form  action="producto_index.html" action="ControladorServlet" method="post">
+											<input class="form-wt" type="hidden" name="referenciaM" value=<%=product.getReferencia()%> required>
+											<input type="submit"  class="primary-btn add-to-cart" value="Mas  Informacion">
+										</form>	
+									<% if(login == true && usu.getRol().compareTo("Cliente")==0){%>
+										<form  action="agregar_carro.html" action="ControladorServlet" method="post">
+											<input class="form-wt" type="hidden" name="referenciaE" value=<%=product.getReferencia()%> required>
+											<input type="submit" class="primary-btn add-to-cart" value="Agregar a  Carro">
+										</form>	
+									
+									<%} %>
 								</div>
-								<form  action="producto_index.html" action="ControladorServlet" method="post">
-									<input class="form-wt" type="hidden" name="referenciaM" value=<%=product.getReferencia()%> required>
-								<input type="submit"  class="primary-btn add-to-cart" value="Mas  Informacion">
-								</form>	
-								<% if(login == true && usu.getRol().compareTo("Cliente")==0){%>
-								<form  action="agregar_carro.html" action="ControladorServlet" method="post">
-									<input class="form-wt" type="hidden" name="referenciaE" value=<%=product.getReferencia()%> required>
-								<input type="submit" class="primary-btn add-to-cart" value="Agregar a  Carro">
-								</form>	
-							<%}
-								%>
-							<!-- /Product Single -->
 							
-							
+							</div>
 						
 					</div>
 				</div>

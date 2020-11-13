@@ -1,10 +1,16 @@
-package servlet;
+package controller;
 
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Base64;
+import java.util.Hashtable;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
@@ -16,15 +22,19 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.http.HttpSession;
 
-import servlet.Usuario;
-import servlet.Producto;
+
 import javax.annotation.Resource;
+import javax.imageio.ImageIO;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
+import javax.sql.rowset.serial.SerialBlob;
 
-
+import model.Carro;
+import model.Compra;
+import model.Producto;
+import model.Usuario;
 /**
  * Servlet implementation class ControladorServlet
  */
@@ -82,7 +92,6 @@ public class ControladorServlet extends HttpServlet {
 					Statement st = con.createStatement();
 					String script= "SELECT * FROM producto";
 					ResultSet rs = st.executeQuery(script);
-				
 					while(rs.next()) {
 						System.out.println("Recorremos");
 						Producto _producto= new Producto();
@@ -90,7 +99,9 @@ public class ControladorServlet extends HttpServlet {
 						_producto.setTitulo(rs.getString(2));
 						_producto.setDescripcion(rs.getString(3));
 						_producto.setCategoria(rs.getString(4));
-						_producto.setImagen(rs.getString(5));
+						 Blob bytesImagen = rs.getBlob(5);
+						 byte[] imgData = bytesImagen.getBytes(1, (int) bytesImagen.length());
+						_producto.setImagen(imgData);
 						_producto.setPrecio(rs.getFloat(6));
 						_producto.setUser(rs.getString(7));
 						_producto.setEstado(rs.getBoolean(8));
@@ -99,9 +110,6 @@ public class ControladorServlet extends HttpServlet {
 					
 					}
 					
-						
-					//sesion.setAttribute("sesion_iniciada", login);
-					//sesion.setAttribute("usuario", Usuario);
 					sesion.setAttribute("productos", producto_total);
 					rs.close();
 					st.close();
@@ -167,13 +175,13 @@ public class ControladorServlet extends HttpServlet {
 						_producto.setFecha(rs.getString(6));
 						_producto.setReferencia_compra(rs.getInt(7)); 
 						_producto.setTitulo(rs.getString(8));
-						//_producto.setImagen(rs.getString(9));
+						Blob bytesImagen = rs.getBlob(9);
+						 byte[] imgData = bytesImagen.getBytes(1, (int) bytesImagen.length());
+						_producto.setImagen(imgData);
 						compras.add(_producto);
 					}
 					
-						
-					//sesion.setAttribute("sesion_iniciada", login);
-					//sesion.setAttribute("usuario", Usuario);
+
 					sesion.setAttribute("compras", compras);
 					rs.close();
 					st.close();
@@ -225,7 +233,9 @@ public class ControladorServlet extends HttpServlet {
 							_producto.setTitulo(rs.getString(2));
 							_producto.setDescripcion(rs.getString(3));
 							_producto.setCategoria(rs.getString(4));
-							_producto.setImagen(rs.getString(5));
+							Blob bytesImagen = rs.getBlob(5);
+							 byte[] imgData = bytesImagen.getBytes(1, (int) bytesImagen.length());
+							_producto.setImagen(imgData);
 							_producto.setPrecio(rs.getFloat(6));
 							_producto.setUser(rs.getString(7));
 							_producto.setEstado(rs.getBoolean(8));
@@ -298,8 +308,6 @@ public class ControladorServlet extends HttpServlet {
 						System.out.println(rs.getString(5));
 						if((rs.getString(1).compareTo(req.getParameter("email"))== 0  && rs.getString(5).compareTo(req.getParameter("contrasenia"))==0 )) {
 							usuario_existe = 1;
-							
-							System.out.println("Usuario existe");
 							_usuario.setEmail(rs.getString(1));
 							user = rs.getString(1);
 							_usuario.setNombre(rs.getString(2));
@@ -327,14 +335,13 @@ public class ControladorServlet extends HttpServlet {
 						ArrayList<Carro> carrito = new ArrayList<Carro>();
 						
 						while(rs2.next()) {
-							
-							
-							
 							_carro.setReferencia(rs2.getInt(1));
 							_carro.setUser(rs2.getString(2)); 
 							_carro.setPrecio(rs2.getFloat(3));
 							_carro.setTitulo(rs2.getString(4));
-							_carro.setImagen(rs2.getString(5));
+							Blob bytesImagen = rs2.getBlob(5);
+							 byte[] imgData = bytesImagen.getBytes(1, (int) bytesImagen.length());
+							_carro.setImagen(imgData);
 							carrito.add(_carro);
 						}
 						sesion.setAttribute("carro", carrito);
@@ -387,25 +394,30 @@ public class ControladorServlet extends HttpServlet {
 				if (con != null) {
 					System.out.println("CONEXION CORRECTA");
 					Statement st = con.createStatement();
-					
-					String script= "insert into usuario (email,nombre,apellido,direccion,contrasenia,rol) values (?,?,?,?,?,?)";
-					PreparedStatement ps = con.prepareStatement(script);
-					ps.setString(1, req.getParameter("email"));
-					ps.setString(2, req.getParameter("nombre"));
-					ps.setString(3, req.getParameter("apellido"));
-					ps.setString(4, req.getParameter("direccion"));
-					ps.setString(5, req.getParameter("contrasenia"));
-					ps.setString(6, req.getParameter("rol"));
+					if((req.getParameter("rol").compareTo("Admin")==0 &&req.getParameter("contraAdmin").compareTo("2020")==0)||(req.getParameter("rol").compareTo("Admin")!=0 )){
+						String script= "insert into usuario (email,nombre,apellido,direccion,contrasenia,rol) values (?,?,?,?,?,?)";
+						PreparedStatement ps = con.prepareStatement(script);
+						ps.setString(1, req.getParameter("email"));
+						ps.setString(2, req.getParameter("nombre"));
+						ps.setString(3, req.getParameter("apellido"));
+						ps.setString(4, req.getParameter("direccion"));
+						ps.setString(5, req.getParameter("contrasenia"));
+						ps.setString(6, req.getParameter("rol"));
 
-					int correcto = ps.executeUpdate();
-					ps.close();
-					st.close();
-					con.close();
-					System.out.println("Connection close");
-					if(correcto==1) req.getRequestDispatcher("registro-correcto.jsp").forward(req, resp);
+						int correcto = ps.executeUpdate();
+						ps.close();
+						st.close();
+						con.close();
+						System.out.println("Connection close");
+						if(correcto==1) req.getRequestDispatcher("registro-correcto.jsp").forward(req, resp);
+						else {
+							req.getRequestDispatcher("registro-incorrecto.jsp").forward(req, resp);
+						}
+					}
 					else {
 						req.getRequestDispatcher("registro-incorrecto.jsp").forward(req, resp);
 					}
+					
 					
 				}
 				else {
@@ -580,12 +592,10 @@ public class ControladorServlet extends HttpServlet {
 					ps.setString(2, req.getParameter("nombreProd"));
 					ps.setString(3, req.getParameter("descripcionProd"));
 					ps.setString(4, req.getParameter("categoriaProd"));
-					/*FileInputStream fis = new FileInputStream(req.getParameter("imagenProd"));
-					ps.setBinaryStream(5, fis, (int) imagen.length()); */
-					ps.setString(5, req.getParameter("imagenProd"));
+					FileInputStream fis = new FileInputStream(req.getParameter("fotoproducto"));
+					ps.setBlob(5,fis);
 					ps.setString(6, req.getParameter("precioProd"));
-					Object user = (Object) sesion.getAttribute("usuario");
-					Usuario usu = (Usuario) user;
+					Usuario usu = (Usuario) sesion.getAttribute("usuario");
 					ps.setString(7, usu.getEmail());
 					ps.setBoolean(8, false);
 
@@ -678,9 +688,8 @@ public class ControladorServlet extends HttpServlet {
 					ps.setString(1, req.getParameter("nombreProd"));
 					ps.setString(2, req.getParameter("descripcionProd"));
 					ps.setString(3, req.getParameter("categoriaProd"));
-					/*FileInputStream fis = new FileInputStream(req.getParameter("imagenProd"));
-					ps.setBinaryStream(5, fis, (int) imagen.length()); */
-					ps.setString(4, req.getParameter("imagenProd"));
+					FileInputStream fis = new FileInputStream(req.getParameter("fotoproducto"));
+					ps.setBlob(4,fis);
 					ps.setString(5, req.getParameter("precioProd"));
 					Usuario user = (Usuario) sesion.getAttribute("usuario");
 					ps.setInt(6,Integer.parseInt( req.getParameter("referenciaProd")));
@@ -730,8 +739,7 @@ public class ControladorServlet extends HttpServlet {
 					String script= "SELECT * FROM producto where referencia like '"+req.getParameter("referenciaM")+"' ";
 					ResultSet rs = st.executeQuery(script);
 				
-					Object user = (Object) sesion.getAttribute("usuario");
-					Usuario usu = (Usuario) user;
+					Usuario usu = (Usuario) sesion.getAttribute("usuario");
 					String us = usu.getEmail();
 					ArrayList<Producto> productoList = new ArrayList<Producto>();
 					
@@ -742,7 +750,9 @@ public class ControladorServlet extends HttpServlet {
 							_producto.setTitulo(rs.getString(2));
 							_producto.setDescripcion(rs.getString(3));
 							_producto.setCategoria(rs.getString(4));
-							_producto.setImagen(rs.getString(5));
+							Blob bytesImagen = rs.getBlob(5);
+							 byte[] imgData = bytesImagen.getBytes(1, (int) bytesImagen.length());
+							_producto.setImagen(imgData);
 							_producto.setPrecio(rs.getFloat(6));
 							_producto.setUser(rs.getString(7));
 							_producto.setEstado(rs.getBoolean(8));
@@ -785,7 +795,7 @@ public class ControladorServlet extends HttpServlet {
 					
 					System.out.println("CONEXION CORRECTA");
 					Statement st = con.createStatement();
-					String script= "SELECT * FROM producto where referencia like '"+req.getParameter("referenciaC")+"' ";
+					String script= "SELECT * FROM producto where referencia like '"+req.getParameter("referenciaM")+"' ";
 					ResultSet rs = st.executeQuery(script);
 				
 					
@@ -797,7 +807,9 @@ public class ControladorServlet extends HttpServlet {
 						_producto.setTitulo(rs.getString(2));
 						_producto.setDescripcion(rs.getString(3));
 						_producto.setCategoria(rs.getString(4));
-						_producto.setImagen(rs.getString(5));
+						Blob bytesImagen = rs.getBlob(5);
+						 byte[] imgData = bytesImagen.getBytes(1, (int) bytesImagen.length());
+						_producto.setImagen(imgData);
 						_producto.setPrecio(rs.getFloat(6));
 						_producto.setUser(rs.getString(7));
 						_producto.setEstado(rs.getBoolean(8));
@@ -830,9 +842,9 @@ public class ControladorServlet extends HttpServlet {
 
 			try {
 				Context ctx = new InitialContext();
-				System.out.println("iniciamos context");
+				
 				DataSource ds = (DataSource) ctx.lookup("jdbc/practica");
-				System.out.println("ds");
+				
 				Connection con = ds.getConnection();
 				Producto _producto= new Producto();
 				if (con != null) {
@@ -847,7 +859,9 @@ public class ControladorServlet extends HttpServlet {
 						_producto.setTitulo(rs.getString(2));
 						_producto.setDescripcion(rs.getString(3));
 						_producto.setCategoria(rs.getString(4));
-						_producto.setImagen(rs.getString(5));
+						Blob bytesImagen = rs.getBlob(5);
+						 byte[] imgData = bytesImagen.getBytes(1, (int) bytesImagen.length());
+						_producto.setImagen(imgData);
 						_producto.setPrecio(rs.getFloat(6));
 						_producto.setUser(rs.getString(7));
 						_producto.setEstado(rs.getBoolean(8));
@@ -859,13 +873,16 @@ public class ControladorServlet extends HttpServlet {
 					st = con.createStatement();
 					Usuario us = (Usuario) sesion.getAttribute("usuario");
 					
-					String script= "insert into carro (precio,referencia,usuario,titulo,imagen) values (?,?,?,?,?)";
+					String script= "insert into carro (referencia,usuario,precio,titulo,imagen) values (?,?,?,?,?)";
 					PreparedStatement ps = con.prepareStatement(script);
-					ps.setFloat(1, _producto.getPrecio());
-					ps.setInt(2,Integer.parseInt(req.getParameter("referenciaE")) );
-					ps.setString(3,us.getEmail());
+					
+					ps.setInt(1,Integer.parseInt(req.getParameter("referenciaE")) );
+					ps.setString(2,us.getEmail());
+					ps.setFloat(3, _producto.getPrecio());
 					ps.setString(4, _producto.getTitulo());
-					ps.setString(5, _producto.getImagen());
+					Blob blob = new SerialBlob(_producto.getImagen());
+					ps.setBlob(5,blob);
+
 
 					
 					ps.executeUpdate();
@@ -875,21 +892,23 @@ public class ControladorServlet extends HttpServlet {
 					st = con.createStatement();
 					System.out.println("Usuario: "+us.getEmail());
 					ResultSet rs2 = st.executeQuery("SELECT * FROM carro where usuario like  '"+us.getEmail()+"'");
-					
-					Carro _carro = new Carro();
+
 					ArrayList<Carro> carrito = new ArrayList<Carro>();
 					
 					while(rs2.next()) {
 						
-						
-						
+						System.out.println("titulo:"+rs2.getString(4));
+						Carro _carro = new Carro();
 						_carro.setReferencia(rs2.getInt(1));
 						_carro.setUser(rs2.getString(2)); 
 						_carro.setPrecio(rs2.getFloat(3));
 						_carro.setTitulo(rs2.getString(4));
-						_carro.setImagen(rs2.getString(5));
+						Blob bytesImagen = rs2.getBlob(5);
+						 byte[] imgData = bytesImagen.getBytes(1, (int) bytesImagen.length());
+						_carro.setImagen(imgData);
 						carrito.add(_carro);
 					}
+					
 					sesion.setAttribute("carro", carrito);
 					
 					rs2.close();
@@ -927,7 +946,6 @@ public class ControladorServlet extends HttpServlet {
 				DataSource ds = (DataSource) ctx.lookup("jdbc/practica");
 				System.out.println("ds");
 				Connection con = ds.getConnection();
-				Producto _producto= new Producto();
 				if (con != null) {
 					System.out.println("CONEXION CORRECTA");
 					Statement st = con.createStatement();
@@ -954,7 +972,9 @@ public class ControladorServlet extends HttpServlet {
 						_carro.setUser(rs2.getString(2)); 
 						_carro.setPrecio(rs2.getFloat(3));
 						_carro.setTitulo(rs2.getString(4));
-						_carro.setImagen(rs2.getString(5));
+						Blob bytesImagen = rs2.getBlob(5);
+						 byte[] imgData = bytesImagen.getBytes(1, (int) bytesImagen.length());
+						_carro.setImagen(imgData);
 						carrito.add(_carro);
 					}
 					sesion.setAttribute("carro", carrito);
@@ -1007,7 +1027,7 @@ public class ControladorServlet extends HttpServlet {
 						_producto.setTitulo(rs.getString(2));
 						_producto.setDescripcion(rs.getString(3));
 						_producto.setCategoria(rs.getString(4));
-						_producto.setImagen(rs.getString(5));
+						//_producto.setImagen(rs.getString(5));
 						_producto.setPrecio(rs.getFloat(6));
 						_producto.setUser(rs.getString(7));
 						_producto.setEstado(rs.getBoolean(8));
@@ -1093,7 +1113,7 @@ public class ControladorServlet extends HttpServlet {
 						_producto.setTitulo(rs.getString(2));
 						_producto.setDescripcion(rs.getString(3));
 						_producto.setCategoria(rs.getString(4));
-						_producto.setImagen(rs.getString(5));
+						//_producto.setImagen(rs.getString(5));
 						_producto.setPrecio(rs.getFloat(6));
 						_producto.setUser(rs.getString(7));
 						_producto.setEstado(rs.getBoolean(8));

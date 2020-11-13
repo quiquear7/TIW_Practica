@@ -1,4 +1,4 @@
-package servlet;
+package model;
 
 public class Compra {
 	private int referencia;
@@ -15,7 +15,7 @@ public class Compra {
 	  private String fecha;
 	  private int referencia_compra;
 	  private String titulo;
-	  private String imagen;
+	  private byte[] imagen;
 	public int getReferencia() {
 		return referencia;
 	}
@@ -64,15 +64,12 @@ public class Compra {
 	public void setTitulo(String titulo) {
 		this.titulo = titulo;
 	}
-	public String getImagen() {
+	public  byte[] getImagen() {
 		return imagen;
 	}
-	public void setImagen(String imagen) {
+	public void setImagen( byte[] imagen) {
 		this.imagen = imagen;
 	}
 
 
-	  
-	  
-	  
 }

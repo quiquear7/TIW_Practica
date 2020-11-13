@@ -1,7 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
     pageEncoding="ISO-8859-1"%>
-<%@page import="servlet.Usuario"%>
-<%@page import="servlet.Producto"%>
+<%@page import="model.Usuario"%>
+<%@page import="model.Producto"%>
 <%@page import="java.sql.ResultSet"
         import="javax.naming.InitialContext"
         import="javax.naming.Context"
@@ -157,7 +157,7 @@
 						<label for="email">Precio:</label><br>    
 						<input class="form-wt" type="text" name="precioProd" value="" required><br>
 						<label for="direccion">Imagen:</label><br>
-						<input class="form-wt" type="text" name="imagenProd" value="" required><br>
+						<input id="fotoproducto" class="form-wt" name="fotoproducto" type="file"><br />
 						<h4>Categoría:</h4>
 						<select name="categoriaProd" required>
 							<option value="Ropa">Ropa</option>

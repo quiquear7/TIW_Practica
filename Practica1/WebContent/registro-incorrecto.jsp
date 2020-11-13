@@ -1,7 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
     pageEncoding="ISO-8859-1"%>
-<%@page import="servlet.Usuario"%>
-<%@page import="servlet.Producto"%>
+<%@page import="model.Usuario"%>
+<%@page import="model.Producto"%>
 <%@page import="java.sql.ResultSet"
         import="javax.naming.InitialContext"
         import="javax.naming.Context"
@@ -164,7 +164,10 @@
 							<option value="Admin">Administrador</option>
 						</select>
 						<br></br>
-					<input type="submit" value="Aceptar">
+						<label for="contrasenia">Contraseña Admin:</label><br>
+						<input class="form-wt" type="password" name="contraAdmin" value="" required>
+						<br></br>
+					<input type="submit" class="primary-btn add-to-cart" value="Aceptar">
 					</form>	
 
 				</div>

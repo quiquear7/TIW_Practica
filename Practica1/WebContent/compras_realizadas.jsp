@@ -1,8 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
     pageEncoding="ISO-8859-1"%>
-<%@page import="servlet.Usuario"%>
-<%@page import="servlet.Producto"%>
-<%@page import="servlet.Compra"%>
+<%@page import="model.Usuario"%>
+<%@page import="model.Producto"%>
+<%@page import="model.Compra"%>
 <%@page import="java.sql.ResultSet"
         import="javax.naming.InitialContext"
         import="java.util.ArrayList"
@@ -159,7 +159,10 @@
 							
 							
 							for (int x = 0; x < p.size(); x++) {
-  							Compra product = p.get(x);%>
+  							Compra product = p.get(x);
+  							byte[] photo = product.getImagen();
+	  						String bphoto = Base64.getEncoder().encodeToString(photo);
+	  								%>
   								
 
 				<!-- Produc Slick -->
@@ -175,7 +178,7 @@
 							<strong>Referencia Compra: <%=product.getReferencia_compra()%></strong>
 								<div class="product-thumb">
 									
-									<!--<img src= alt="<%//product.getImagen()%>">-->
+									<img alt="" style="max-width:70%;width:auto;height:auto;"  src="data:image/png;base64,<%=bphoto%>" />
 								</div>
 								<div class="product-body">
 									<h2 class="product-name"> <%=product.getTitulo()%></h2>
