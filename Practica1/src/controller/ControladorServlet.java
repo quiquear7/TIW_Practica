@@ -517,7 +517,7 @@ public class ControladorServlet extends HttpServlet {
 							login = false;
 							sesion.setAttribute("sesion_iniciada", login);
 							sesion.setAttribute("usuario", _usuario);
-							req.getRequestDispatcher("index.jsp").forward(req, resp);
+							req.getRequestDispatcher("eliminar-usuario-correcto.jsp").forward(req, resp);
 						}
 						else {
 							req.getRequestDispatcher("eliminar-usuario-incorrecto.jsp").forward(req, resp);

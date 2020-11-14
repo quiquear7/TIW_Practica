@@ -155,12 +155,12 @@
 					<a href="cuenta-productos.html">Productos Ofertados</a>
 					<%}%>
 					<br></br>
-					<label for="email">Eliminar usuario:</label><br> 
+					<label for="email">Eliminar usuario</label><br> 
 					<form  action="eliminar-usuario.html" action="ControladorServlet" method="post">
 						<label for="email"> Ingresa Email:</label><br>    
 						<input class="form-wt" type="email" name="email" value="" required><br>
 						<br></br>
-					<input type="submit" value="Eliminar usuario">
+					<input type="submit" class="primary-btn add-to-cart" value="Eliminar usuario">
 					</form>	
 
 				</div>

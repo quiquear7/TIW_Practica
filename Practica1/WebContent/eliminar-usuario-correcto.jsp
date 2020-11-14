@@ -125,7 +125,6 @@
 	</header>
 	<!-- /HEADER -->
 
-
 	
 
 	<!-- section -->
@@ -137,7 +136,7 @@
 				<!-- section-title -->
 				<div class="col-md-12">
 					<div class="section-title">
-						<h2 class="title">Iniciar Sesión</h2>
+						<h2 class="title">Cuenta</h2>
 						<div class="pull-right">
 							<div class="product-slick-dots-1 custom-dots"></div>
 						</div>
@@ -148,17 +147,7 @@
 				
 				<!-- Produc Slick -->
 				<div class="col-md-9 col-sm-6 col-xs-6">
-					
-					<p>Login  Incorrecto</p>
-					<form action="analizar-login.html" name="order" id="order" method="post">
-						<label for="email">Email:</label><br>
-						<input class="form-wt" type="email" name="email" value="" required><br>
-						<label for="contrasenia">Contraseña:</label><br>
-						<input class="form-wt" type="password" name="contrasenia" value="" required>
-					<br></br>
-					<input type="submit" class="primary-btn add-to-cart" value="Aceptar">
-					</form>	
-
+					<strong>Usuario Eliminado Correctamente</strong>
 				</div>
 				<!-- /Product Slick -->
 			</div>
