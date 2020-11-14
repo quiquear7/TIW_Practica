@@ -251,7 +251,7 @@
 
 					<% 
 					
-					if(login == true && usu.getRol().compareTo("Admin")!=0){
+					if(login == false || usu.getRol().compareTo("Admin")!=0){
 
 							ArrayList <Producto> p = (ArrayList<Producto>) session.getAttribute("productos");
 

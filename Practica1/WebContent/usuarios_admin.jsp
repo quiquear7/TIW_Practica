@@ -201,14 +201,11 @@
 										<input type="submit" class="primary-btn add-to-cart" value="Modificar       usuario">
 									</form>
 									
-									<% if(login == true && us.getRol().compareTo("Vendedor")==0){%>
+									<% if(us.getRol().compareTo("Vendedor")==0){%>
 									<br>
-									<form action="agregar_carro.html" action="ControladorServlet"
-										method="post">
-										<input class="form-wt" type="hidden" name="referenciaE"
-											value=<%=us.getEmail()%> required> <input
-											type="submit" class="primary-btn add-to-cart"
-											value="Mostrar    Productos">
+									<form action="cuenta-productos.html" action="ControladorServlet"
+										method="get">
+										<input type="submit" class="primary-btn add-to-cart" value="Mostrar    Productos">
 									</form>
 
 									<%} %>
