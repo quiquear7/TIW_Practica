@@ -121,55 +121,6 @@
 						<!-- /Account -->
 
 						<!-- Cart -->
-						<% 
-					if(login == true && usu.getRol().compareTo("Cliente")==0){%>
-						<li class="header-cart dropdown default-dropdown">
-							<a class="dropdown-toggle" data-toggle="dropdown" aria-expanded="true">
-							<div class="header-btns-icon">
-									<i class="fa fa-shopping-cart"></i>
-								</div>
-								<strong class="text-uppercase">Carro</strong>
-								<br>
-								<span>precios</span>
-							</a>
-							<div class="custom-menu">
-								<div id="shopping-cart">
-									<div class="shopping-cart-list">
-										<div class="product product-widget">
-											<div class="product-thumb">
-												<img src="./img/thumb-product01.jpg" alt="">
-											</div>
-											<div class="product-body">
-												<h3 class="product-price">0€ <span class="qty">cantidad</span></h3>
-												<h2 class="product-name"><a href="#">Producto</a></h2>
-											</div>
-											<button class="cancel-btn"><i class="fa fa-trash"></i></button>
-										</div>
-					
-									</div>
-									<div class="shopping-cart-btns">
-										<button class="main-btn">Ver Carro</button>
-										<button class="primary-btn">Pagar <i class="fa fa-arrow-circle-right"></i></button>
-									</div>
-								</div>
-							</div>
-						</li>
-						<!-- /Cart -->
-						
-						<%} %>
-						<li class="header-account dropdown default-dropdown">
-							
-							
-							 
-						
-						
-						<%if(login == true && usu.getRol().compareTo("Vendedor")==0 ){%>
-					
-							<strong><a href="add_producto.html">Nuevo Producto</a></strong>
-						
-							<%}%>
-							
-						</li>
 						
 						
 					</ul>

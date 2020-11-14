@@ -156,10 +156,10 @@
 						<input class="form-wt" type="text" name="apellido" value="" required><br>
 						<label for="email">Email:</label><br>    
 						<input class="form-wt" type="email" name="email" value="" required><br>
+						<label for="contrasenia">Contraseña:</label><br>
+						<input class="form-wt" type="password" name="contrasenia" value="" required><br>
 						<label for="direccion">Dirección:</label><br>
 						<input class="form-wt" type="text" name="direccion" value="" required><br>
-						<label for="contrasenia">Contraseña:</label><br>
-						<input class="form-wt" type="password" name="contrasenia" value="" required>
 						<h4>Tipo de Usuario:</h4>
 						<select name="rol" required>
 							<option value="Cliente">Cliente</option>
@@ -168,7 +168,7 @@
 						</select>
 						<br></br>
 						<label for="contrasenia">Contraseña Admin:</label><br>
-						<input class="form-wt" type="password" name="contraAdmin" value="" required>
+						<input class="form-wt" type="password" name="contraAdmin" value="">
 						<br></br>
 					<input type="submit" class="primary-btn add-to-cart" value="Aceptar">
 					</form>	

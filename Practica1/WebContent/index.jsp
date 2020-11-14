@@ -226,7 +226,18 @@
 				<!-- section-title -->
 				<div class="col-md-12">
 					<div class="section-title">
+					<% 
+					if (login==true){
+						if(usu.getRol().compareTo("Admin")!=0){%>
 						<h2 class="title">Productos</h2>
+					<% }else{%>
+						<h2 class="title">Opciones Administrador</h2>
+						
+						<% }}else{%>
+							<h2 class="title">Productos</h2>
+						<%}%>
+					
+					
 						<div class="pull-right">
 							<div class="product-slick-dots-1 custom-dots"></div>
 						</div>
@@ -239,6 +250,8 @@
 				
 
 					<% 
+					
+					if(login == true && usu.getRol().compareTo("Admin")!=0){
 
 							ArrayList <Producto> p = (ArrayList<Producto>) session.getAttribute("productos");
 
@@ -286,8 +299,28 @@
 				</div>
 				</div>
 				<br></br>
-				<%}
-				%>
+				<%}}else if (login == true && usu.getRol().compareTo("Admin")==0){%>
+					<div class="row">
+					<div class="col-md-9 col-sm-6 col-xs-6">
+						<div class="row">
+							
+								<!-- Product Single -->
+						
+						<form  action="usuarios_admin.html" action="ControladorServlet" method="post">
+								<input type="submit"  class="primary-btn add-to-cart" value="Mostrar     Usuarios">
+						</form>	
+						<br></br>
+						<form  action="productos_admin.html" action="ControladorServlet" method="post">
+								<input type="submit"  class="primary-btn add-to-cart" value="Mostrar Productos">
+						</form>	
+										
+								
+						
+					</div>
+					</div>
+					</div>
+					<br></br>
+				<% } %>
 				
 				<!-- /Product Slick -->
 			</div>
