@@ -248,7 +248,8 @@ public class ControladorServlet extends HttpServlet {
 				if (con != null) {
 
 					Statement st = con.createStatement();
-					ResultSet rs = st.executeQuery("Select * from producto");
+					ResultSet rs = st.executeQuery(
+							"Select * from producto where vendedor like'" + req.getParameter("referenciaM") + "'");
 
 					ArrayList<Producto> productoList = new ArrayList<Producto>();
 
@@ -449,34 +450,50 @@ public class ControladorServlet extends HttpServlet {
 				DataSource ds = (DataSource) ctx.lookup("jdbc/practica");
 				System.out.println("ds");
 				Connection con = ds.getConnection();
+				int update = 0;
 				if (con != null) {
-					Usuario _usuario = new Usuario();
+
 					System.out.println("CONEXION CORRECTA");
 					Statement st = con.createStatement();
+					Usuario user = (Usuario) sesion.getAttribute("usuario");
+					if (user.getRol().compareTo("Admin") == 0
+							|| user.getEmail().compareTo(req.getParameter("email")) == 0)
+						update = 1;
+					if (update == 1) {
+						String script = "UPDATE usuario SET nombre = ?, apellido=?, direccion=?, contrasenia=? WHERE email = ?";
+						PreparedStatement ps = con.prepareStatement(script);
 
-					String script = "UPDATE usuario SET nombre = ?, apellido=?, direccion=?, contrasenia=? WHERE email = ?";
-					PreparedStatement ps = con.prepareStatement(script);
+						ps.setString(1, req.getParameter("nombre"));
+						ps.setString(2, req.getParameter("apellido"));
+						ps.setString(3, req.getParameter("direccion"));
+						ps.setString(4, req.getParameter("contrasenia"));
+						ps.setString(5, req.getParameter("email"));
 
-					ps.setString(1, req.getParameter("nombre"));
-					ps.setString(2, req.getParameter("apellido"));
-					ps.setString(3, req.getParameter("direccion"));
-					ps.setString(4, req.getParameter("contrasenia"));
-					ps.setString(5, req.getParameter("email"));
+						ps.executeUpdate();
+						ps.close();
+						st.close();
 
-					int correcto = ps.executeUpdate();
-					ps.close();
-					st.close();
-					con.close();
-					System.out.println("Connection close");
-					if (correcto == 1) {
-						_usuario.setNombre(req.getParameter("nombre"));
-						_usuario.setApellido(req.getParameter("apellido"));
-						_usuario.setDireccion(req.getParameter("direccion"));
-						_usuario.setContrasenia(req.getParameter("contrasenia"));
-						System.out.println("usuarios almacenados");
-						login = true;
-						sesion.setAttribute("sesion_iniciada", login);
-						sesion.setAttribute("usuario", _usuario);
+						if (user.getEmail().compareTo(req.getParameter("email")) == 0) {
+
+							st = con.createStatement();
+
+							ResultSet rs = st.executeQuery(
+									"SELECT * FROM usuario where email like  '" + req.getParameter("email") + "'");
+
+							Usuario _usuario = new Usuario();
+
+							while (rs.next()) {
+								_usuario.setEmail(rs.getString(1));
+								_usuario.setNombre(rs.getString(2));
+								_usuario.setApellido(rs.getString(3));
+								_usuario.setDireccion(rs.getString(4));
+								_usuario.setContrasenia(rs.getString(5));
+								_usuario.setRol(rs.getString(6));
+							}
+							sesion.setAttribute("sesion_iniciada", true);
+							sesion.setAttribute("usuario", _usuario);
+						}
+						con.close();
 						req.getRequestDispatcher("modificar_usuario-correcto.jsp").forward(req, resp);
 					} else {
 						req.getRequestDispatcher("modificar-usuario-incorrecto.jsp").forward(req, resp);
@@ -499,53 +516,42 @@ public class ControladorServlet extends HttpServlet {
 		} else if (path.compareTo("/eliminar-usuario.html") == 0) {
 			try {
 				Context ctx = new InitialContext();
-				System.out.println("iniciamos context");
+				
 				DataSource ds = (DataSource) ctx.lookup("jdbc/practica");
-				System.out.println("ds");
+				
 				Connection con = ds.getConnection();
 				if (con != null) {
-					Usuario _usuario = new Usuario();
-					System.out.println("CONEXION CORRECTA");
+					
 					Statement st = con.createStatement();
 					Usuario user = (Usuario) sesion.getAttribute("usuario");
+					
 					if (user.getEmail().compareTo(req.getParameter("email")) == 0) {
 						String script = "DELETE FROM usuario where email like '" + req.getParameter("email") + "'";
 
-						int correcto = st.executeUpdate(script);
+						st.executeUpdate(script);
 						st.close();
-						con.close();
-						System.out.println("Connection close");
-						if (correcto == 1) {
-							_usuario = null;
-							login = false;
-							sesion.setAttribute("sesion_iniciada", login);
-							sesion.setAttribute("usuario", _usuario);
-							if (user.getRol().compareTo("Vendedor") == 0) {
-								st = con.createStatement();
-								script = "DELETE FROM producto where email like '" + req.getParameter("email") + "'";
 
-								correcto = st.executeUpdate(script);
-								st.close();
-								con.close();
-								System.out.println("Connection close");
-								if (correcto == 1) {
-									_usuario = null;
-									login = false;
-									sesion.setAttribute("sesion_iniciada", login);
-									sesion.setAttribute("usuario", _usuario);
+						
+						if (user.getRol().compareTo("Vendedor") == 0) {
+							st = con.createStatement();
+							script = "DELETE FROM producto where email like '" + req.getParameter("email") + "'";
 
-									req.getRequestDispatcher("eliminar-usuario-correcto").forward(req, resp);
-								} else {
-									req.getRequestDispatcher("eliminar-usuario-incorrecto.jsp").forward(req, resp);
-								}
-							}
-						} else {
-							req.getRequestDispatcher("eliminar-usuario-incorrecto.jsp").forward(req, resp);
+							st.executeUpdate(script);
+							st.close();
 						}
+						
+						Usuario _usuario = new Usuario();
+						login = false;
+						_usuario.setRol("");
+						_usuario.setEmail("");
+						sesion.setAttribute("sesion_iniciada", login);
+						sesion.setAttribute("usuario", _usuario);
+						con.close();
+						req.getRequestDispatcher("eliminar-usuario-correcto.jsp").forward(req, resp);
 					} else {
 						req.getRequestDispatcher("eliminar-usuario-incorrecto.jsp").forward(req, resp);
 					}
-
+					
 				} else {
 					System.out.println("CONEXION INCORRECTA");
 					req.getRequestDispatcher("eliminar-usuario-incorrecto.jsp").forward(req, resp);
@@ -678,20 +684,17 @@ public class ControladorServlet extends HttpServlet {
 					FileInputStream fis = new FileInputStream(req.getParameter("fotoproducto"));
 					ps.setBlob(4, fis);
 					ps.setString(5, req.getParameter("precioProd"));
-					Usuario user = (Usuario) sesion.getAttribute("usuario");
-					ps.setInt(6, Integer.parseInt(req.getParameter("referenciaProd")));
-					ps.setString(7, user.getEmail());
 
-					int correcto = ps.executeUpdate();
+					ps.setInt(6, Integer.parseInt(req.getParameter("referenciaProd")));
+					ps.setString(7, req.getParameter("referenciaM"));
+
+					ps.executeUpdate();
 					ps.close();
 					st.close();
 					con.close();
 					System.out.println("Connection close");
-					if (correcto == 1) {
-						req.getRequestDispatcher("modificar_producto-correcto.jsp").forward(req, resp);
-					} else {
-						req.getRequestDispatcher("modificar_producto-incorrecto.jsp").forward(req, resp);
-					}
+
+					req.getRequestDispatcher("modificar_producto-correcto.jsp").forward(req, resp);
 
 				} else {
 					System.out.println("CONEXION INCORRECTA");
@@ -1152,7 +1155,7 @@ public class ControladorServlet extends HttpServlet {
 			}
 
 		} else if (path.compareTo("/productos_admin.html") == 0) {
-
+			System.out.println("prodcutos admin");
 			try {
 				Context ctx = new InitialContext();
 

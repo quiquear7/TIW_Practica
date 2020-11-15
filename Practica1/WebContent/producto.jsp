@@ -83,6 +83,7 @@
 							System.out.println(login);
 							Object user = (Object) session.getAttribute("usuario");
 							Usuario usu = (Usuario) user;
+							String email = "";
 							
 							
 							
@@ -162,6 +163,7 @@
   							byte[] photo = product.getImagen();
 							String bphoto = Base64.getEncoder().encodeToString(photo);
   							String estado;
+  							email = product.getUser();
   							if(product.getEstado()==false){
   								estado = "En venta";
   							}else{
@@ -228,7 +230,8 @@
 							
 						</select>
 						<br></br>
-					<input type="submit" value="Modificar Producto">
+						<input class="form-wt" type="hidden" name="referenciaM" value=<%=email%> required>
+					<input type="submit"  class="primary-btn add-to-cart" value="Modificar Producto">
 			</form>	
 	
 			

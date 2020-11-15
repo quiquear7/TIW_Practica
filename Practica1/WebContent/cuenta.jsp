@@ -154,7 +154,7 @@
 					<%}else if(login == true && usu.getRol().compareTo("Vendedor")==0){%>
 					
 					<form action="cuenta-productos.html" action="ControladorServlet" method="get">
-						<input class="form-wt" type="hidden" name="referenciaE" value=<%=usu.getEmail()%> required>
+						<input class="form-wt" type="hidden" name="referenciaM" value=<%=usu.getEmail()%> required>
 						 <input type="submit" class="primary-btn add-to-cart" value="Productos Ofertados">
 					</form>
 					

@@ -161,7 +161,7 @@
 						<label for="contrasenia">Nueva Contraseña:</label><br>
 						<input class="form-wt" type="password" name="contrasenia" value="" required>
 						<br></br>
-					<input type="submit" value="Aceptar">
+					<input type="submit" class="primary-btn add-to-cart" value="Aceptar">
 					</form>	
 
 				</div>

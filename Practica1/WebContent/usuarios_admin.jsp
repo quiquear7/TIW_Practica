@@ -196,8 +196,8 @@
 										<input type="submit" class="primary-btn add-to-cart" value="Eliminar          usuario">
 									</form>
 									<br>
-									<form action="modificar-usuario-admin.html" action="ControladorServlet" method="post">
-										<input class="form-wt" type="hidden" name="referenciaM" value=<%=us.getEmail()%> required> 
+									<form action="modificar_usuario.html" action="ControladorServlet" method="get">
+										
 										<input type="submit" class="primary-btn add-to-cart" value="Modificar       usuario">
 									</form>
 									
@@ -205,6 +205,7 @@
 									<br>
 									<form action="cuenta-productos.html" action="ControladorServlet"
 										method="get">
+										<input class="form-wt" type="hidden" name="referenciaM" value=<%=us.getEmail()%> required>
 										<input type="submit" class="primary-btn add-to-cart" value="Mostrar    Productos">
 									</form>
 

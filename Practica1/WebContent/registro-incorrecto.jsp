@@ -165,7 +165,7 @@
 						</select>
 						<br></br>
 						<label for="contrasenia">Contraseña Admin:</label><br>
-						<input class="form-wt" type="password" name="contraAdmin" value="" required>
+						<input class="form-wt" type="password" name="contraAdmin" value="">
 						<br></br>
 					<input type="submit" class="primary-btn add-to-cart" value="Aceptar">
 					</form>	
