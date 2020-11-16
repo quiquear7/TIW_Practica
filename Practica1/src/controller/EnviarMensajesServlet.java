@@ -1,8 +1,9 @@
-package javaPackage;
+package controller;
 
 import java.io.IOException;
 
 import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -28,12 +29,14 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.sql.DataSource;
 
+import model.Usuario;
+
 
 /**
  * Implementacion del Servlet de Enviar Mensajes
  */
 @WebServlet({ "/EnviarMensajesServlet","/enviarMensajes.html" })
-public class LeerMensajesServlet extends HttpServlet {
+public class EnviarMensajesServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
 	@Resource
@@ -68,19 +71,19 @@ public class LeerMensajesServlet extends HttpServlet {
     						// Creamos la sesion
     						 //javax.jms.QueueSession QSes = null; //... COMPLETE ....
 
-    						 Session sesiones = conexion.createSession(false, Session.AUTO_ACKNOWLEDGE);
+    						 Session sesion = conexion.createSession(false, Session.AUTO_ACKNOWLEDGE);
 
     						// Asignamos la cola a la sesion para crear a la persona que envia los mensajes
     						 javax.jms.QueueSender Qsen =  null;
-    						 MessageProducer messageProd = sesiones.createProducer(cola);
+    						 MessageProducer messageProd = sesion.createProducer(cola);
 
     							// Creamos un mensaje de texto
                   // Creamos la sesion de un cliente y sacamos su rol ya que solo los vendedores pueden enviar mensajes
     						 javax.jms.TextMessage men = null;
     						 TextMessage textMessage = sesion.createTextMessage();
     						 HttpSession miSesion = req.getSession(true);
-    						 Usuario aux = (Usuario) mySession.getAttribute("usuario");
-    						 String rol = aux.getRole();
+    						 Usuario aux = (Usuario) ((ServletRequest) sesion).getAttribute("usuario");
+    						 String rol = aux.getRol();
     						 String mensaje, emailRec;
     						 String pagina="index.jsp"; //Definimos la pagina inicial
     						 int respuesta= (int) miSesion.getAttribute("respuesta");
@@ -174,7 +177,7 @@ public class LeerMensajesServlet extends HttpServlet {
   									if(rol.equals("Cliente")){// Si el enisor es un "Cliente" solo puede enviar mensajes a un vendedor
   										if(rolRec.equals("Vendedor")){
                         //Obtenemos el mensaje del parametro y lo asignamos a uno de la cola
-  											 textMessage.setText(menasje);
+  											 textMessage.setText(mensaje);
   											 //creamos las propiedades emisor y receptor
   											 textMessage.setStringProperty("emisor", aux.getEmail());
   											 textMessage.setStringProperty("receptor",emailRec);
@@ -231,7 +234,7 @@ public class LeerMensajesServlet extends HttpServlet {
   						// Cerramos el productor de mensajes
   						messageProd.close();
   						// Cerramos la sesion
-  						sesiones.close();
+  						sesion.close();
   						// Cerramos la conexion
   						conexion.close();
 
@@ -239,13 +242,10 @@ public class LeerMensajesServlet extends HttpServlet {
 
   					} catch (Exception e) {
   						System.out.println("Error en el doPost: " + e);
-  						System.out.println("Error MQ: " + e.getLinkedException().getMessage());
-  						System.out.println("Error MQ: " + e.getLinkedException().toString());
+  						
 
 
-  			}catch (Exception e) {
-  					System.out.println("Error en el doPost: " + e.toString());
-  		      }
+  			}
 
 
   	}
