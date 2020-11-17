@@ -195,9 +195,12 @@
 									<div class="shopping-cart-btns">
 										<span>Total a Pagar: <%=total%> $
 										</span> <br></br>
-										<button class="primary-btn">
-											Pagar <i class="fa fa-arrow-circle-right"></i>
-										</button>
+										<form action="pagar.html" action="ControladorServlet"
+											method="post">
+											<input class="form-wt" type="hidden" name="referenciaC"
+												value=required> <input type="submit" class="class="
+												fa fa-arrow-circle-right"" value="Pagar">
+										</form>
 									</div>
 								</div>
 							</div></li>

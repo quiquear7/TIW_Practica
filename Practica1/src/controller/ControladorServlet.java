@@ -27,8 +27,11 @@ import javax.imageio.ImageIO;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.sql.DataSource;
 import javax.sql.rowset.serial.SerialBlob;
+import javax.transaction.UserTransaction;
 
 import model.Carro;
 import model.Compra;
@@ -41,6 +44,11 @@ import model.Usuario;
 @WebServlet("/ControladorServlet")
 public class ControladorServlet extends HttpServlet {
 	boolean login = false;
+	@PersistenceContext (unitName="Practica1")
+	EntityManager em;
+	
+	@Resource
+	UserTransaction ut;
 
 	/**
 	 * 
