@@ -67,12 +67,12 @@ public class ControladorServlet extends HttpServlet {
 	HttpSession sesion;
 
 	public void init() {
-		InitialContext ic;
+		
 		try {
-			ic = new InitialContext();
-			ConnectionFactory cf = (ConnectionFactory) ic.lookup("jms/practica");
-			Destination d = (Destination) ic.lookup("jms/queueAsinpractica ");
-			Listener listener = new Listener(cf,d);
+			InitialContext ica = new InitialContext();
+			ConnectionFactory cfa = (ConnectionFactory) ica.lookup("jms/practica");
+			Destination da = (Destination) ica.lookup("jms/queueAsinpractica ");
+			Listener listener = new Listener(cfa,da);
 			listener.read();
 		} catch (NamingException e) {
 			// TODO Auto-generated catch block
