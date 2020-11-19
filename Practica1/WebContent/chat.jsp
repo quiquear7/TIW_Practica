@@ -3,6 +3,7 @@
 <%@page import="model.Usuario"%>
 <%@page import="model.Producto"%>
 <%@page import="model.Carro"%>
+<%@page import="model.Compra"%>
 <%@page import="java.sql.ResultSet" import="javax.naming.InitialContext"
 	import="javax.naming.Context" import=" java.io.OutputStream"
 	import="java.sql.Statement" import=" java.util.Base64"
@@ -68,11 +69,12 @@
 					<!-- /Logo -->
 
 					<%
-						Boolean login = (Boolean) session.getAttribute("sesion_iniciada");
+					Boolean login = (Boolean) session.getAttribute("sesion_iniciada");
 
 					Usuario usu = (Usuario) session.getAttribute("usuario");
 
-					if (login == true && usu.getRol().compareTo("Cliente") == 0) {
+					if (login == true) {
+						if(usu.getRol().compareTo("Cliente") == 0){
 					%>
 					<!-- Search -->
 					<div class="header-search">
@@ -88,7 +90,7 @@
 					<a href="busqueda-avanzada.html">Busqueda Avanzada</a>
 
 					<%
-						}
+					}}
 					%>
 					<!-- /Search -->
 				</div>
@@ -144,8 +146,8 @@
 
 						<!-- Cart -->
 						<%
-							if (login == true && usu.getRol().compareTo("Cliente") == 0) {
-
+							if (login == true ) {
+								if(usu.getRol().compareTo("Cliente") == 0){
 							ArrayList<Carro> c = (ArrayList<Carro>) session.getAttribute("carro");
 							float total = 0;
 
@@ -211,8 +213,8 @@
 										<form action="pagar.html" action="ControladorServlet"
 											method="post">
 											<input class="form-wt" type="hidden" name="referenciaC"
-												value=required> <input type="submit" class="class="
-												fa fa-arrow-circle-right"" value="Pagar">
+												value=required> <input type="submit"
+												class="primary-btn add-to-cart" value="Pagar">
 										</form>
 									</div>
 								</div>
@@ -221,15 +223,20 @@
 
 						<%
 							}
-						}
+						}}
 						%>
 						<li class="header-account dropdown default-dropdown">
 							<%
-								if (login == true && usu.getRol().compareTo("Vendedor") == 0) {
+								if (login == true) {
+									if (usu.getRol().compareTo("Vendedor") == 0) {
 							%> <strong><a href="add_producto.html">Nuevo
 									Producto</a></strong> <%
- 	}
- %>
+ 							}}
+ 							%> <%
+ 							if (login == true) {
+ 							%><strong><a href="mensajes.html">Mensajes</a></strong> <%
+ 							}
+ 							%>
 
 						</li>
 
@@ -281,19 +288,14 @@
 					</div>
 				</div>
 				<!-- /section-title -->
-				<div class="chatbox" id="chatbox">
 				
-				
-				
-				
-				</div>
 
 				<!-- Produc Slick -->
 				<form action="enviar_mensaje.html" name="order" id="order"
 					method="post">
 					<input class="form-wt" type="hidden" name="referenciaE"
-												value=<%=request.getParameter("destino")%> required>
-					<label for="email">Mensaje:</label><br> <input class="form-wt"
+						value=<%=request.getAttribute("destino")%> required> <label
+						for="email">Mensaje:</label><br> <input class="form-wt"
 						type="text" name="mensaje" value="" required><br> <br></br>
 					<input type="submit" class="primary-btn add-to-cart" value="Enviar">
 				</form>

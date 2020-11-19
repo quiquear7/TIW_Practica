@@ -49,17 +49,12 @@ public class ControladorServlet extends HttpServlet {
 	boolean login = false;
 
 	private static final long serialVersionUID = 1L;
-	
-	
-	
-	
-	
-	
-	
-	/*@Resource(name="jms/practica")
-	private ConnectionFactory cf;
-	@Resource(name="jms/queuepractica")
-	private Destination d;*/
+
+	/*
+	 * @Resource(name="jms/practica") private ConnectionFactory cf;
+	 * 
+	 * @Resource(name="jms/queuepractica") private Destination d;
+	 */
 
 	ServletContext miServletContex = null;
 
@@ -67,20 +62,16 @@ public class ControladorServlet extends HttpServlet {
 	HttpSession sesion;
 
 	public void init() {
-		
+		login = false;
 		try {
 			InitialContext ica = new InitialContext();
 			ConnectionFactory cfa = (ConnectionFactory) ica.lookup("jms/practica");
-			Destination da = (Destination) ica.lookup("jms/queueAsinpractica ");
-			Listener listener = new Listener(cfa,da);
+			Destination da = (Destination) ica.lookup("jms/queueAsinpractica");
+			Listener listener = new Listener(cfa, da);
 			listener.read();
 		} catch (NamingException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		
-		
 
 		/*
 		 * ServletContext miServletContex = getServletContext();
@@ -132,7 +123,7 @@ public class ControladorServlet extends HttpServlet {
 						producto_total.add(_producto);
 
 					}
-
+					sesion.setAttribute("sesion_iniciada", login);
 					sesion.setAttribute("productos", producto_total);
 					rs.close();
 					st.close();
@@ -167,6 +158,7 @@ public class ControladorServlet extends HttpServlet {
 
 				Connection con = ds.getConnection();
 				ArrayList<Producto> producto_total = new ArrayList<Producto>();
+
 				if (con != null) {
 
 					Statement st = con.createStatement();
@@ -318,29 +310,25 @@ public class ControladorServlet extends HttpServlet {
 
 		} else if (path.compareTo("/busqueda-avanzada.html") == 0) {
 			req.getRequestDispatcher("busqueda-avanzada.jsp").forward(req, resp);
-		}
-		else if (path.compareTo("/mensajes.html") == 0) {
-			
+		} else if (path.compareTo("/mensajes.html") == 0) {
+
 			try {
 				InitialContext ic = new InitialContext();
 				ConnectionFactory cf = (ConnectionFactory) ic.lookup("jms/practica");
 				Destination d = (Destination) ic.lookup("jms/queuepractica");
-				ReadJMS readJMS = new ReadJMS(cf,d);
+				ReadJMS readJMS = new ReadJMS(cf, d);
 				List<Mensaje> contenidos = readJMS.read();
-				
-				req.setAttribute("mensaje",contenidos);
-				
+
+				req.setAttribute("mensaje", contenidos);
+
 			} catch (NamingException e) {
 				e.printStackTrace();
 			}
-			
-			
+
 			req.getRequestDispatcher("mensajes.jsp").forward(req, resp);
 		}
 
 	}
-
-
 
 	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
@@ -389,10 +377,10 @@ public class ControladorServlet extends HttpServlet {
 
 						ResultSet rs2 = st.executeQuery("SELECT * FROM carro where usuario like  '" + user + "'");
 
-						Carro _carro = new Carro();
 						ArrayList<Carro> carrito = new ArrayList<Carro>();
 
 						while (rs2.next()) {
+							Carro _carro = new Carro();
 							_carro.setReferencia(rs2.getInt(1));
 							_carro.setUser(rs2.getString(2));
 							_carro.setPrecio(rs2.getFloat(3));
@@ -957,11 +945,10 @@ public class ControladorServlet extends HttpServlet {
 
 					ResultSet rs2 = st.executeQuery("SELECT * FROM carro where usuario like  '" + us.getEmail() + "'");
 
-					Carro _carro = new Carro();
 					ArrayList<Carro> carrito = new ArrayList<Carro>();
 
 					while (rs2.next()) {
-
+						Carro _carro = new Carro();
 						_carro.setReferencia(rs2.getInt(1));
 						_carro.setUser(rs2.getString(2));
 						_carro.setPrecio(rs2.getFloat(3));
@@ -1273,21 +1260,131 @@ public class ControladorServlet extends HttpServlet {
 
 		{
 			req.setAttribute("destino", req.getParameter("referenciaE"));
+			System.out.println("Destino chat : "+req.getParameter("referenciaE"));
 			req.getRequestDispatcher("chat.jsp").forward(req, resp);
 
 		} else if (path.compareTo("/enviar_mensaje.html") == 0)
 
 		{
-			
+
 			String destino = req.getParameter("referenciaE");
+			System.out.println("Destino: "+destino);
 			String mensaje = req.getParameter("mensaje");
 			Usuario user = (Usuario) sesion.getAttribute("usuario");
-			Mensaje mensajeobj = new Mensaje (user.getEmail(),destino,mensaje);
+			Mensaje mensajeobj = new Mensaje(user.getEmail(), destino, mensaje);
 			SendJMS sendJMS = new SendJMS();
 			sendJMS.Send(mensajeobj);
 			req.setAttribute("men", mensaje);
-			req.getRequestDispatcher("mensaje_enviado.jsp").forward(req, resp);
+			
+			try {
+				InitialContext ic = new InitialContext();
+				ConnectionFactory cf = (ConnectionFactory) ic.lookup("jms/practica");
+				Destination d = (Destination) ic.lookup("jms/queuepractica");
+				ReadJMS readJMS = new ReadJMS(cf, d);
+				List<Mensaje> contenidos = readJMS.read();
 
+				req.setAttribute("mensaje", contenidos);
+				req.setAttribute("receptor", req.getParameter("referenciaE"));
+
+			} catch (NamingException e) {
+				e.printStackTrace();
+			}
+			
+			req.getRequestDispatcher("chat_unico.jsp").forward(req, resp);
+			
+			
+			
+			
+			
+			
+			//req.getRequestDispatcher("mensaje_enviado.jsp").forward(req, resp);
+
+		} else if (path.compareTo("/pagar.html") == 0) {
+			try {
+				Context ctx = new InitialContext();
+
+				DataSource ds = (DataSource) ctx.lookup("jdbc/practica");
+
+				Connection con = ds.getConnection();
+				if (con != null) {
+					Usuario user = (Usuario) sesion.getAttribute("usuario");
+					Statement st = con.createStatement();
+					String script = "SELECT * FROM carro where usuario like  '" + user.getEmail() + "'";
+
+					ResultSet rs = st.executeQuery(script);
+
+					ArrayList<Producto> productoList = new ArrayList<Producto>();
+
+					while (rs.next()) {
+						Statement st2 = con.createStatement();
+						String script2 = "SELECT * FROM producto where referencia like  '" + rs.getInt(1) + "'";
+						ResultSet rs2 = st2.executeQuery(script2);
+						while(rs2.next()) {
+							Producto _producto = new Producto();
+							_producto.setReferencia(rs2.getInt(1));
+							_producto.setTitulo(rs2.getString(2));
+							_producto.setDescripcion(rs2.getString(3));
+							_producto.setCategoria(rs2.getString(4));
+							Blob bytesImagen = rs2.getBlob(5);
+							byte[] imgData = bytesImagen.getBytes(1, (int) bytesImagen.length());
+							_producto.setImagen(imgData);
+							_producto.setPrecio(rs2.getFloat(6));
+							_producto.setUser(rs2.getString(7));
+							_producto.setEstado(rs2.getBoolean(8));
+							productoList.add(_producto);
+						}
+						rs2.close();
+						st2.close();
+					}
+					req.setAttribute("producto", productoList);
+					rs.close();
+					st.close();
+					con.close();
+
+					req.getRequestDispatcher("compra.jsp").forward(req, resp);
+				} else {
+
+					req.getRequestDispatcher("error.jsp").forward(req, resp);
+				}
+
+			} catch (SQLException e) {
+
+				System.out.println("Error al Insertar " + e.getMessage());
+				req.getRequestDispatcher("error.jsp").forward(req, resp);
+			} // complete
+			catch (NamingException e) {
+				req.getRequestDispatcher("error.jsp").forward(req, resp);
+			}
+
+		}else if (path.compareTo("/pago.html") == 0)
+		{
+			
+			/*String destino = req.getParameter("referenciaE");
+			String mensaje = req.getParameter("mensaje");
+			Usuario user = (Usuario) sesion.getAttribute("usuario");
+			Mensaje mensajeobj = new Mensaje(user.getEmail(), destino, mensaje);
+			SendJMS sendJMS = new SendJMS();
+			sendJMS.Send(mensajeobj);
+			req.setAttribute("men", mensaje);
+			req.getRequestDispatcher("mensaje_enviado.jsp").forward(req, resp);*/
+
+		} else if (path.compareTo("/abrir_chat.html") == 0) {
+
+			try {
+				InitialContext ic = new InitialContext();
+				ConnectionFactory cf = (ConnectionFactory) ic.lookup("jms/practica");
+				Destination d = (Destination) ic.lookup("jms/queuepractica");
+				ReadJMS readJMS = new ReadJMS(cf, d);
+				List<Mensaje> contenidos = readJMS.read();
+
+				req.setAttribute("mensaje", contenidos);
+				req.setAttribute("receptor", req.getParameter("referenciaE"));
+
+			} catch (NamingException e) {
+				e.printStackTrace();
+			}
+			
+			req.getRequestDispatcher("chat_unico.jsp").forward(req, resp);
 		}
 
 	}

@@ -4,7 +4,6 @@
 <%@page import="model.Producto"%>
 <%@page import="model.Carro"%>
 <%@page import="model.Compra"%>
-<%@page import="model.Mensaje"%>
 <%@page import="java.sql.ResultSet" import="javax.naming.InitialContext"
 	import="javax.naming.Context" import=" java.io.OutputStream"
 	import="java.sql.Statement" import=" java.util.Base64"
@@ -230,12 +229,12 @@
 								if (login == true && usu.getRol().compareTo("Vendedor") == 0) {
 							%> <strong><a href="add_producto.html">Nuevo
 									Producto</a></strong> <%
- 							}
- 							%> <%
- 							if (login == true) {
- 							%><strong><a href="mensajes.html">Mensajes</a></strong> <%
- 								}
- 								%>
+ 	}
+ %> <%
+ 	if (login == true) {
+ %><strong><a href="mensajes.html">Mensajes</a></strong> <%
+ 	}
+ %>
 
 						</li>
 
@@ -261,24 +260,9 @@
 				<!-- section-title -->
 				<div class="col-md-12">
 					<div class="section-title">
-						<%
-							if (login == true) {
-							if (usu.getRol().compareTo("Admin") != 0) {
-						%>
-						<h2 class="title">CHAT</h2>
-						<%
-							} else {
-						%>
-						<h2 class="title">CHAT</h2>
 
-						<%
-							}
-						} else {
-						%>
-						<h2 class="title">CHAT</h2>
-						<%
-							}
-						%>
+						<h2 class="title">Compra</h2>
+
 
 
 						<div class="pull-right">
@@ -287,148 +271,161 @@
 					</div>
 				</div>
 				<!-- /section-title -->
-				<div>
-
-					<jsp:useBean id="mensaje" scope="request"
-						type="java.util.ArrayList<model.Mensaje>"></jsp:useBean>
-					<%
-						ArrayList<String> chats = new ArrayList<String>();
-						for (Mensaje v : mensaje) {
-							int correcto=0;
-							System.out.println(v.getEmisor());
-							System.out.println(v.getReceptor());
-						if (v.getEmisor().compareTo(usu.getEmail()) == 0 || v.getReceptor().compareTo(usu.getEmail()) == 0) {
-					%>
-					<form action="abrir_chat.html" name="order" id="order"
-						method="post">
-						<%
-							if (v.getEmisor().compareTo(usu.getEmail()) != 0 && v.getEmisor().compareTo("null") != 0 && chats.contains(v.getEmisor())==false) {
-								chats.add(v.getEmisor());
-								correcto=1;
-						%>
-						<label for="apellido"><%=v.getEmisor()%></label> <input
-							class="form-wt" type="hidden" name="usuario"
-							value=<%=v.getEmisor()%> required>
-						<%
-							}
-						%>
-						<%
-							if (v.getReceptor().compareTo(usu.getEmail()) != 0 && v.getReceptor().compareTo("null") != 0 && chats.contains(v.getReceptor())==false) {
-								chats.add(v.getReceptor());
-								correcto=1;
-						%>
-						<label for="apellido"><%=v.getReceptor()%></label> <input
-							class="form-wt" type="hidden" name="referenciaE"
-							value=<%=v.getReceptor()%> required>
-						<%
-							}
-						%>
-						<%if (correcto==1) {
-								
-						%>
-						<input type="submit" class="primary-btn add-to-cart"
-							value="Abrir Chat">
-						<%correcto=0;
-							}
-						%>
-					</form>
-
-					<%
-						}
-					%>
-
-					<%
-						}
-					%>
-
-				</div>
-
-			</div>
-			<!-- /row -->
 
 
-		</div>
-		<!-- /container -->
-	</div>
-	<!-- /section -->
-
-	<!-- section -->
+				<!-- Produc Slick -->
+				
 
 
-	<!-- FOOTER -->
-	<footer id="footer" class="section section-grey">
-		<!-- container -->
-		<div class="container">
-			<!-- row -->
-			<div class="row">
-				<!-- footer widget -->
-				<div class="col-md-3 col-sm-6 col-xs-6">
-					<div class="footer">
-						<!-- footer logo -->
-						<div class="footer-logo">
-							<a class="logo" href="#"> <img src="./img/logo.png" alt="">
-							</a>
+
+				<!-- /section-title -->
+
+				<%
+					ArrayList<Producto> p = (ArrayList<Producto>) request.getAttribute("producto");
+					int total = 0;
+				if (login == true) {
+					
+					for (int x = 0; x < p.size(); x++) {
+						Producto product = p.get(x);
+						byte[] photo = product.getImagen();
+						String bphoto = Base64.getEncoder().encodeToString(photo);
+						total += product.getPrecio();
+				%>
+
+
+				<!-- Produc Slick -->
+				<div class="row">
+					<div class="col-md-9 col-sm-6 col-xs-6">
+						<div class="row">
+
+							<!-- Product Single -->
+							<strong>Referencia: <%=product.getReferencia()%></strong>
+							<div class="product product-single">
+								<div class="product-thumb">
+
+									<img alt="" style="max-width: 30%; width: auto; height: auto;"
+										src="data:image/png;base64,<%=bphoto%>" />
+								</div>
+								<div class="product-body">
+									<h3 class="product-price"><%=product.getPrecio()%>$
+									</h3>
+									
+									<h2 class="product-name">
+										<%=product.getTitulo()%></h2>
+								</div>								
+
+								<!-- /Product Single -->
+
+
+
+							</div>
 						</div>
-						<!-- /footer logo -->
-
-						<p>Somos los mejores</p>
-
-						<!-- footer social -->
-
-						<!-- /footer social -->
 					</div>
 				</div>
+				
+				<br></br>
+				<%
+					}%>
+					
+					<h3>Total a pagar: <%=total%> $</h3>
+					<div>
+					<form action="pago.html" name="order" id="order" method="post">
+						<input class="form-wt" type="hidden" name="referenciaE" value=<%=request.getParameter("destino")%> required> 
+						<label for="email">Dirección:</label><br> 
+						<input class="form-wt" type="text" name="direccion" value="" required><br></br>
+						<label for="email">Tarjeta:</label><br> 
+						<input class="form-wt" type="text" name="direccion" value="" required><br></br>
+					<input type="submit" class="primary-btn add-to-cart" value="Pagar">
+					</form>
+					
+					</div>	
+					
+				<%}
+				%>
+				
+				
 
-
-				<div class="clearfix visible-sm visible-xs"></div>
-
-				<!-- footer widget -->
-				<div class="col-md-3 col-sm-6 col-xs-6">
-					<div class="footer">
-						<h3 class="footer-header">Servicio</h3>
-						<ul class="list-links">
-							<li><a href="#">About Us</a></li>
-						</ul>
-					</div>
-				</div>
-				<!-- /footer widget -->
-
-				<!-- footer subscribe -->
-				<!-- /footer subscribe -->
 			</div>
-			<!-- /row -->
-			<hr>
-			<!-- row -->
-			<div class="row">
-				<div class="col-md-8 col-md-offset-2 text-center">
-					<!-- footer copyright -->
-					<div class="footer-copyright">
-						<!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
-						Copyright &copy;
-						<script>
-							document.write(new Date().getFullYear());
-						</script>
-						All rights reserved | This template is made with <i
-							class="fa fa-heart-o" aria-hidden="true"></i> by <a
-							href="https://colorlib.com" target="_blank">Colorlib</a>
-						<!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
-					</div>
-					<!-- /footer copyright -->
-				</div>
-			</div>
-			<!-- /row -->
+			<!-- /container -->
 		</div>
-		<!-- /container -->
-	</footer>
-	<!-- /FOOTER -->
+		<!-- /section -->
 
-	<!-- jQuery Plugins -->
-	<script src="js/jquery.min.js"></script>
-	<script src="js/bootstrap.min.js"></script>
-	<script src="js/slick.min.js"></script>
-	<script src="js/nouislider.min.js"></script>
-	<script src="js/jquery.zoom.min.js"></script>
-	<script src="js/main.js"></script>
+		<!-- section -->
 
+
+		<!-- FOOTER -->
+		<footer id="footer" class="section section-grey">
+			<!-- container -->
+			<div class="container">
+				<!-- row -->
+				<div class="row">
+					<!-- footer widget -->
+					<div class="col-md-3 col-sm-6 col-xs-6">
+						<div class="footer">
+							<!-- footer logo -->
+							<div class="footer-logo">
+								<a class="logo" href="#"> <img src="./img/logo.png" alt="">
+								</a>
+							</div>
+							<!-- /footer logo -->
+
+							<p>Somos los mejores</p>
+
+							<!-- footer social -->
+
+							<!-- /footer social -->
+						</div>
+					</div>
+
+
+					<div class="clearfix visible-sm visible-xs"></div>
+
+					<!-- footer widget -->
+					<div class="col-md-3 col-sm-6 col-xs-6">
+						<div class="footer">
+							<h3 class="footer-header">Servicio</h3>
+							<ul class="list-links">
+								<li><a href="#">About Us</a></li>
+							</ul>
+						</div>
+					</div>
+					<!-- /footer widget -->
+
+					<!-- footer subscribe -->
+					<!-- /footer subscribe -->
+				</div>
+				<!-- /row -->
+				<hr>
+				<!-- row -->
+				<div class="row">
+					<div class="col-md-8 col-md-offset-2 text-center">
+						<!-- footer copyright -->
+						<div class="footer-copyright">
+							<!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+							Copyright &copy;
+							<script>
+								document.write(new Date().getFullYear());
+							</script>
+							All rights reserved | This template is made with <i
+								class="fa fa-heart-o" aria-hidden="true"></i> by <a
+								href="https://colorlib.com" target="_blank">Colorlib</a>
+							<!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+						</div>
+						<!-- /footer copyright -->
+					</div>
+				</div>
+				<!-- /row -->
+			</div>
+			<!-- /container -->
+		</footer>
+		<!-- /FOOTER -->
+
+		<!-- jQuery Plugins -->
+		<script src="js/jquery.min.js"></script>
+		<script src="js/bootstrap.min.js"></script>
+		<script src="js/slick.min.js"></script>
+		<script src="js/nouislider.min.js"></script>
+		<script src="js/jquery.zoom.min.js"></script>
+		<script src="js/main.js"></script>
 </body>
 </html>

@@ -230,12 +230,12 @@
 								if (login == true && usu.getRol().compareTo("Vendedor") == 0) {
 							%> <strong><a href="add_producto.html">Nuevo
 									Producto</a></strong> <%
- 							}
- 							%> <%
- 							if (login == true) {
- 							%><strong><a href="mensajes.html">Mensajes</a></strong> <%
- 								}
- 								%>
+ 	}
+ %> <%
+ 	if (login == true) {
+ %><strong><a href="mensajes.html">Mensajes</a></strong> <%
+ 	}
+ %>
 
 						</li>
 
@@ -288,58 +288,38 @@
 				</div>
 				<!-- /section-title -->
 				<div>
-
+					<%String receptor =""; %>
 					<jsp:useBean id="mensaje" scope="request"
 						type="java.util.ArrayList<model.Mensaje>"></jsp:useBean>
-					<%
-						ArrayList<String> chats = new ArrayList<String>();
-						for (Mensaje v : mensaje) {
-							int correcto=0;
+					<div class="chatbox" id="chatbox">
+						<%
+							for (Mensaje v : mensaje) {
+							int correcto = 0;
 							System.out.println(v.getEmisor());
 							System.out.println(v.getReceptor());
-						if (v.getEmisor().compareTo(usu.getEmail()) == 0 || v.getReceptor().compareTo(usu.getEmail()) == 0) {
-					%>
-					<form action="abrir_chat.html" name="order" id="order"
-						method="post">
-						<%
-							if (v.getEmisor().compareTo(usu.getEmail()) != 0 && v.getEmisor().compareTo("null") != 0 && chats.contains(v.getEmisor())==false) {
-								chats.add(v.getEmisor());
-								correcto=1;
+							if (v.getEmisor().compareTo(usu.getEmail()) == 0) {
 						%>
-						<label for="apellido"><%=v.getEmisor()%></label> <input
-							class="form-wt" type="hidden" name="usuario"
-							value=<%=v.getEmisor()%> required>
-						<%
-							}
+						<h5>Tu: <%=v.getMensaje() %></h5>
+
+						<%}%>
+						<% if (v.getEmisor().compareTo(usu.getEmail()) != 0) {
+							receptor=v.getReceptor();
 						%>
-						<%
-							if (v.getReceptor().compareTo(usu.getEmail()) != 0 && v.getReceptor().compareTo("null") != 0 && chats.contains(v.getReceptor())==false) {
-								chats.add(v.getReceptor());
-								correcto=1;
+						<h5><%=v.getReceptor()%> : <%=v.getMensaje() %></h5>
+
+						<%}	
+						}
 						%>
-						<label for="apellido"><%=v.getReceptor()%></label> <input
-							class="form-wt" type="hidden" name="referenciaE"
-							value=<%=v.getReceptor()%> required>
-						<%
-							}
-						%>
-						<%if (correcto==1) {
-								
-						%>
-						<input type="submit" class="primary-btn add-to-cart"
-							value="Abrir Chat">
-						<%correcto=0;
-							}
-						%>
+
+					</div>
+					<form action="enviar_mensaje.html" name="order" id="order"
+					method="post">
+					<input class="form-wt" type="hidden" name="referenciaE"
+						value=<%=receptor%> required> <label
+						for="email">Mensaje:</label><br> <input class="form-wt"
+						type="text" name="mensaje" value="" required><br> <br></br>
+					<input type="submit" class="primary-btn add-to-cart" value="Enviar">
 					</form>
-
-					<%
-						}
-					%>
-
-					<%
-						}
-					%>
 
 				</div>
 

@@ -2,6 +2,7 @@
     pageEncoding="ISO-8859-1"%>
 <%@page import="model.Usuario"%>
 <%@page import="model.Producto"%>
+<%@page import="model.Carro" %>
 <%@page import="java.sql.ResultSet"
         import="javax.naming.InitialContext"
         import="javax.naming.Context"
@@ -59,63 +60,182 @@
 				<div class="pull-left">
 					<!-- Logo -->
 					<div class="header-logo">
-						<a class="logo" href="index.html">
-							<img src="./img/logo.png" alt="">
+						<a class="logo" href="index.html"> <img src="./img/logo.png"
+							alt="">
 						</a>
 					</div>
 					<!-- /Logo -->
 
+					<%
+						Boolean login = (Boolean) session.getAttribute("sesion_iniciada");
+
+					Usuario usu = (Usuario) session.getAttribute("usuario");
+
+					if (login == true && usu.getRol().compareTo("Cliente") == 0) {
+					%>
 					<!-- Search -->
-				
+					<div class="header-search">
+						<form action="busqueda.html" action="ControladorServlet"
+							method="post">
+							<input class="input search-input" name="name" type="text"
+								placeholder="Busqueda">
+							<button class="search-btn">
+								<i class="fa fa-search"></i>
+							</button>
+						</form>
+					</div>
+					<a href="busqueda-avanzada.html">Busqueda Avanzada</a>
+
+					<%
+						}
+					%>
+					<!-- /Search -->
 				</div>
 				<div class="pull-right">
 					<ul class="header-btns">
 						<!-- Account -->
 						<li class="header-account dropdown default-dropdown">
-							<div class="dropdown-toggle" role="button" data-toggle="dropdown" aria-expanded="true">
+							<div class="dropdown-toggle" role="button" data-toggle="dropdown"
+								aria-expanded="true">
 								<div class="header-btns-icon">
 									<i class="fa fa-user-o"></i>
 								</div>
-								<% 
-							Object log = (Object) session.getAttribute("sesion_iniciada");
-							Boolean login = (Boolean) log;
-							System.out.println(login);
-							Object user = (Object) session.getAttribute("usuario");
-							Usuario usu = (Usuario) user;
-							
-							if(login == false || usu.getEmail() == null){%>
-								<strong class="text-uppercase">Mi Cuenta <i class="fa fa-caret-down"></i></strong>
-								<%}else{%>
-									<strong class="text-uppercase"><%=usu.getEmail()%> <i class="fa fa-caret-down"></i></strong>
-								<%}%>
+								<%
+									if (login == false) {
+								%>
+								<strong class="text-uppercase">Mi Cuenta <i
+									class="fa fa-caret-down"></i></strong>
+								<%
+									} else {
+								%>
+								<strong class="text-uppercase"><%=usu.getEmail()%> <i
+									class="fa fa-caret-down"></i></strong>
+								<%
+									}
+								%>
 							</div>
-							
-							
-							<ul class="custom-menu">
-							<% if(login == false){%>
-								<li><a href="login.html"><i class="fa fa-unlock-alt"></i>Login</a></li>
-								<li><a href="registro.html"><i class="fa fa-user-plus"></i> Crear Cuenta</a></li>
-							<%} else{ %>
-								<li><a href="cuenta.html"><i class="fa fa-user-o"></i> Mi Cuenta</a></li>
-								<li><a href="modificar_usuario.html"><i class="fa fa-unlock-alt"></i>Modificar Usuario</a></li>
-								<li><a href="cerrar_sesion.html"><i class="fa fa-user-plus"></i> Cerrar Sesion</a></li>
-							<%}%>
-						
 
-						</ul>
-						<li class="header-account dropdown default-dropdown">
-							
-							
-							 
-						
-						
-						<%if(login == true && usu.getRol().compareTo("Vendedor")==0 ){%>
-					
-							<strong><a href="add_producto.html">Nuevo Producto</a></strong>
-						
-							<%}%>
-							
+
+							<ul class="custom-menu">
+								<%
+									if (login == false) {
+								%>
+								<li><a href="login.html"><i class="fa fa-unlock-alt"></i>Login</a></li>
+								<li><a href="registro.html"><i class="fa fa-user-plus"></i>
+										Crear Cuenta</a></li>
+								<%
+									} else {
+								%>
+								<li><a href="cuenta.html"><i class="fa fa-user-o"></i>
+										Mi Cuenta</a></li>
+								<li><a href="modificar_usuario.html"><i
+										class="fa fa-unlock-alt"></i>Modificar Usuario</a></li>
+								<li><a href="cerrar_sesion.html"><i
+										class="fa fa-user-plus"></i> Cerrar Sesion</a></li>
+								<%
+									}
+								%>
+
+
+							</ul>
 						</li>
+						<!-- /Account -->
+
+						<!-- Cart -->
+						<%
+							if (login == true && usu.getRol().compareTo("Cliente") == 0) {
+
+							ArrayList<Carro> c = (ArrayList<Carro>) session.getAttribute("carro");
+							float total = 0;
+
+							if (c != null) {
+						%>
+
+						<li class="header-cart dropdown default-dropdown"><a
+							class="dropdown-toggle" data-toggle="dropdown"
+							aria-expanded="true">
+								<div class="header-btns-icon">
+									<i class="fa fa-shopping-cart"></i>
+								</div> <strong class="text-uppercase">Carro</strong> <br>
+
+						</a>
+							<div class="custom-menu">
+								<div id="shopping-cart">
+									<div class="shopping-cart-list">
+
+
+										<%
+											for (int x = 0; x < c.size(); x++) {
+
+											Carro carrito = c.get(x);
+
+											byte[] photo = carrito.getImagen();
+											String bphoto = Base64.getEncoder().encodeToString(photo);
+											total += carrito.getPrecio();
+										%>
+										<div class="product product-widget">
+											<div class="product-thumb">
+												<img alt=""
+													style="max-width: 70%; width: auto; height: auto;"
+													src="data:image/png;base64,<%=bphoto%>" />
+											</div>
+											<div class="product-body">
+												<h3 class="product-price"><%=carrito.getPrecio()%>$
+												</h3>
+												<h2 class="product-name"><%=carrito.getTitulo()%></h2>
+												<form action="producto_index.html"
+													action="ControladorServlet" method="post">
+													<input class="form-wt" type="hidden" name="referenciaM"
+														value=<%=carrito.getReferencia()%> required> <input
+														type="submit" class="prod_btn" value="Mas Info">
+												</form>
+											</div>
+
+
+											<form action="eliminar_carro.html"
+												action="ControladorServlet" method="post">
+												<input class="form-wt" type="hidden" name="referenciaC"
+													value=<%=carrito.getReferencia()%> required> <input
+													type="submit" class="cancel-btn" value="X">
+											</form>
+
+										</div>
+										<%
+											}
+										%>
+									</div>
+									<div class="shopping-cart-btns">
+										<span>Total a Pagar: <%=total%> $
+										</span> <br></br>
+										<form action="pagar.html" action="ControladorServlet"
+											method="post">
+											<input class="form-wt" type="hidden" name="referenciaC"
+												value=required> <input type="submit" class="primary-btn add-to-cart" value="Pagar">
+										</form>
+									</div>
+								</div>
+							</div></li>
+						<!-- /Cart -->
+
+						<%
+							}
+						}
+						%>
+						<li class="header-account dropdown default-dropdown">
+							<%
+								if (login == true && usu.getRol().compareTo("Vendedor") == 0) {
+							%> <strong><a href="add_producto.html">Nuevo
+									Producto</a></strong> <%
+ 							}
+ 							%> <%
+ 							if (login == true) {
+ 							%><strong><a href="mensajes.html">Mensajes</a></strong> <%
+ 							}
+ 							%>
+
+						</li>
+
+
 					</ul>
 				</div>
 			</div>

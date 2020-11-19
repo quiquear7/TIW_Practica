@@ -3,6 +3,7 @@
 <%@page import="model.Usuario"%>
 <%@page import="model.Producto"%>
 <%@page import="model.Carro"%>
+<%@page import="model.Compra"%>
 <%@page import="java.sql.ResultSet" import="javax.naming.InitialContext"
 	import="javax.naming.Context" import=" java.io.OutputStream"
 	import="java.sql.Statement" import=" java.util.Base64"
@@ -68,11 +69,12 @@
 					<!-- /Logo -->
 
 					<%
-						Boolean login = (Boolean) session.getAttribute("sesion_iniciada");
+					Boolean login = (Boolean) session.getAttribute("sesion_iniciada");
 
 					Usuario usu = (Usuario) session.getAttribute("usuario");
 
-					if (login == true && usu.getRol().compareTo("Cliente") == 0) {
+					if (login == true) {
+						if(usu.getRol().compareTo("Cliente") == 0){
 					%>
 					<!-- Search -->
 					<div class="header-search">
@@ -88,7 +90,7 @@
 					<a href="busqueda-avanzada.html">Busqueda Avanzada</a>
 
 					<%
-						}
+					}}
 					%>
 					<!-- /Search -->
 				</div>
@@ -144,8 +146,8 @@
 
 						<!-- Cart -->
 						<%
-							if (login == true && usu.getRol().compareTo("Cliente") == 0) {
-
+							if (login == true ) {
+								if(usu.getRol().compareTo("Cliente") == 0){
 							ArrayList<Carro> c = (ArrayList<Carro>) session.getAttribute("carro");
 							float total = 0;
 
@@ -211,8 +213,7 @@
 										<form action="pagar.html" action="ControladorServlet"
 											method="post">
 											<input class="form-wt" type="hidden" name="referenciaC"
-												value=required> <input type="submit" class="class="
-												fa fa-arrow-circle-right"" value="Pagar">
+												value=required> <input type="submit" class="primary-btn add-to-cart" value="Pagar">
 										</form>
 									</div>
 								</div>
@@ -221,14 +222,15 @@
 
 						<%
 							}
-						}
+						}}
 						%>
 						<li class="header-account dropdown default-dropdown">
 							<%
-								if (login == true && usu.getRol().compareTo("Vendedor") == 0) {
+								if (login == true) {
+									if (usu.getRol().compareTo("Vendedor") == 0) {
 							%> <strong><a href="add_producto.html">Nuevo
 									Producto</a></strong> <%
- 							}
+ 							}}
  							%> <%
  							if (login == true) {
  							%><strong><a href="mensajes.html">Mensajes</a></strong> <%
@@ -291,22 +293,25 @@
 
 
 				<%
-					if (login == false || usu.getRol().compareTo("Admin") != 0) {
+					if (login == false ) {
 
 					ArrayList<Producto> p = (ArrayList<Producto>) session.getAttribute("productos");
 					int cont = 0;
 
-					for (int x = 0; x < p.size() / 2; x++) {
+					for (int x = 0; x < (p.size() / 2)+1; x++) {
+			
 				%>
 
 				<!-- Produc Slick -->
 				<div class="row">
 
 					<%
-						int res = p.size() - cont;
+					int res = p.size() - cont;
+					
 					if (res >= 2)
-						res = 3;
+						res = 2;
 					for (int j = 0; j < res; j++) {
+						System.out.println("cont"+cont);
 						Producto product = p.get(cont);
 						byte[] photo = product.getImagen();
 						String bphoto = Base64.getEncoder().encodeToString(photo);
@@ -314,15 +319,15 @@
 					%>
 
 
-					<div class="col-md-9 col-sm-6 col-xs-6">
+					<div class="col-md-6 col-sm-6 col-xs-6">
 						<div class="row">
 
 							<!-- Product Single -->
 
-							<div class="product product-single">
+							<div class="product product-single" style="width:30%">
 								<div class="product-thumb">
 
-									<img alt="" style="width: 130px; height: 140px;"
+									<img alt="" style="width: 150px; height: 170px;"
 										src="data:image/png;base64,<%=bphoto%>" />
 
 								</div>
@@ -341,7 +346,8 @@
 												value="Mas  Informacion">
 										</form>
 										<%
-											if (login == true && usu.getRol().compareTo("Cliente") == 0) {
+											if (login == true) {
+												if(usu.getRol().compareTo("Cliente") == 0){
 										%>
 										<form action="agregar_carro.html" action="ControladorServlet"
 											method="post">
@@ -350,15 +356,8 @@
 												type="submit" class="primary-btn add-to-cart"
 												value="Agregar a  Carro">
 										</form>
-										<form action="chat.html" action="ControladorServlet"
-											method="post">
-											<input class="form-wt" type="hidden" name="referenciaE"
-												value=<%=product.getUser()%> required> <input
-												type="submit" class="primary-btn add-to-cart"
-												value="Enviar Mensaje">
-										</form>
 										<%
-											}
+											}}
 										%>
 									</div>
 
@@ -374,7 +373,8 @@
 				<br></br>
 				<%
 					}
-				} else if (login == true && usu.getRol().compareTo("Admin") == 0) {
+				}if (login == true)  {
+					if(usu.getRol().compareTo("Admin") == 0){
 				%>
 				<div class="row">
 					<div class="col-md-9 col-sm-6 col-xs-6">
@@ -401,7 +401,86 @@
 				</div>
 				<br></br>
 				<%
+				}else{
+					ArrayList<Producto> p = (ArrayList<Producto>) session.getAttribute("productos");
+					int cont2 = 0;
+
+					for (int x = 0; x < (p.size() / 2)+1; x++) {
+			
+				%>
+
+				<!-- Produc Slick -->
+				<div class="row">
+
+					<%
+					int res = p.size() - cont2;
+					
+					if (res >= 2)
+						res = 2;
+					for (int j = 0; j < res; j++) {
+						
+						Producto product = p.get(cont2);
+						byte[] photo = product.getImagen();
+						String bphoto = Base64.getEncoder().encodeToString(photo);
+						cont2++;
+					%>
+
+
+					<div class="col-md-6 col-sm-6 col-xs-6">
+						<div class="row">
+
+							<!-- Product Single -->
+
+							<div class="product product-single" style="width:30%">
+								<div class="product-thumb">
+
+									<img alt="" style="width: 150px; height: 170px;"
+										src="data:image/png;base64,<%=bphoto%>" />
+
+								</div>
+								<div class="product-body">
+									<h3 class="product-price"><%=product.getPrecio()%>$
+									</h3>
+
+									<h2 class="product-name">
+										<%=product.getTitulo()%></h2>
+									<div class="product-btns">
+										<form action="producto_index.html" action="ControladorServlet"
+											method="post">
+											<input class="form-wt" type="hidden" name="referenciaM"
+												value=<%=product.getReferencia()%> required> <input
+												type="submit" class="primary-btn add-to-cart"
+												value="Mas  Informacion">
+										</form>
+										<%
+											if (login == true) {
+												if(usu.getRol().compareTo("Cliente") == 0){
+										%>
+										<form action="agregar_carro.html" action="ControladorServlet"
+											method="post">
+											<input class="form-wt" type="hidden" name="referenciaE"
+												value=<%=product.getReferencia()%> required> <input
+												type="submit" class="primary-btn add-to-cart"
+												value="Agregar a  Carro">
+										</form>
+										<%
+											}}
+										%>
+									</div>
+
+								</div>
+
+							</div>
+						</div>
+					</div>
+					<%
+						}
+					%>
+				</div>
+				<br></br>
+				<%
 					}
+				}}
 				%>
 
 				<!-- /Product Slick -->

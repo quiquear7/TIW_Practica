@@ -151,7 +151,7 @@
 
 				<% 
 						
-							ArrayList <Producto> p = (ArrayList<Producto>) session.getAttribute("producto");
+							ArrayList <Producto> p = (ArrayList<Producto>) request.getAttribute("producto");
 							
 							
 							if(login == true) {

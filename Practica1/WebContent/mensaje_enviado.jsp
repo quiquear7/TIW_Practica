@@ -3,6 +3,8 @@
 <%@page import="model.Usuario"%>
 <%@page import="model.Producto"%>
 <%@page import="model.Carro"%>
+<%@page import="model.Compra"%>
+<%@page import="model.Mensaje"%>
 <%@page import="java.sql.ResultSet" import="javax.naming.InitialContext"
 	import="javax.naming.Context" import=" java.io.OutputStream"
 	import="java.sql.Statement" import=" java.util.Base64"
@@ -68,11 +70,12 @@
 					<!-- /Logo -->
 
 					<%
-						Boolean login = (Boolean) session.getAttribute("sesion_iniciada");
+					Boolean login = (Boolean) session.getAttribute("sesion_iniciada");
 
 					Usuario usu = (Usuario) session.getAttribute("usuario");
 
-					if (login == true && usu.getRol().compareTo("Cliente") == 0) {
+					if (login == true) {
+						if(usu.getRol().compareTo("Cliente") == 0){
 					%>
 					<!-- Search -->
 					<div class="header-search">
@@ -88,7 +91,7 @@
 					<a href="busqueda-avanzada.html">Busqueda Avanzada</a>
 
 					<%
-						}
+					}}
 					%>
 					<!-- /Search -->
 				</div>
@@ -144,8 +147,8 @@
 
 						<!-- Cart -->
 						<%
-							if (login == true && usu.getRol().compareTo("Cliente") == 0) {
-
+							if (login == true ) {
+								if(usu.getRol().compareTo("Cliente") == 0){
 							ArrayList<Carro> c = (ArrayList<Carro>) session.getAttribute("carro");
 							float total = 0;
 
@@ -211,8 +214,7 @@
 										<form action="pagar.html" action="ControladorServlet"
 											method="post">
 											<input class="form-wt" type="hidden" name="referenciaC"
-												value=required> <input type="submit" class="class="
-												fa fa-arrow-circle-right"" value="Pagar">
+												value=required> <input type="submit" class="primary-btn add-to-cart" value="Pagar">
 										</form>
 									</div>
 								</div>
@@ -221,15 +223,20 @@
 
 						<%
 							}
-						}
+						}}
 						%>
 						<li class="header-account dropdown default-dropdown">
 							<%
-								if (login == true && usu.getRol().compareTo("Vendedor") == 0) {
+								if (login == true) {
+									if (usu.getRol().compareTo("Vendedor") == 0) {
 							%> <strong><a href="add_producto.html">Nuevo
 									Producto</a></strong> <%
- 	}
- %>
+ 							}}
+ 							%> <%
+ 							if (login == true) {
+ 							%><strong><a href="mensajes.html">Mensajes</a></strong> <%
+ 							}
+ 							%>
 
 						</li>
 
@@ -290,20 +297,42 @@
 
 				</div>
 
-				<!-- Produc Slick -->
-				<form action="enviar_mensaje.html" name="order" id="order"
+				<div>
+					<%String receptor =""; %>
+					<jsp:useBean id="mensaje" scope="request"
+						type="java.util.ArrayList<model.Mensaje>"></jsp:useBean>
+					<div class="chatbox" id="chatbox">
+						<%
+							for (Mensaje v : mensaje) {
+							int correcto = 0;
+							System.out.println(v.getEmisor());
+							System.out.println(v.getReceptor());
+							if (v.getEmisor().compareTo(usu.getEmail()) == 0) {
+						%>
+						<h5>Tu: <%=v.getMensaje() %></h5>
+
+						<%}%>
+						<% if (v.getEmisor().compareTo(usu.getEmail()) != 0) {
+							receptor=v.getReceptor();
+						%>
+						<h5><%=v.getReceptor()%> : <%=v.getMensaje() %></h5>
+
+						<%}	
+						}
+						%>
+
+					</div>
+					<form action="enviar_mensaje.html" name="order" id="order"
 					method="post">
 					<input class="form-wt" type="hidden" name="referenciaE"
-						value=<%=request.getParameter("destino")%> required> <label
+						value=<%=receptor%> required> <label
 						for="email">Mensaje:</label><br> <input class="form-wt"
-						type="email" name="mensaje" value="" required><br> <br></br>
+						type="text" name="mensaje" value="" required><br> <br></br>
 					<input type="submit" class="primary-btn add-to-cart" value="Enviar">
-				</form>
+					</form>
 
-
-
-				<!-- Produc Slick -->
-				<div class="row"></div>
+				</div>
+				
 
 			</div>
 			<!-- /row -->

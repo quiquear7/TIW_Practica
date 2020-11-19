@@ -119,69 +119,87 @@
 						<!-- /Account -->
 
 						<!-- Cart -->
-						<% 
-					if(login == true && usu.getRol().compareTo("Cliente")==0){
-					
-						ArrayList <Carro> c = (ArrayList<Carro>) session.getAttribute("carro");
-						float total = 0;
-						
-						if(c!=null){
-							
-						
-					%>
-					
-						<li class="header-cart dropdown default-dropdown">
-							<a class="dropdown-toggle" data-toggle="dropdown" aria-expanded="true">
-							<div class="header-btns-icon">
+							<!-- Cart -->
+						<%
+							if (login == true && usu.getRol().compareTo("Cliente") == 0) {
+
+							ArrayList<Carro> c = (ArrayList<Carro>) session.getAttribute("carro");
+							float total = 0;
+
+							if (c != null) {
+						%>
+
+						<li class="header-cart dropdown default-dropdown"><a
+							class="dropdown-toggle" data-toggle="dropdown"
+							aria-expanded="true">
+								<div class="header-btns-icon">
 									<i class="fa fa-shopping-cart"></i>
-								</div>
-								<strong class="text-uppercase">Carro</strong>
-								<br>
-								
-							</a>
+								</div> <strong class="text-uppercase">Carro</strong> <br>
+
+						</a>
 							<div class="custom-menu">
 								<div id="shopping-cart">
 									<div class="shopping-cart-list">
-									
-									
-									<% for (int x = 0; x < c.size(); x++) {
-		
-									Carro carrito = c.get(x);
-									System.out.println(carrito.getPrecio());
-									total += carrito.getPrecio();	%>
+
+
+										<%
+											for (int x = 0; x < c.size(); x++) {
+
+											Carro carrito = c.get(x);
+
+											byte[] photo = carrito.getImagen();
+											String bphoto = Base64.getEncoder().encodeToString(photo);
+											total += carrito.getPrecio();
+										%>
 										<div class="product product-widget">
 											<div class="product-thumb">
-												<img src="./img/thumb-product01.jpg" alt="">
+												<img alt=""
+													style="max-width: 70%; width: auto; height: auto;"
+													src="data:image/png;base64,<%=bphoto%>" />
 											</div>
 											<div class="product-body">
-												<h3 class="product-price"><%=carrito.getPrecio()%>$</h3>
+												<h3 class="product-price"><%=carrito.getPrecio()%>$
+												</h3>
 												<h2 class="product-name"><%=carrito.getTitulo()%></h2>
-												<form  action="producto_index.html" action="ControladorServlet" method="post">
-												<input class="form-wt" type="hidden" name="referenciaC" value=<%=carrito.getReferencia()%> required>
-												<input type="submit" class="prod_btn" value="Mas Info">
-											</form>
+												<form action="producto_index.html"
+													action="ControladorServlet" method="post">
+													<input class="form-wt" type="hidden" name="referenciaM"
+														value=<%=carrito.getReferencia()%> required> <input
+														type="submit" class="prod_btn" value="Mas Info">
+												</form>
 											</div>
-											
-	
-											<form  action="eliminar_carro.html" action="ControladorServlet" method="post">
-											<input class="form-wt" type="hidden" name="referenciaC" value=<%=carrito.getReferencia()%> required>
-											<input type="submit" class="cancel-btn" value="X" >
+
+
+											<form action="eliminar_carro.html"
+												action="ControladorServlet" method="post">
+												<input class="form-wt" type="hidden" name="referenciaC"
+													value=<%=carrito.getReferencia()%> required> <input
+													type="submit" class="cancel-btn" value="X">
 											</form>
-											
+
 										</div>
-						<%} %>
+										<%
+											}
+										%>
 									</div>
 									<div class="shopping-cart-btns">
-										<span>Total a Pagar: <%=total%> $</span>
-										<br></br>
-										<button class="primary-btn">Pagar <i class="fa fa-arrow-circle-right"></i></button>
+										<span>Total a Pagar: <%=total%> $
+										</span> <br></br>
+										<form action="pagar.html" action="ControladorServlet"
+											method="post">
+											<input class="form-wt" type="hidden" name="referenciaC"
+												value=required> <input type="submit" class="class="
+												fa fa-arrow-circle-right"" value="Pagar">
+										</form>
 									</div>
 								</div>
-							</div>
-						</li>
+							</div></li>
 						<!-- /Cart -->
-						
-						<%} }%>
+
+						<%
+							}
+						}
+						%>
 						<li class="header-account dropdown default-dropdown">
 							
 							
@@ -193,6 +211,11 @@
 							<strong><a href="add_producto.html">Nuevo Producto</a></strong>
 						
 							<%}%>
+							<%
+ 							if (login == true) {
+ 							%><strong><a href="mensajes.html">Mensajes</a></strong> <%
+ 							}
+ 							%>
 							
 						</li>
 						
@@ -231,53 +254,86 @@
 				
 					
 					
-					<% 
-						
-							ArrayList <Producto> p = (ArrayList<Producto>) session.getAttribute("productos-busqueda");
+					<%
+					
 
-							for (int x = 0; x < p.size(); x++) {
-								System.out.println("Recorremos for el index");
-  								Producto product = p.get(x);%>
-  								
+					ArrayList<Producto> p = (ArrayList<Producto>) session.getAttribute("productos-busqueda");
+					int cont = 0;
+
+					for (int x = 0; x < (p.size() / 2)+1; x++) {
+			
+				%>
 
 				<!-- Produc Slick -->
 				<div class="row">
-				<div class="col-md-9 col-sm-6 col-xs-6">
-					<div class="row">
+
+					<%
+					int res = p.size() - cont;
+					
+					if (res >= 2)
+						res = 2;
+					for (int j = 0; j < res; j++) {
 						
+						Producto product = p.get(cont);
+						byte[] photo = product.getImagen();
+						String bphoto = Base64.getEncoder().encodeToString(photo);
+						cont++;
+					%>
+
+
+					<div class="col-md-6 col-sm-6 col-xs-6">
+						<div class="row">
+
 							<!-- Product Single -->
-							
+
 							<div class="product product-single">
 								<div class="product-thumb">
-									
-									<!--<img src= alt="<%//product.getImagen()%>">-->
+
+									<img alt="" style="width: 150px; height: 170px;"
+										src="data:image/png;base64,<%=bphoto%>" />
+
 								</div>
 								<div class="product-body">
-									<h3 class="product-price"><%=product.getPrecio()%>$</h3>
-									
-									<h2 class="product-name"> <%=product.getTitulo()%></h2>
+									<h3 class="product-price"><%=product.getPrecio()%>$
+									</h3>
+
+									<h2 class="product-name">
+										<%=product.getTitulo()%></h2>
+									<div class="product-btns">
+										<form action="producto_index.html" action="ControladorServlet"
+											method="post">
+											<input class="form-wt" type="hidden" name="referenciaM"
+												value=<%=product.getReferencia()%> required> <input
+												type="submit" class="primary-btn add-to-cart"
+												value="Mas  Informacion">
+										</form>
+										<%
+											if (login == true && usu.getRol().compareTo("Cliente") == 0) {
+										%>
+										<form action="agregar_carro.html" action="ControladorServlet"
+											method="post">
+											<input class="form-wt" type="hidden" name="referenciaE"
+												value=<%=product.getReferencia()%> required> <input
+												type="submit" class="primary-btn add-to-cart"
+												value="Agregar a  Carro">
+										</form>
+										<%
+											}
+										%>
+									</div>
+
 								</div>
-								<form  action="producto_index.html" action="ControladorServlet" method="post">
-									<input class="form-wt" type="hidden" name="referenciaM" value=<%=product.getReferencia()%> required>
-								<input type="submit"  class="primary-btn add-to-cart" value="Mas  Informacion">
-								</form>	
-								<% if(login == true && usu.getRol().compareTo("Cliente")==0){%>
-								<form  action="agregar_carro.html" action="ControladorServlet" method="post">
-									<input class="form-wt" type="hidden" name="referenciaE" value=<%=product.getReferencia()%> required>
-								<input type="submit" class="primary-btn add-to-cart" value="Agregar a  Carro">
-								</form>	
-							<%}
-								%>
-							<!-- /Product Single -->
-							
-							
-						
+
+							</div>
+						</div>
 					</div>
-				</div>
-				</div>
+					<%
+						}
+					%>
 				</div>
 				<br></br>
-				<%}
+				<%
+					}
 				%>
 				
 				<!-- /Product Slick -->
