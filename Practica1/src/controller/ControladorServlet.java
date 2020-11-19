@@ -1,5 +1,6 @@
 package controller;
 
+import java.util.List;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -21,9 +22,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.http.HttpSession;
-
 import javax.annotation.Resource;
 import javax.imageio.ImageIO;
+import javax.jms.ConnectionFactory;
+import javax.jms.Destination;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -35,6 +37,7 @@ import javax.transaction.UserTransaction;
 
 import model.Carro;
 import model.Compra;
+import model.Mensaje;
 import model.Producto;
 import model.Usuario;
 
@@ -44,16 +47,19 @@ import model.Usuario;
 @WebServlet("/ControladorServlet")
 public class ControladorServlet extends HttpServlet {
 	boolean login = false;
-	@PersistenceContext (unitName="Practica1")
-	EntityManager em;
-	
-	@Resource
-	UserTransaction ut;
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
+	
+	
+	
+	
+	
+	
+	
+	/*@Resource(name="jms/practica")
+	private ConnectionFactory cf;
+	@Resource(name="jms/queuepractica")
+	private Destination d;*/
 
 	ServletContext miServletContex = null;
 
@@ -61,11 +67,25 @@ public class ControladorServlet extends HttpServlet {
 	HttpSession sesion;
 
 	public void init() {
+		InitialContext ic;
+		try {
+			ic = new InitialContext();
+			ConnectionFactory cf = (ConnectionFactory) ic.lookup("jms/practica");
+			Destination d = (Destination) ic.lookup("jms/queueAsinpractica ");
+			Listener listener = new Listener(cf,d);
+			listener.read();
+		} catch (NamingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+		
 
 		/*
 		 * ServletContext miServletContex = getServletContext();
 		 * 
-		 * // Cogemos el par�metro de inicializaci�n
+		 * //Cogemos el par�metro de inicializaci�n
 		 * miServletContex.setAttribute("autor",
 		 * miServletContex.getInitParameter("autor"));
 		 */
@@ -194,21 +214,20 @@ public class ControladorServlet extends HttpServlet {
 		} else if (path.compareTo("/compras_realizadas.html") == 0) {
 			try {
 				Context ctx = new InitialContext();
-				System.out.println("iniciamos context");
+
 				DataSource ds = (DataSource) ctx.lookup("jdbc/practica");
-				System.out.println("ds");
+
 				Connection con = ds.getConnection();
 				ArrayList<Compra> compras = new ArrayList<Compra>();
 				if (con != null) {
 
-					System.out.println("CONEXION CORRECTA");
 					Statement st = con.createStatement();
 					Usuario user = (Usuario) sesion.getAttribute("usuario");
 					String script = "SELECT * FROM compra where comprador like  '" + user.getEmail() + "'";
 					ResultSet rs = st.executeQuery(script);
 
 					while (rs.next()) {
-						System.out.println("Recorremos");
+
 						Compra _producto = new Compra();
 						_producto.setReferencia(rs.getInt(1));
 						_producto.setComprador(rs.getString(2));
@@ -228,10 +247,10 @@ public class ControladorServlet extends HttpServlet {
 					rs.close();
 					st.close();
 					con.close();
-					System.out.println("Connection close");
+
 					req.getRequestDispatcher("compras_realizadas.jsp").forward(req, resp);
 				} else {
-					System.out.println("CONEXION iNCORRECTA");
+
 					req.getRequestDispatcher("error.jsp").forward(req, resp);
 				}
 
@@ -284,7 +303,7 @@ public class ControladorServlet extends HttpServlet {
 
 					req.getRequestDispatcher("cuenta-productos.jsp").forward(req, resp);
 				} else {
-					System.out.println("CONEXION iNCORRECTA");
+
 					req.getRequestDispatcher("registrar_producto-incorrecto.jsp").forward(req, resp);
 				}
 
@@ -300,8 +319,28 @@ public class ControladorServlet extends HttpServlet {
 		} else if (path.compareTo("/busqueda-avanzada.html") == 0) {
 			req.getRequestDispatcher("busqueda-avanzada.jsp").forward(req, resp);
 		}
+		else if (path.compareTo("/mensajes.html") == 0) {
+			
+			try {
+				InitialContext ic = new InitialContext();
+				ConnectionFactory cf = (ConnectionFactory) ic.lookup("jms/practica");
+				Destination d = (Destination) ic.lookup("jms/queuepractica");
+				ReadJMS readJMS = new ReadJMS(cf,d);
+				List<Mensaje> contenidos = readJMS.read();
+				
+				req.setAttribute("mensaje",contenidos);
+				
+			} catch (NamingException e) {
+				e.printStackTrace();
+			}
+			
+			
+			req.getRequestDispatcher("mensajes.jsp").forward(req, resp);
+		}
 
 	}
+
+
 
 	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
@@ -311,23 +350,21 @@ public class ControladorServlet extends HttpServlet {
 		if (path.compareTo("/analizar-login.html") == 0) {
 			try {
 				Context ctx = new InitialContext();
-				System.out.println("iniciamos context");
+
 				DataSource ds = (DataSource) ctx.lookup("jdbc/practica");
-				System.out.println("ds");
+
 				Connection con = ds.getConnection();
 				if (con != null) {
-					System.out.println("CONEXION CORRECTA");
+
 					Statement st = con.createStatement();
 
 					ResultSet rs = st.executeQuery("Select * from usuario");
-					System.out.println("rs");
+
 					int usuario_existe = 0;
 					String user = "";
 					Usuario _usuario = new Usuario();
 					while (rs.next()) {
 
-						System.out.println(rs.getString(1));
-						System.out.println(rs.getString(5));
 						if ((rs.getString(1).compareTo(req.getParameter("email")) == 0
 								&& rs.getString(5).compareTo(req.getParameter("contrasenia")) == 0)) {
 							usuario_existe = 1;
@@ -344,8 +381,6 @@ public class ControladorServlet extends HttpServlet {
 					rs.close();
 					st.close();
 
-					System.out.println("Connection close");
-					System.out.println("User" + usuario_existe);
 					if (usuario_existe == 1) {
 						login = true;
 						sesion.setAttribute("sesion_iniciada", login);
@@ -373,19 +408,13 @@ public class ControladorServlet extends HttpServlet {
 						st.close();
 						con.close();
 
-						for (int x = 0; x < carrito.size(); x++) {
-							Carro car = carrito.get(x);
-							System.out.println(car.getPrecio());
-						}
-						System.out.println("Connection close");
-
 						req.getRequestDispatcher("index.jsp").forward(req, resp);
 					} else {
 						req.getRequestDispatcher("login-incorrecto.jsp").forward(req, resp);
 					}
 
 				} else {
-					System.out.println("CONEXION inCORRECTA");
+
 					req.getRequestDispatcher("login-incorrecto.jsp").forward(req, resp);
 				}
 
@@ -395,21 +424,20 @@ public class ControladorServlet extends HttpServlet {
 				req.getRequestDispatcher("log-incorrecto.jsp").forward(req, resp);
 			} // complete
 			catch (NamingException e) {
-				System.out.println("Error al 2");
+
 				req.getRequestDispatcher("login-incorrecto.jsp").forward(req, resp);
 			}
 
 		} else if (path.compareTo("/analizar-registro.html") == 0) {
-			System.out.println("entramos al path");
 
 			try {
 				Context ctx = new InitialContext();
-				System.out.println("iniciamos context");
+
 				DataSource ds = (DataSource) ctx.lookup("jdbc/practica");
-				System.out.println("ds");
+
 				Connection con = ds.getConnection();
 				if (con != null) {
-					System.out.println("CONEXION CORRECTA");
+
 					Statement st = con.createStatement();
 					if ((req.getParameter("rol").compareTo("Admin") == 0
 							&& req.getParameter("contraAdmin").compareTo("2020") == 0)
@@ -427,7 +455,7 @@ public class ControladorServlet extends HttpServlet {
 						ps.close();
 						st.close();
 						con.close();
-						System.out.println("Connection close");
+
 						if (correcto == 1)
 							req.getRequestDispatcher("registro-correcto.jsp").forward(req, resp);
 						else {
@@ -438,7 +466,7 @@ public class ControladorServlet extends HttpServlet {
 					}
 
 				} else {
-					System.out.println("CONEXION inCORRECTA");
+
 					req.getRequestDispatcher("registro-incorrecto.jsp").forward(req, resp);
 				}
 
@@ -454,14 +482,13 @@ public class ControladorServlet extends HttpServlet {
 		} else if (path.compareTo("/modificar_usuario-correcto.html") == 0) {
 			try {
 				Context ctx = new InitialContext();
-				System.out.println("iniciamos context");
+
 				DataSource ds = (DataSource) ctx.lookup("jdbc/practica");
-				System.out.println("ds");
+
 				Connection con = ds.getConnection();
 				int update = 0;
 				if (con != null) {
 
-					System.out.println("CONEXION CORRECTA");
 					Statement st = con.createStatement();
 					Usuario user = (Usuario) sesion.getAttribute("usuario");
 					if (user.getRol().compareTo("Admin") == 0
@@ -508,7 +535,7 @@ public class ControladorServlet extends HttpServlet {
 					}
 
 				} else {
-					System.out.println("CONEXION INCORRECTA");
+
 					req.getRequestDispatcher("modificar-usuario-incorrecto.jsp").forward(req, resp);
 				}
 
@@ -524,22 +551,21 @@ public class ControladorServlet extends HttpServlet {
 		} else if (path.compareTo("/eliminar-usuario.html") == 0) {
 			try {
 				Context ctx = new InitialContext();
-				
+
 				DataSource ds = (DataSource) ctx.lookup("jdbc/practica");
-				
+
 				Connection con = ds.getConnection();
 				if (con != null) {
-					
+
 					Statement st = con.createStatement();
 					Usuario user = (Usuario) sesion.getAttribute("usuario");
-					
+
 					if (user.getEmail().compareTo(req.getParameter("email")) == 0) {
 						String script = "DELETE FROM usuario where email like '" + req.getParameter("email") + "'";
 
 						st.executeUpdate(script);
 						st.close();
 
-						
 						if (user.getRol().compareTo("Vendedor") == 0) {
 							st = con.createStatement();
 							script = "DELETE FROM producto where email like '" + req.getParameter("email") + "'";
@@ -547,7 +573,7 @@ public class ControladorServlet extends HttpServlet {
 							st.executeUpdate(script);
 							st.close();
 						}
-						
+
 						Usuario _usuario = new Usuario();
 						login = false;
 						_usuario.setRol("");
@@ -559,9 +585,9 @@ public class ControladorServlet extends HttpServlet {
 					} else {
 						req.getRequestDispatcher("eliminar-usuario-incorrecto.jsp").forward(req, resp);
 					}
-					
+
 				} else {
-					System.out.println("CONEXION INCORRECTA");
+
 					req.getRequestDispatcher("eliminar-usuario-incorrecto.jsp").forward(req, resp);
 				}
 
@@ -574,16 +600,16 @@ public class ControladorServlet extends HttpServlet {
 				req.getRequestDispatcher("eliminar-usuario-incorrecto.jsp").forward(req, resp);
 			}
 		} else if (path.compareTo("/agregar_producto.html") == 0) {
-			System.out.println("entramos al path");
+
 			int referencia = 0;
 			try {
 				Context ctx = new InitialContext();
-				System.out.println("iniciamos context");
+
 				DataSource ds = (DataSource) ctx.lookup("jdbc/practica");
-				System.out.println("ds");
+
 				Connection con = ds.getConnection();
 				if (con != null) {
-					System.out.println("CONEXION CORRECTA");
+
 					Statement st = con.createStatement();
 					ResultSet rs = st.executeQuery("Select referencia from producto");
 
@@ -612,7 +638,7 @@ public class ControladorServlet extends HttpServlet {
 					ps.close();
 					st.close();
 					con.close();
-					System.out.println("Connection close");
+
 					if (correcto == 1)
 						req.getRequestDispatcher("registrar_producto-correctamente.jsp").forward(req, resp);
 					else {
@@ -620,7 +646,7 @@ public class ControladorServlet extends HttpServlet {
 					}
 
 				} else {
-					System.out.println("CONEXION iNCORRECTA");
+
 					req.getRequestDispatcher("registrar_podructo-incorrecto.jsp").forward(req, resp);
 				}
 
@@ -650,7 +676,7 @@ public class ControladorServlet extends HttpServlet {
 					int correcto = st.executeUpdate(script);
 					st.close();
 					con.close();
-					System.out.println("Connection close");
+
 					if (correcto == 1) {
 
 						req.getRequestDispatcher("producto-eliminar-correctamente.jsp").forward(req, resp);
@@ -659,7 +685,7 @@ public class ControladorServlet extends HttpServlet {
 					}
 
 				} else {
-					System.out.println("CONEXION INCORRECTA");
+
 					req.getRequestDispatcher("producto-eliminar-incorrectamente.jsp").forward(req, resp);
 				}
 
@@ -674,13 +700,13 @@ public class ControladorServlet extends HttpServlet {
 		} else if (path.compareTo("/modificar-producto.html") == 0) {
 			try {
 				Context ctx = new InitialContext();
-				System.out.println("iniciamos context");
+
 				DataSource ds = (DataSource) ctx.lookup("jdbc/practica");
-				System.out.println("ds");
+
 				Connection con = ds.getConnection();
 
 				if (con != null) {
-					System.out.println("CONEXION CORRECTA");
+
 					Statement st = con.createStatement();
 
 					String script = "UPDATE producto SET nombre = ?, descripcion=?, categoria=?, imagen=?, precio=? WHERE referencia = ? and vendedor=?";
@@ -700,12 +726,11 @@ public class ControladorServlet extends HttpServlet {
 					ps.close();
 					st.close();
 					con.close();
-					System.out.println("Connection close");
 
 					req.getRequestDispatcher("modificar_producto-correcto.jsp").forward(req, resp);
 
 				} else {
-					System.out.println("CONEXION INCORRECTA");
+
 					req.getRequestDispatcher("modificar_producto-incorrecto.jsp").forward(req, resp);
 				}
 
@@ -721,13 +746,12 @@ public class ControladorServlet extends HttpServlet {
 		} else if (path.compareTo("/producto.html") == 0) {
 			try {
 				Context ctx = new InitialContext();
-				System.out.println("iniciamos context");
+
 				DataSource ds = (DataSource) ctx.lookup("jdbc/practica");
-				System.out.println("ds");
+
 				Connection con = ds.getConnection();
 				if (con != null) {
 
-					System.out.println("CONEXION CORRECTA");
 					Statement st = con.createStatement();
 					String script = "SELECT * FROM producto where referencia like '" + req.getParameter("referenciaM")
 							+ "' ";
@@ -755,10 +779,10 @@ public class ControladorServlet extends HttpServlet {
 					rs.close();
 					st.close();
 					con.close();
-					System.out.println("Connection close");
+
 					req.getRequestDispatcher("producto.jsp").forward(req, resp);
 				} else {
-					System.out.println("CONEXION iNCORRECTA");
+
 					req.getRequestDispatcher("error.jsp").forward(req, resp);
 				}
 
@@ -774,13 +798,12 @@ public class ControladorServlet extends HttpServlet {
 		} else if (path.compareTo("/producto_index.html") == 0) {
 			try {
 				Context ctx = new InitialContext();
-				System.out.println("iniciamos context");
+
 				DataSource ds = (DataSource) ctx.lookup("jdbc/practica");
-				System.out.println("ds");
+
 				Connection con = ds.getConnection();
 				if (con != null) {
 
-					System.out.println("CONEXION CORRECTA");
 					Statement st = con.createStatement();
 					String script = "SELECT * FROM producto where referencia like '" + req.getParameter("referenciaM")
 							+ "' ";
@@ -806,10 +829,10 @@ public class ControladorServlet extends HttpServlet {
 					rs.close();
 					st.close();
 					con.close();
-					System.out.println("Connection close");
+
 					req.getRequestDispatcher("producto-index.jsp").forward(req, resp);
 				} else {
-					System.out.println("CONEXION iNCORRECTA");
+
 					req.getRequestDispatcher("error.jsp").forward(req, resp);
 				}
 
@@ -832,7 +855,7 @@ public class ControladorServlet extends HttpServlet {
 				Connection con = ds.getConnection();
 				Producto _producto = new Producto();
 				if (con != null) {
-					System.out.println("CONEXION CORRECTA");
+
 					Statement st = con.createStatement();
 					ResultSet rs = st.executeQuery(
 							"SELECT * FROM producto where referencia like '" + req.getParameter("referenciaE") + "' ");
@@ -954,15 +977,10 @@ public class ControladorServlet extends HttpServlet {
 					st.close();
 					con.close();
 
-					for (int x = 0; x < carrito.size(); x++) {
-						Carro car = carrito.get(x);
-						System.out.println(car.getPrecio());
-					}
-					System.out.println("Connection close");
 					req.getRequestDispatcher("index.jsp").forward(req, resp);
 
 				} else {
-					System.out.println("CONEXION iNCORRECTA");
+
 					req.getRequestDispatcher("index.jsp").forward(req, resp);
 				}
 
@@ -984,7 +1002,7 @@ public class ControladorServlet extends HttpServlet {
 				Connection con = ds.getConnection();
 				ArrayList<Producto> producto_total = new ArrayList<Producto>();
 				if (con != null) {
-					System.out.println("CONEXION CORRECTA");
+
 					Statement st = con.createStatement();
 					ResultSet rs = st.executeQuery("SELECT * FROM producto where nombre like '%"
 							+ req.getParameter("name") + "%' or descripcion like '%" + req.getParameter("name") + "%'");
@@ -1013,7 +1031,7 @@ public class ControladorServlet extends HttpServlet {
 					req.getRequestDispatcher("res-busqueda.jsp").forward(req, resp);
 
 				} else {
-					System.out.println("CONEXION iNCORRECTA");
+
 					req.getRequestDispatcher("index.jsp").forward(req, resp);
 				}
 
@@ -1048,13 +1066,13 @@ public class ControladorServlet extends HttpServlet {
 						cont++;
 					}
 					if (req.getParameter("descripcionProd").compareTo("") != 0) {
-						System.out.println(req.getParameter("descripcionProd"));
+
 						if (cont > 0)
 							descripcion = " and descripcion like '%" + req.getParameter("descripcionProd") + "%'";
 						else
 							descripcion = " descripcion like '%" + req.getParameter("descripcionProd") + "%'";
 						cont++;
-						System.out.println(descripcion);
+
 					}
 					if (req.getParameter("precioProd").compareTo("") != 0) {
 						if (cont > 0)
@@ -1105,7 +1123,7 @@ public class ControladorServlet extends HttpServlet {
 					req.getRequestDispatcher("res-busqueda.jsp").forward(req, resp);
 
 				} else {
-					System.out.println("CONEXION iNCORRECTA");
+
 					req.getRequestDispatcher("index.jsp").forward(req, resp);
 				}
 
@@ -1163,7 +1181,7 @@ public class ControladorServlet extends HttpServlet {
 			}
 
 		} else if (path.compareTo("/productos_admin.html") == 0) {
-			System.out.println("prodcutos admin");
+
 			try {
 				Context ctx = new InitialContext();
 
@@ -1199,10 +1217,10 @@ public class ControladorServlet extends HttpServlet {
 					rs.close();
 					st.close();
 					con.close();
-					System.out.println("Connection close");
+
 					req.getRequestDispatcher("cuenta-productos.jsp").forward(req, resp);
 				} else {
-					System.out.println("CONEXION iNCORRECTA");
+
 					req.getRequestDispatcher("error.jsp").forward(req, resp);
 				}
 
@@ -1251,6 +1269,25 @@ public class ControladorServlet extends HttpServlet {
 			catch (NamingException e) {
 				req.getRequestDispatcher("error.jsp").forward(req, resp);
 			}
+		} else if (path.compareTo("/chat.html") == 0)
+
+		{
+			req.setAttribute("destino", req.getParameter("referenciaE"));
+			req.getRequestDispatcher("chat.jsp").forward(req, resp);
+
+		} else if (path.compareTo("/enviar_mensaje.html") == 0)
+
+		{
+			
+			String destino = req.getParameter("referenciaE");
+			String mensaje = req.getParameter("mensaje");
+			Usuario user = (Usuario) sesion.getAttribute("usuario");
+			Mensaje mensajeobj = new Mensaje (user.getEmail(),destino,mensaje);
+			SendJMS sendJMS = new SendJMS();
+			sendJMS.Send(mensajeobj);
+			req.setAttribute("men", mensaje);
+			req.getRequestDispatcher("mensaje_enviado.jsp").forward(req, resp);
+
 		}
 
 	}

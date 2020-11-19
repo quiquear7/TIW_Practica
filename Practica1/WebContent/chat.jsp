@@ -228,12 +228,8 @@
 								if (login == true && usu.getRol().compareTo("Vendedor") == 0) {
 							%> <strong><a href="add_producto.html">Nuevo
 									Producto</a></strong> <%
- 							}
- 							%> <%
- 							if (login == true) {
- 							%><strong><a href="mensajes.html">Mensajes</a></strong> <%
- 							}
- 							%>
+ 	}
+ %>
 
 						</li>
 
@@ -263,17 +259,17 @@
 							if (login == true) {
 							if (usu.getRol().compareTo("Admin") != 0) {
 						%>
-						<h2 class="title">Productos</h2>
+						<h2 class="title">CHAT</h2>
 						<%
 							} else {
 						%>
-						<h2 class="title">Opciones Administrador</h2>
+						<h2 class="title">CHAT</h2>
 
 						<%
 							}
 						} else {
 						%>
-						<h2 class="title">Productos</h2>
+						<h2 class="title">CHAT</h2>
 						<%
 							}
 						%>
@@ -285,126 +281,28 @@
 					</div>
 				</div>
 				<!-- /section-title -->
+				<div class="chatbox" id="chatbox">
+				
+				
+				
+				
+				</div>
+
+				<!-- Produc Slick -->
+				<form action="enviar_mensaje.html" name="order" id="order"
+					method="post">
+					<input class="form-wt" type="hidden" name="referenciaE"
+												value=<%=request.getParameter("destino")%> required>
+					<label for="email">Mensaje:</label><br> <input class="form-wt"
+						type="text" name="mensaje" value="" required><br> <br></br>
+					<input type="submit" class="primary-btn add-to-cart" value="Enviar">
+				</form>
+
 
 
 				<!-- Produc Slick -->
+				<div class="row"></div>
 
-
-				<%
-					if (login == false || usu.getRol().compareTo("Admin") != 0) {
-
-					ArrayList<Producto> p = (ArrayList<Producto>) session.getAttribute("productos");
-					int cont = 0;
-
-					for (int x = 0; x < p.size() / 2; x++) {
-				%>
-
-				<!-- Produc Slick -->
-				<div class="row">
-
-					<%
-						int res = p.size() - cont;
-					if (res >= 2)
-						res = 3;
-					for (int j = 0; j < res; j++) {
-						Producto product = p.get(cont);
-						byte[] photo = product.getImagen();
-						String bphoto = Base64.getEncoder().encodeToString(photo);
-						cont++;
-					%>
-
-
-					<div class="col-md-9 col-sm-6 col-xs-6">
-						<div class="row">
-
-							<!-- Product Single -->
-
-							<div class="product product-single">
-								<div class="product-thumb">
-
-									<img alt="" style="width: 130px; height: 140px;"
-										src="data:image/png;base64,<%=bphoto%>" />
-
-								</div>
-								<div class="product-body">
-									<h3 class="product-price"><%=product.getPrecio()%>$
-									</h3>
-
-									<h2 class="product-name">
-										<%=product.getTitulo()%></h2>
-									<div class="product-btns">
-										<form action="producto_index.html" action="ControladorServlet"
-											method="post">
-											<input class="form-wt" type="hidden" name="referenciaM"
-												value=<%=product.getReferencia()%> required> <input
-												type="submit" class="primary-btn add-to-cart"
-												value="Mas  Informacion">
-										</form>
-										<%
-											if (login == true && usu.getRol().compareTo("Cliente") == 0) {
-										%>
-										<form action="agregar_carro.html" action="ControladorServlet"
-											method="post">
-											<input class="form-wt" type="hidden" name="referenciaE"
-												value=<%=product.getReferencia()%> required> <input
-												type="submit" class="primary-btn add-to-cart"
-												value="Agregar a  Carro">
-										</form>
-										<form action="chat.html" action="ControladorServlet"
-											method="post">
-											<input class="form-wt" type="hidden" name="referenciaE"
-												value=<%=product.getUser()%> required> <input
-												type="submit" class="primary-btn add-to-cart"
-												value="Enviar Mensaje">
-										</form>
-										<%
-											}
-										%>
-									</div>
-
-								</div>
-
-							</div>
-						</div>
-					</div>
-					<%
-						}
-					%>
-				</div>
-				<br></br>
-				<%
-					}
-				} else if (login == true && usu.getRol().compareTo("Admin") == 0) {
-				%>
-				<div class="row">
-					<div class="col-md-9 col-sm-6 col-xs-6">
-						<div class="row">
-
-							<!-- Product Single -->
-
-							<form action="usuarios_admin.html" action="ControladorServlet"
-								method="post">
-								<input type="submit" class="primary-btn add-to-cart"
-									value="Mostrar     Usuarios">
-							</form>
-							<br></br>
-							<form action="productos_admin.html" action="ControladorServlet"
-								method="post">
-								<input type="submit" class="primary-btn add-to-cart"
-									value="Mostrar Productos">
-							</form>
-
-
-
-						</div>
-					</div>
-				</div>
-				<br></br>
-				<%
-					}
-				%>
-
-				<!-- /Product Slick -->
 			</div>
 			<!-- /row -->
 
