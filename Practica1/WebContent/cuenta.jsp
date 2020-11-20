@@ -4,6 +4,7 @@
 <%@page import="model.Producto"%>
 <%@page import="model.Carro"%>
 <%@page import="model.Compra"%>
+<%@page import="model.Mensaje"%>
 <%@page import="java.sql.ResultSet" import="javax.naming.InitialContext"
 	import="javax.naming.Context" import=" java.io.OutputStream"
 	import="java.sql.Statement" import=" java.util.Base64"
@@ -69,11 +70,18 @@
 					<!-- /Logo -->
 
 					<%
-						Boolean login = (Boolean) session.getAttribute("sesion_iniciada");
+					Boolean login = (Boolean) session.getAttribute("sesion_iniciada");
 
 					Usuario usu = (Usuario) session.getAttribute("usuario");
-
-					if (login == true && usu.getRol().compareTo("Cliente") == 0) {
+					
+					if(login==null){
+						login = false;
+					}
+					if(usu==null){
+						login = false;
+					}
+					if (login == true) {
+						if(usu.getRol().compareTo("Cliente") == 0){
 					%>
 					<!-- Search -->
 					<div class="header-search">
@@ -89,7 +97,7 @@
 					<a href="busqueda-avanzada.html">Busqueda Avanzada</a>
 
 					<%
-						}
+					}}
 					%>
 					<!-- /Search -->
 				</div>
@@ -145,8 +153,8 @@
 
 						<!-- Cart -->
 						<%
-							if (login == true && usu.getRol().compareTo("Cliente") == 0) {
-
+							if (login == true ) {
+								if(usu.getRol().compareTo("Cliente") == 0){
 							ArrayList<Carro> c = (ArrayList<Carro>) session.getAttribute("carro");
 							float total = 0;
 
@@ -221,14 +229,15 @@
 
 						<%
 							}
-						}
+						}}
 						%>
 						<li class="header-account dropdown default-dropdown">
 							<%
-								if (login == true && usu.getRol().compareTo("Vendedor") == 0) {
+								if (login == true) {
+									if (usu.getRol().compareTo("Vendedor") == 0) {
 							%> <strong><a href="add_producto.html">Nuevo
 									Producto</a></strong> <%
- 							}
+ 							}}
  							%> <%
  							if (login == true) {
  							%><strong><a href="mensajes.html">Mensajes</a></strong> <%
@@ -271,9 +280,10 @@
 				<!-- Produc Slick -->
 				<div class="col-md-9 col-sm-6 col-xs-6">
 				<% 
-					if(login == true && usu.getRol().compareTo("Cliente")==0){%>
+					if(login == true){
+					if(usu.getRol().compareTo("Cliente")==0){%>
 					<a href="compras_realizadas.html">Compras Realizadas</a>
-					<%}else if(login == true && usu.getRol().compareTo("Vendedor")==0){%>
+					<%}if(usu.getRol().compareTo("Vendedor")==0){%>
 					
 					<form action="cuenta-productos.html" action="ControladorServlet" method="get">
 						<input class="form-wt" type="hidden" name="referenciaM" value=<%=usu.getEmail()%> required>
@@ -282,7 +292,7 @@
 					
 					
 					
-					<%}%>
+					<%}}%>
 					<br></br>
 					<label for="email">Eliminar usuario</label><br> 
 					<form  action="eliminar-usuario.html" action="ControladorServlet" method="post">

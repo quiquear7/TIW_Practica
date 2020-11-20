@@ -70,11 +70,18 @@
 					<!-- /Logo -->
 
 					<%
-						Boolean login = (Boolean) session.getAttribute("sesion_iniciada");
+					Boolean login = (Boolean) session.getAttribute("sesion_iniciada");
 
 					Usuario usu = (Usuario) session.getAttribute("usuario");
-
-					if (login == true && usu.getRol().compareTo("Cliente") == 0) {
+					
+					if(login==null){
+						login = false;
+					}
+					if(usu==null){
+						login = false;
+					}
+					if (login == true) {
+						if(usu.getRol().compareTo("Cliente") == 0){
 					%>
 					<!-- Search -->
 					<div class="header-search">
@@ -90,7 +97,7 @@
 					<a href="busqueda-avanzada.html">Busqueda Avanzada</a>
 
 					<%
-						}
+					}}
 					%>
 					<!-- /Search -->
 				</div>
@@ -146,8 +153,8 @@
 
 						<!-- Cart -->
 						<%
-							if (login == true && usu.getRol().compareTo("Cliente") == 0) {
-
+							if (login == true ) {
+								if(usu.getRol().compareTo("Cliente") == 0){
 							ArrayList<Carro> c = (ArrayList<Carro>) session.getAttribute("carro");
 							float total = 0;
 
@@ -213,8 +220,7 @@
 										<form action="pagar.html" action="ControladorServlet"
 											method="post">
 											<input class="form-wt" type="hidden" name="referenciaC"
-												value=required> <input type="submit"
-												class="primary-btn add-to-cart" value="Pagar">
+												value=required> <input type="submit" class="primary-btn add-to-cart" value="Pagar">
 										</form>
 									</div>
 								</div>
@@ -223,19 +229,20 @@
 
 						<%
 							}
-						}
+						}}
 						%>
 						<li class="header-account dropdown default-dropdown">
 							<%
-								if (login == true && usu.getRol().compareTo("Vendedor") == 0) {
+								if (login == true) {
+									if (usu.getRol().compareTo("Vendedor") == 0) {
 							%> <strong><a href="add_producto.html">Nuevo
 									Producto</a></strong> <%
- 							}
+ 							}}
  							%> <%
  							if (login == true) {
  							%><strong><a href="mensajes.html">Mensajes</a></strong> <%
- 								}
- 								%>
+ 							}
+ 							%>
 
 						</li>
 
@@ -295,8 +302,7 @@
 						ArrayList<String> chats = new ArrayList<String>();
 						for (Mensaje v : mensaje) {
 							int correcto=0;
-							System.out.println(v.getEmisor());
-							System.out.println(v.getReceptor());
+							
 						if (v.getEmisor().compareTo(usu.getEmail()) == 0 || v.getReceptor().compareTo(usu.getEmail()) == 0) {
 					%>
 					<form action="abrir_chat.html" name="order" id="order"
@@ -307,7 +313,7 @@
 								correcto=1;
 						%>
 						<label for="apellido"><%=v.getEmisor()%></label> <input
-							class="form-wt" type="hidden" name="usuario"
+							class="form-wt" type="hidden" name="referenciaE"
 							value=<%=v.getEmisor()%> required>
 						<%
 							}
@@ -327,7 +333,7 @@
 								
 						%>
 						<input type="submit" class="primary-btn add-to-cart"
-							value="Abrir Chat">
+							value="Abrir Chat"><br></br>
 						<%correcto=0;
 							}
 						%>
@@ -336,7 +342,6 @@
 					<%
 						}
 					%>
-
 					<%
 						}
 					%>

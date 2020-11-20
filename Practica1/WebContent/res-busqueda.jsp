@@ -1,48 +1,51 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
-    pageEncoding="ISO-8859-1"%>
+	pageEncoding="ISO-8859-1"%>
 <%@page import="model.Usuario"%>
 <%@page import="model.Producto"%>
 <%@page import="model.Carro"%>
-<%@page import="java.sql.ResultSet"
-        import="javax.naming.InitialContext"
-        import="javax.naming.Context"
-        import="java.sql.Statement"
-        import="javax.sql.DataSource"
-        import="java.sql.SQLException"%>
+<%@page import="model.Compra"%>
+<%@page import="model.Mensaje"%>
+<%@page import="java.sql.ResultSet" import="javax.naming.InitialContext"
+	import="javax.naming.Context" import=" java.io.OutputStream"
+	import="java.sql.Statement" import=" java.util.Base64"
+	import="javax.sql.DataSource" import="java.sql.SQLException"
+	import=" java.sql.Connection" import="java.sql.ResultSet"
+	import="java.sql.Statement"%>
 <%@page import="java.util.*"%>
 
 <!DOCTYPE html>
 <html>
 <head>
 <meta charset="utf-8">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
 
-	<title>Oyarzabal</title>
+<title>Oyarzabal</title>
 
-	<!-- Google font -->
-	<link href="https://fonts.googleapis.com/css?family=Hind:400,700" rel="stylesheet">
+<!-- Google font -->
+<link href="https://fonts.googleapis.com/css?family=Hind:400,700"
+	rel="stylesheet">
 
-	<!-- Bootstrap -->
-	<link type="text/css" rel="stylesheet" href="css/bootstrap.min.css" />
+<!-- Bootstrap -->
+<link type="text/css" rel="stylesheet" href="css/bootstrap.min.css" />
 
-	<!-- Slick -->
-	<link type="text/css" rel="stylesheet" href="css/slick.css" />
-	<link type="text/css" rel="stylesheet" href="css/slick-theme.css" />
+<!-- Slick -->
+<link type="text/css" rel="stylesheet" href="css/slick.css" />
+<link type="text/css" rel="stylesheet" href="css/slick-theme.css" />
 
-	<!-- nouislider -->
-	<link type="text/css" rel="stylesheet" href="css/nouislider.min.css" />
+<!-- nouislider -->
+<link type="text/css" rel="stylesheet" href="css/nouislider.min.css" />
 
-	<!-- Font Awesome Icon -->
-	<link rel="stylesheet" href="css/font-awesome.min.css">
+<!-- Font Awesome Icon -->
+<link rel="stylesheet" href="css/font-awesome.min.css">
 
-	<!-- Custom stlylesheet -->
-	<link type="text/css" rel="stylesheet" href="css/style.css" />
+<!-- Custom stlylesheet -->
+<link type="text/css" rel="stylesheet" href="css/style.css" />
 
-	<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
-	<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-	<!--[if lt IE 9]>
+<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+<!--[if lt IE 9]>
 		  <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 		  <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 		<![endif]-->
@@ -60,69 +63,98 @@
 				<div class="pull-left">
 					<!-- Logo -->
 					<div class="header-logo">
-						<a class="logo" href="index.html">
-							<img src="./img/logo.png" alt="">
+						<a class="logo" href="index.html"> <img src="./img/logo.png"
+							alt="">
 						</a>
 					</div>
 					<!-- /Logo -->
-					<% 
-							Object log = (Object) session.getAttribute("sesion_iniciada");
-							Boolean login = (Boolean) log;
-							System.out.println(login);
-							Object user = (Object) session.getAttribute("usuario");
-							Usuario usu = (Usuario) user;
-							
-							if(login == true && usu.getRol().compareTo("Cliente")==0){%>
+
+					<%
+					Boolean login = (Boolean) session.getAttribute("sesion_iniciada");
+
+					Usuario usu = (Usuario) session.getAttribute("usuario");
+					
+					if(login==null){
+						login = false;
+					}
+					if(usu==null){
+						login = false;
+					}
+					if (login == true) {
+						if(usu.getRol().compareTo("Cliente") == 0){
+					%>
 					<!-- Search -->
 					<div class="header-search">
-						<form action="busqueda.html" action="ControladorServlet" method="post">
-							<input class="input search-input" name="name" type="text" placeholder="Busqueda">
-							<button class="search-btn"><i class="fa fa-search"></i></button>
+						<form action="busqueda.html" action="ControladorServlet"
+							method="post">
+							<input class="input search-input" name="name" type="text"
+								placeholder="Busqueda">
+							<button class="search-btn">
+								<i class="fa fa-search"></i>
+							</button>
 						</form>
 					</div>
 					<a href="busqueda-avanzada.html">Busqueda Avanzada</a>
-					<% }%>
+
+					<%
+					}}
+					%>
 					<!-- /Search -->
 				</div>
 				<div class="pull-right">
 					<ul class="header-btns">
 						<!-- Account -->
 						<li class="header-account dropdown default-dropdown">
-							<div class="dropdown-toggle" role="button" data-toggle="dropdown" aria-expanded="true">
+							<div class="dropdown-toggle" role="button" data-toggle="dropdown"
+								aria-expanded="true">
 								<div class="header-btns-icon">
 									<i class="fa fa-user-o"></i>
 								</div>
-								<% 
-							
-							
-							if(login == false || usu.getEmail() == null){%>
-								<strong class="text-uppercase">Mi Cuenta <i class="fa fa-caret-down"></i></strong>
-								<%}else{%>
-								<strong class="text-uppercase"><%=usu.getEmail()%> <i class="fa fa-caret-down"></i></strong>
-								<%}%>
+								<%
+									if (login == false) {
+								%>
+								<strong class="text-uppercase">Mi Cuenta <i
+									class="fa fa-caret-down"></i></strong>
+								<%
+									} else {
+								%>
+								<strong class="text-uppercase"><%=usu.getEmail()%> <i
+									class="fa fa-caret-down"></i></strong>
+								<%
+									}
+								%>
 							</div>
-							
-							
+
+
 							<ul class="custom-menu">
-							<% if(login == false){%>
+								<%
+									if (login == false) {
+								%>
 								<li><a href="login.html"><i class="fa fa-unlock-alt"></i>Login</a></li>
-								<li><a href="registro.html"><i class="fa fa-user-plus"></i> Crear Cuenta</a></li>
-							<%} else{ %>
-								<li><a href="cuenta.html"><i class="fa fa-user-o"></i> Mi Cuenta</a></li>
-								<li><a href="modificar_usuario.html"><i class="fa fa-unlock-alt"></i>Modificar Usuario</a></li>
-								<li><a href="cerrar_sesion.html"><i class="fa fa-user-plus"></i> Cerrar Sesion</a></li>
-							<%}%>
-						
-								
+								<li><a href="registro.html"><i class="fa fa-user-plus"></i>
+										Crear Cuenta</a></li>
+								<%
+									} else {
+								%>
+								<li><a href="cuenta.html"><i class="fa fa-user-o"></i>
+										Mi Cuenta</a></li>
+								<li><a href="modificar_usuario.html"><i
+										class="fa fa-unlock-alt"></i>Modificar Usuario</a></li>
+								<li><a href="cerrar_sesion.html"><i
+										class="fa fa-user-plus"></i> Cerrar Sesion</a></li>
+								<%
+									}
+								%>
+
+
 							</ul>
 						</li>
 						<!-- /Account -->
 
 						<!-- Cart -->
-							<!-- Cart -->
 						<%
-							if (login == true && usu.getRol().compareTo("Cliente") == 0) {
-
+							if (login == true ) {
+								if(usu.getRol().compareTo("Cliente") == 0){
 							ArrayList<Carro> c = (ArrayList<Carro>) session.getAttribute("carro");
 							float total = 0;
 
@@ -188,8 +220,7 @@
 										<form action="pagar.html" action="ControladorServlet"
 											method="post">
 											<input class="form-wt" type="hidden" name="referenciaC"
-												value=required> <input type="submit" class="class="
-												fa fa-arrow-circle-right"" value="Pagar">
+												value=required> <input type="submit" class="primary-btn add-to-cart" value="Pagar">
 										</form>
 									</div>
 								</div>
@@ -198,28 +229,24 @@
 
 						<%
 							}
-						}
+						}}
 						%>
 						<li class="header-account dropdown default-dropdown">
-							
-							
-							 
-						
-						
-						<%if(login == true && usu.getRol().compareTo("Vendedor")==0 ){%>
-					
-							<strong><a href="add_producto.html">Nuevo Producto</a></strong>
-						
-							<%}%>
 							<%
+								if (login == true) {
+									if (usu.getRol().compareTo("Vendedor") == 0) {
+							%> <strong><a href="add_producto.html">Nuevo
+									Producto</a></strong> <%
+ 							}}
+ 							%> <%
  							if (login == true) {
  							%><strong><a href="mensajes.html">Mensajes</a></strong> <%
  							}
  							%>
-							
+
 						</li>
-						
-						
+
+
 					</ul>
 				</div>
 			</div>
@@ -289,7 +316,7 @@
 							<div class="product product-single">
 								<div class="product-thumb">
 
-									<img alt="" style="width: 150px; height: 170px;"
+									<img alt="" style="width: 160px; height: 190px;"
 										src="data:image/png;base64,<%=bphoto%>" />
 
 								</div>

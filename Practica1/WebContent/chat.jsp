@@ -4,6 +4,7 @@
 <%@page import="model.Producto"%>
 <%@page import="model.Carro"%>
 <%@page import="model.Compra"%>
+<%@page import="model.Mensaje"%>
 <%@page import="java.sql.ResultSet" import="javax.naming.InitialContext"
 	import="javax.naming.Context" import=" java.io.OutputStream"
 	import="java.sql.Statement" import=" java.util.Base64"
@@ -72,7 +73,13 @@
 					Boolean login = (Boolean) session.getAttribute("sesion_iniciada");
 
 					Usuario usu = (Usuario) session.getAttribute("usuario");
-
+					
+					if(login==null){
+						login = false;
+					}
+					if(usu==null){
+						login = false;
+					}
 					if (login == true) {
 						if(usu.getRol().compareTo("Cliente") == 0){
 					%>
@@ -213,8 +220,7 @@
 										<form action="pagar.html" action="ControladorServlet"
 											method="post">
 											<input class="form-wt" type="hidden" name="referenciaC"
-												value=required> <input type="submit"
-												class="primary-btn add-to-cart" value="Pagar">
+												value=required> <input type="submit" class="primary-btn add-to-cart" value="Pagar">
 										</form>
 									</div>
 								</div>

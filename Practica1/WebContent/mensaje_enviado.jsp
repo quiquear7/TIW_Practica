@@ -73,7 +73,13 @@
 					Boolean login = (Boolean) session.getAttribute("sesion_iniciada");
 
 					Usuario usu = (Usuario) session.getAttribute("usuario");
-
+					
+					if(login==null){
+						login = false;
+					}
+					if(usu==null){
+						login = false;
+					}
 					if (login == true) {
 						if(usu.getRol().compareTo("Cliente") == 0){
 					%>

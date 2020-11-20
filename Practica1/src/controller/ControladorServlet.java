@@ -267,8 +267,7 @@ public class ControladorServlet extends HttpServlet {
 				if (con != null) {
 
 					Statement st = con.createStatement();
-					ResultSet rs = st.executeQuery(
-							"Select * from producto where vendedor like'" + req.getParameter("referenciaM") + "'");
+					ResultSet rs = st.executeQuery("Select * from producto where vendedor like'" + req.getParameter("referenciaM") + "'");
 
 					ArrayList<Producto> productoList = new ArrayList<Producto>();
 
@@ -288,7 +287,7 @@ public class ControladorServlet extends HttpServlet {
 						productoList.add(_producto);
 					}
 
-					sesion.setAttribute("producto", productoList);
+					req.setAttribute("producto", productoList);
 					rs.close();
 					st.close();
 					con.close();
@@ -1256,11 +1255,9 @@ public class ControladorServlet extends HttpServlet {
 			catch (NamingException e) {
 				req.getRequestDispatcher("error.jsp").forward(req, resp);
 			}
-		} else if (path.compareTo("/chat.html") == 0)
-
-		{
+		} else if (path.compareTo("/chat.html") == 0) {
 			req.setAttribute("destino", req.getParameter("referenciaE"));
-			System.out.println("Destino chat : "+req.getParameter("referenciaE"));
+
 			req.getRequestDispatcher("chat.jsp").forward(req, resp);
 
 		} else if (path.compareTo("/enviar_mensaje.html") == 0)
@@ -1268,14 +1265,14 @@ public class ControladorServlet extends HttpServlet {
 		{
 
 			String destino = req.getParameter("referenciaE");
-			System.out.println("Destino: "+destino);
+
 			String mensaje = req.getParameter("mensaje");
 			Usuario user = (Usuario) sesion.getAttribute("usuario");
 			Mensaje mensajeobj = new Mensaje(user.getEmail(), destino, mensaje);
 			SendJMS sendJMS = new SendJMS();
+
 			sendJMS.Send(mensajeobj);
-			req.setAttribute("men", mensaje);
-			
+
 			try {
 				InitialContext ic = new InitialContext();
 				ConnectionFactory cf = (ConnectionFactory) ic.lookup("jms/practica");
@@ -1284,20 +1281,15 @@ public class ControladorServlet extends HttpServlet {
 				List<Mensaje> contenidos = readJMS.read();
 
 				req.setAttribute("mensaje", contenidos);
-				req.setAttribute("receptor", req.getParameter("referenciaE"));
+				req.setAttribute("receptor", destino);
 
 			} catch (NamingException e) {
 				e.printStackTrace();
 			}
-			
+
 			req.getRequestDispatcher("chat_unico.jsp").forward(req, resp);
-			
-			
-			
-			
-			
-			
-			//req.getRequestDispatcher("mensaje_enviado.jsp").forward(req, resp);
+
+			// req.getRequestDispatcher("mensaje_enviado.jsp").forward(req, resp);
 
 		} else if (path.compareTo("/pagar.html") == 0) {
 			try {
@@ -1319,7 +1311,7 @@ public class ControladorServlet extends HttpServlet {
 						Statement st2 = con.createStatement();
 						String script2 = "SELECT * FROM producto where referencia like  '" + rs.getInt(1) + "'";
 						ResultSet rs2 = st2.executeQuery(script2);
-						while(rs2.next()) {
+						while (rs2.next()) {
 							Producto _producto = new Producto();
 							_producto.setReferencia(rs2.getInt(1));
 							_producto.setTitulo(rs2.getString(2));
@@ -1356,17 +1348,16 @@ public class ControladorServlet extends HttpServlet {
 				req.getRequestDispatcher("error.jsp").forward(req, resp);
 			}
 
-		}else if (path.compareTo("/pago.html") == 0)
-		{
-			
-			/*String destino = req.getParameter("referenciaE");
-			String mensaje = req.getParameter("mensaje");
-			Usuario user = (Usuario) sesion.getAttribute("usuario");
-			Mensaje mensajeobj = new Mensaje(user.getEmail(), destino, mensaje);
-			SendJMS sendJMS = new SendJMS();
-			sendJMS.Send(mensajeobj);
-			req.setAttribute("men", mensaje);
-			req.getRequestDispatcher("mensaje_enviado.jsp").forward(req, resp);*/
+		} else if (path.compareTo("/pago.html") == 0) {
+
+			/*
+			 * String destino = req.getParameter("referenciaE"); String mensaje =
+			 * req.getParameter("mensaje"); Usuario user = (Usuario)
+			 * sesion.getAttribute("usuario"); Mensaje mensajeobj = new
+			 * Mensaje(user.getEmail(), destino, mensaje); SendJMS sendJMS = new SendJMS();
+			 * sendJMS.Send(mensajeobj); req.setAttribute("men", mensaje);
+			 * req.getRequestDispatcher("mensaje_enviado.jsp").forward(req, resp);
+			 */
 
 		} else if (path.compareTo("/abrir_chat.html") == 0) {
 
@@ -1378,12 +1369,13 @@ public class ControladorServlet extends HttpServlet {
 				List<Mensaje> contenidos = readJMS.read();
 
 				req.setAttribute("mensaje", contenidos);
+
 				req.setAttribute("receptor", req.getParameter("referenciaE"));
 
 			} catch (NamingException e) {
 				e.printStackTrace();
 			}
-			
+
 			req.getRequestDispatcher("chat_unico.jsp").forward(req, resp);
 		}
 

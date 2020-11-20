@@ -4,6 +4,7 @@
 <%@page import="model.Producto"%>
 <%@page import="model.Carro"%>
 <%@page import="model.Compra"%>
+<%@page import="model.Mensaje"%>
 <%@page import="java.sql.ResultSet" import="javax.naming.InitialContext"
 	import="javax.naming.Context" import=" java.io.OutputStream"
 	import="java.sql.Statement" import=" java.util.Base64"
@@ -72,7 +73,13 @@
 					Boolean login = (Boolean) session.getAttribute("sesion_iniciada");
 
 					Usuario usu = (Usuario) session.getAttribute("usuario");
-
+					
+					if(login==null){
+						login = false;
+					}
+					if(usu==null){
+						login = false;
+					}
 					if (login == true) {
 						if(usu.getRol().compareTo("Cliente") == 0){
 					%>
@@ -311,7 +318,7 @@
 					if (res >= 2)
 						res = 2;
 					for (int j = 0; j < res; j++) {
-						System.out.println("cont"+cont);
+						
 						Producto product = p.get(cont);
 						byte[] photo = product.getImagen();
 						String bphoto = Base64.getEncoder().encodeToString(photo);
@@ -327,7 +334,7 @@
 							<div class="product product-single" style="width:30%">
 								<div class="product-thumb">
 
-									<img alt="" style="width: 150px; height: 170px;"
+									<img alt="" style="width: 160px; height: 190px;"
 										src="data:image/png;base64,<%=bphoto%>" />
 
 								</div>
