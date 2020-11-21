@@ -328,7 +328,7 @@
 				</div>
 				<br></br>
 				<%}}
-				session.removeAttribute("producto");%>
+				%>
 			
 			<!-- /row -->
 			

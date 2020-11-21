@@ -41,16 +41,18 @@ public class Pagos implements MessageListener {
 					Comp c = (Comp) msg.getObject();
 					// System.out.println("Comprador" + c.getComprador());
 
-					procesar_compra(c);
+					procesar_compraJDBC(c);
 					vaciar_carro(c.getComprador());
-					cambiar_estado(c.getComprador());
+					cambiar_estado(c.getReferencia());
 
 				}
 			}
 
 		} catch (JMSException e) {
+			System.out.println("Erro en On MEssage 1");
 			System.err.println("JMSException in onMessage(): " + e.toString());
 		} catch (Throwable t) {
+			System.out.println("Erro en On MEssage 2");
 			System.err.println("Exception in onMessage():" + t.getMessage());
 		}
 	}
@@ -145,6 +147,7 @@ public class Pagos implements MessageListener {
 	}
 
 	public void cambiar_estado(String referencia) {
+		System.out.println("Cambiamos estado");
 		try {
 			Context ctx = new InitialContext();
 
@@ -155,12 +158,13 @@ public class Pagos implements MessageListener {
 			String[] parts = referencia.split("-");
 			for (int i = 0; i < parts.length; i++) {
 				Statement st = con.createStatement();
-				String script = "UPDATE producto SET estado='" +true+"' WHERE referencia ='" +parts[i]+"'";
+				System.out.println(parts[i]);
+				String script = "UPDATE producto SET estado='"+1+"' WHERE referencia ='" +parts[i]+"'";
 				st.executeUpdate(script);
 				st.close();
 			}
 			con.close();
-
+			System.out.println("Estado Cambiado");
 		} catch (SQLException e) {
 
 			System.out.println("Error al Insertar " + e.getMessage());

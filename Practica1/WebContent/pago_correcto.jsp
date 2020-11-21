@@ -151,86 +151,9 @@
 						</li>
 						<!-- /Account -->
 
-						<!-- Cart -->
-						<%
-							if (login == true ) {
-								if(usu.getRol().compareTo("Cliente") == 0){
-							ArrayList<Carro> c = (ArrayList<Carro>) session.getAttribute("carro");
-							float total = 0;
+						
 
-							if (c != null) {
-						%>
-
-						<li class="header-cart dropdown default-dropdown"><a
-							class="dropdown-toggle" data-toggle="dropdown"
-							aria-expanded="true">
-								<div class="header-btns-icon">
-									<i class="fa fa-shopping-cart"></i>
-								</div> <strong class="text-uppercase">Carro</strong> <br>
-
-						</a>
-							<div class="custom-menu">
-								<div id="shopping-cart">
-									<div class="shopping-cart-list">
-
-
-										<%
-											for (int x = 0; x < c.size(); x++) {
-
-											Carro carrito = c.get(x);
-
-											byte[] photo = carrito.getImagen();
-											String bphoto = Base64.getEncoder().encodeToString(photo);
-											total += carrito.getPrecio();
-										%>
-										<div class="product product-widget">
-											<div class="product-thumb">
-												<img alt=""
-													style="max-width: 70%; width: auto; height: auto;"
-													src="data:image/png;base64,<%=bphoto%>" />
-											</div>
-											<div class="product-body">
-												<h3 class="product-price"><%=carrito.getPrecio()%>$
-												</h3>
-												<h2 class="product-name"><%=carrito.getTitulo()%></h2>
-												<form action="producto_index.html"
-													action="ControladorServlet" method="post">
-													<input class="form-wt" type="hidden" name="referenciaM"
-														value=<%=carrito.getReferencia()%> required> <input
-														type="submit" class="prod_btn" value="Mas Info">
-												</form>
-											</div>
-
-
-											<form action="eliminar_carro.html"
-												action="ControladorServlet" method="post">
-												<input class="form-wt" type="hidden" name="referenciaC"
-													value=<%=carrito.getReferencia()%> required> <input
-													type="submit" class="cancel-btn" value="X">
-											</form>
-
-										</div>
-										<%
-											}
-										%>
-									</div>
-									<div class="shopping-cart-btns">
-										<span>Total a Pagar: <%=total%> $
-										</span> <br></br>
-										<form action="pagar.html" action="ControladorServlet"
-											method="post">
-											<input class="form-wt" type="hidden" name="referenciaC"
-												value=required> <input type="submit" class="primary-btn add-to-cart" value="Pagar">
-										</form>
-									</div>
-								</div>
-							</div></li>
-						<!-- /Cart -->
-
-						<%
-							}
-						}}
-						%>
+					
 						<li class="header-account dropdown default-dropdown">
 							<%
 								if (login == true) {
@@ -268,7 +191,7 @@
 				<!-- section-title -->
 				<div class="col-md-12">
 					<div class="section-title">
-						<h2 class="title">Pago Correcto</h2>
+						<h2 class="title">Pago procesado, compruebe en su cuenta si se ha realizado la compra</h2>
 						<div class="pull-right">
 							<div class="product-slick-dots-1 custom-dots"></div>
 						</div>
