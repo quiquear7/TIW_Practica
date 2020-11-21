@@ -1425,8 +1425,7 @@ public class ControladorServlet extends HttpServlet {
 					}
 					req.setAttribute("producto", productoList);
 					rs.close();
-					st.close();
-					con.close();
+					
 
 					for (int i = 0; i < usuarios.size(); i++) {
 						String referencia = "";
@@ -1454,11 +1453,27 @@ public class ControladorServlet extends HttpServlet {
 						Comp comp = new Comp(referencia, vendedor, comprador, total, direccion, tarjeta, fecha);
 						PagoJMS sendJMS = new PagoJMS();
 						sendJMS.Send(comp);
+						con = ds.getConnection();
+						st = con.createStatement();
+
+						ResultSet rs2 = st.executeQuery("SELECT * FROM carro where usuario like  '" +user.getEmail() + "'");
 
 						ArrayList<Carro> carrito = new ArrayList<Carro>();
 
+						while (rs2.next()) {
+							Carro _carro = new Carro();
+							_carro.setReferencia(rs2.getInt(1));
+							_carro.setUser(rs2.getString(2));
+							_carro.setPrecio(rs2.getFloat(3));
+							_carro.setTitulo(rs2.getString(4));
+							Blob bytesImagen = rs2.getBlob(5);
+							byte[] imgData = bytesImagen.getBytes(1, (int) bytesImagen.length());
+							_carro.setImagen(imgData);
+							carrito.add(_carro);
+						}
+						st.close();
+						con.close();
 						sesion.setAttribute("carro", carrito);
-
 					}
 
 					req.getRequestDispatcher("index.jsp").forward(req, resp);

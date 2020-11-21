@@ -13,15 +13,20 @@ import javax.jms.ObjectMessage;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.EntityTransaction;
+import javax.persistence.Persistence;
 import javax.sql.DataSource;
 
 import model.Comp;
 import model.Compra;
 
 public class Pagos implements MessageListener {
-	/*
-	 * public EntityManager em; public EntityTransaction et;
-	 */
+	
+	 private EntityManager em; 
+	 private EntityTransaction et;
+	 
 
 	public void onMessage(Message message) {
 		ObjectMessage msg = null;
@@ -34,9 +39,9 @@ public class Pagos implements MessageListener {
 					msg = (ObjectMessage) message;
 
 					Comp c = (Comp) msg.getObject();
-					System.out.println("Comprador" + c.getComprador());
+					// System.out.println("Comprador" + c.getComprador());
 
-					procesar_compraJDBC(c);
+					procesar_compra(c);
 					vaciar_carro(c.getComprador());
 					cambiar_estado(c.getComprador());
 
@@ -50,24 +55,33 @@ public class Pagos implements MessageListener {
 		}
 	}
 
-	/*
-	 * public void procesar_compra(Comp compra) {
-	 * 
-	 * EntityManagerFactory emf =
-	 * Persistence.createEntityManagerFactory("Practica1");
-	 * 
-	 * em = emf.createEntityManager(); et = em.getTransaction();
-	 * 
-	 * try { et.begin(); Compra c = new Compra();
-	 * c.setReferencia(compra.getReferencia()); c.setVendedor(compra.getVendedor());
-	 * c.setComprador(compra.getComprador()); c.setPrecio(compra.getPrecio());
-	 * c.setDireccion(compra.getDireccion()); c.setTarjeta(compra.getTarjeta());
-	 * c.setFecha(compra.getFecha()); em.persist(c);
-	 * 
-	 * et.commit(); } catch (Exception e) { if (et != null) { et.rollback(); } }
-	 * 
-	 * }
-	 */
+	public void procesar_compra(Comp compra) {
+
+		EntityManagerFactory emf = Persistence.createEntityManagerFactory("Practica1");
+
+		em = emf.createEntityManager();
+		et = em.getTransaction();
+
+		try {
+			et.begin();
+			Compra c = new Compra();
+			c.setReferencia(compra.getReferencia());
+			c.setVendedor(compra.getVendedor());
+			c.setComprador(compra.getComprador());
+			c.setPrecio(compra.getPrecio());
+			c.setDireccion(compra.getDireccion());
+			c.setTarjeta(compra.getTarjeta());
+			c.setFecha(compra.getFecha());
+			em.persist(c);
+
+			et.commit();
+		} catch (Exception e) {
+			if (et != null) {
+				et.rollback();
+			}
+		}
+
+	}
 
 	public void procesar_compraJDBC(Comp compra) {
 		System.out.println("Procesamos compra");
