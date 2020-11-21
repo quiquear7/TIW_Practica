@@ -155,13 +155,8 @@ public class Pagos implements MessageListener {
 			String[] parts = referencia.split("-");
 			for (int i = 0; i < parts.length; i++) {
 				Statement st = con.createStatement();
-				String script = "UPDATE producto SET estado=? WHERE referencia = ?";
-				PreparedStatement ps = con.prepareStatement(script);
-
-				ps.setBoolean(1, true);
-				ps.setString(2, parts[i]);
-				ps.executeUpdate();
-				ps.close();
+				String script = "UPDATE producto SET estado='" +true+"' WHERE referencia ='" +parts[i]+"'";
+				st.executeUpdate(script);
 				st.close();
 			}
 			con.close();
