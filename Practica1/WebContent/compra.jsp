@@ -337,12 +337,11 @@
 					
 					<h3>Total a pagar: <%=total%> $</h3>
 					<div>
-					<form action="pago.html" name="order" id="order" method="post">
-						<input class="form-wt" type="hidden" name="referenciaE" value=<%=request.getParameter("destino")%> required> 
+					<form action="pago.html" action="ControladorServlet" method="post"> 
 						<label for="email">Dirección:</label><br> 
 						<input class="form-wt" type="text" name="direccion" value="" required><br></br>
 						<label for="email">Tarjeta:</label><br> 
-						<input class="form-wt" type="text" name="direccion" value="" required><br></br>
+						<input class="form-wt" type="text" name="tarjeta" value="" required><br></br>
 					<input type="submit" class="primary-btn add-to-cart" value="Pagar">
 					</form>
 					

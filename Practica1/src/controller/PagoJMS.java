@@ -13,24 +13,23 @@ import javax.naming.NamingException;
 import model.Comp;
 import model.Mensaje;
 
-public class SendJMS {
-	public SendJMS() {
+public class PagoJMS {
+	public PagoJMS() {
 		super();
 		try {
 			InitialContext ic = new InitialContext();
 			cf = (ConnectionFactory) ic.lookup("jms/practica");
-			d = (Destination) ic.lookup("jms/queuepractica");
+			d = (Destination) ic.lookup("jms/queueAsinpractica");
 		} catch (NamingException e) {
 
 			e.printStackTrace();
 		}
-
 	}
 
 	private ConnectionFactory cf;
 	private Destination d;
 
-	public void Send(Mensaje mensajeobj) {
+	public void Send(Comp compraobj) {
 		Connection c = null;
 		Session s = null;
 		MessageProducer mp = null;
@@ -39,8 +38,10 @@ public class SendJMS {
 			s = c.createSession();
 			mp = s.createProducer(d);
 
-			ObjectMessage om = s.createObjectMessage(mensajeobj);
-
+			
+			
+			ObjectMessage om = s.createObjectMessage(compraobj);
+			
 			c.start();
 
 			mp.send(om);
@@ -66,5 +67,4 @@ public class SendJMS {
 		}
 
 	}
-
 }

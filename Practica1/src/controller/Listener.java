@@ -17,9 +17,12 @@ import javax.jms.Session;
 import model.Mensaje;
 
 public class Listener {
-	private ConnectionFactory cf;
-	private Destination d;
-
+	private ConnectionFactory cf = null;
+	private Destination d = null;
+	private Connection c = null;
+	private Session s = null;
+	private MessageConsumer mc = null;
+	
 	public Listener(ConnectionFactory cf, Destination d) {
 		super();
 		this.cf = cf;
@@ -27,38 +30,21 @@ public class Listener {
 	}
 
 	public void read() {
-		Connection c = null;
-		Session s = null;
-		MessageConsumer mc = null;
+		
 		try {
 			c = cf.createConnection();
-			s = c.createSession();
+			s = c.createSession(false,Session.AUTO_ACKNOWLEDGE);
 			mc = s.createConsumer(d);
-			
+
+			mc.setMessageListener(new Pagos());
 
 			c.start();
-			
-			mc.setMessageListener(new Pagos());
-			
+
+			System.out.println("Listener Iniciado");
+
 		} catch (JMSException e) {
 
-			e.printStackTrace();
-		} finally {
-			try {
-				if (mc != null)
-					mc.close();
-
-				if (s != null)
-					s.close();
-
-				if (c != null)
-					c.close();
-
-			} catch (JMSException e) {
-				e.printStackTrace();
-			}
-
+			//e.printStackTrace();
 		}
 	}
-
 }

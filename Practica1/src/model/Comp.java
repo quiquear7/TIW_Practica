@@ -1,25 +1,16 @@
 package model;
 
 import java.io.Serializable;
-
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.NamedQuery;
-
+import javax.persistence.*;
 
 /**
  * The persistent class for the compra database table.
  * 
  */
-@Entity
-@NamedQuery(name="Compra.findAll", query="SELECT c FROM Compra c")
-public class Compra implements Serializable {
+
+public class Comp implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
 	private String referencia;
 
 	private String direccion;
@@ -32,14 +23,21 @@ public class Compra implements Serializable {
 
 	private String vendedor;
 
-
 	private String comprador;
 
-	public Compra() {
+	public Comp(String referencia, String vendedor,String comprador, float precio, String tarjeta,String direccion,String fecha) {
+		super();
+		this.referencia = referencia;
+		this.direccion = direccion;
+		this.fecha = fecha;
+		this.precio = precio;
+		this.tarjeta = tarjeta;
+		this.vendedor = vendedor;
+		this.comprador = comprador;
 	}
 
 	public String getReferencia() {
-		return this.referencia;
+		return referencia;
 	}
 
 	public void setReferencia(String referencia) {
@@ -47,7 +45,7 @@ public class Compra implements Serializable {
 	}
 
 	public String getDireccion() {
-		return this.direccion;
+		return direccion;
 	}
 
 	public void setDireccion(String direccion) {
@@ -55,7 +53,7 @@ public class Compra implements Serializable {
 	}
 
 	public String getFecha() {
-		return this.fecha;
+		return fecha;
 	}
 
 	public void setFecha(String fecha) {
@@ -63,7 +61,7 @@ public class Compra implements Serializable {
 	}
 
 	public float getPrecio() {
-		return this.precio;
+		return precio;
 	}
 
 	public void setPrecio(float precio) {
@@ -71,7 +69,7 @@ public class Compra implements Serializable {
 	}
 
 	public String getTarjeta() {
-		return this.tarjeta;
+		return tarjeta;
 	}
 
 	public void setTarjeta(String tarjeta) {
@@ -79,19 +77,23 @@ public class Compra implements Serializable {
 	}
 
 	public String getVendedor() {
-		return this.vendedor;
+		return vendedor;
 	}
 
-	public void setVendedor(String usuario1) {
-		this.vendedor = usuario1;
+	public void setVendedor(String vendedor) {
+		this.vendedor = vendedor;
 	}
 
 	public String getComprador() {
-		return this.comprador;
+		return comprador;
 	}
 
-	public void setComprador(String usuario2) {
-		this.comprador = usuario2;
+	public void setComprador(String comprador) {
+		this.comprador = comprador;
+	}
+
+	public static long getSerialversionuid() {
+		return serialVersionUID;
 	}
 
 }

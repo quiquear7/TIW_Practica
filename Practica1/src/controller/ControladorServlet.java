@@ -12,7 +12,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Hashtable;
-
+import java.util.Date;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -36,6 +36,7 @@ import javax.sql.rowset.serial.SerialBlob;
 import javax.transaction.UserTransaction;
 
 import model.Carro;
+import model.Comp;
 import model.Compra;
 import model.Mensaje;
 import model.Producto;
@@ -70,7 +71,8 @@ public class ControladorServlet extends HttpServlet {
 			Listener listener = new Listener(cfa, da);
 			listener.read();
 		} catch (NamingException e) {
-			e.printStackTrace();
+			//e.printStackTrace();
+			
 		}
 
 		/*
@@ -108,19 +110,20 @@ public class ControladorServlet extends HttpServlet {
 					String script = "SELECT * FROM producto";
 					ResultSet rs = st.executeQuery(script);
 					while (rs.next()) {
-
-						Producto _producto = new Producto();
-						_producto.setReferencia(rs.getInt(1));
-						_producto.setTitulo(rs.getString(2));
-						_producto.setDescripcion(rs.getString(3));
-						_producto.setCategoria(rs.getString(4));
-						Blob bytesImagen = rs.getBlob(5);
-						byte[] imgData = bytesImagen.getBytes(1, (int) bytesImagen.length());
-						_producto.setImagen(imgData);
-						_producto.setPrecio(rs.getFloat(6));
-						_producto.setUser(rs.getString(7));
-						_producto.setEstado(rs.getBoolean(8));
-						producto_total.add(_producto);
+						if (rs.getBoolean(8) == false) {
+							Producto _producto = new Producto();
+							_producto.setReferencia(rs.getInt(1));
+							_producto.setTitulo(rs.getString(2));
+							_producto.setDescripcion(rs.getString(3));
+							_producto.setCategoria(rs.getString(4));
+							Blob bytesImagen = rs.getBlob(5);
+							byte[] imgData = bytesImagen.getBytes(1, (int) bytesImagen.length());
+							_producto.setImagen(imgData);
+							_producto.setPrecio(rs.getFloat(6));
+							_producto.setUser(rs.getString(7));
+							_producto.setEstado(rs.getBoolean(8));
+							producto_total.add(_producto);
+						}
 
 					}
 					sesion.setAttribute("sesion_iniciada", login);
@@ -165,20 +168,20 @@ public class ControladorServlet extends HttpServlet {
 					String script = "SELECT * FROM producto";
 					ResultSet rs = st.executeQuery(script);
 					while (rs.next()) {
-
-						Producto _producto = new Producto();
-						_producto.setReferencia(rs.getInt(1));
-						_producto.setTitulo(rs.getString(2));
-						_producto.setDescripcion(rs.getString(3));
-						_producto.setCategoria(rs.getString(4));
-						Blob bytesImagen = rs.getBlob(5);
-						byte[] imgData = bytesImagen.getBytes(1, (int) bytesImagen.length());
-						_producto.setImagen(imgData);
-						_producto.setPrecio(rs.getFloat(6));
-						_producto.setUser(rs.getString(7));
-						_producto.setEstado(rs.getBoolean(8));
-						producto_total.add(_producto);
-
+						if (rs.getBoolean(8) == false) {
+							Producto _producto = new Producto();
+							_producto.setReferencia(rs.getInt(1));
+							_producto.setTitulo(rs.getString(2));
+							_producto.setDescripcion(rs.getString(3));
+							_producto.setCategoria(rs.getString(4));
+							Blob bytesImagen = rs.getBlob(5);
+							byte[] imgData = bytesImagen.getBytes(1, (int) bytesImagen.length());
+							_producto.setImagen(imgData);
+							_producto.setPrecio(rs.getFloat(6));
+							_producto.setUser(rs.getString(7));
+							_producto.setEstado(rs.getBoolean(8));
+							producto_total.add(_producto);
+						}
 					}
 
 					sesion.setAttribute("productos", producto_total);
@@ -204,53 +207,67 @@ public class ControladorServlet extends HttpServlet {
 		} else if (path.compareTo("/cuenta.html") == 0) {
 			req.getRequestDispatcher("cuenta.jsp").forward(req, resp);
 		} else if (path.compareTo("/compras_realizadas.html") == 0) {
+
 			try {
+
 				Context ctx = new InitialContext();
-
 				DataSource ds = (DataSource) ctx.lookup("jdbc/practica");
-
 				Connection con = ds.getConnection();
-				ArrayList<Compra> compras = new ArrayList<Compra>();
-				if (con != null) {
+				ArrayList<Producto> compras = new ArrayList<Producto>();
 
-					Statement st = con.createStatement();
-					Usuario user = (Usuario) sesion.getAttribute("usuario");
-					String script = "SELECT * FROM compra where comprador like  '" + user.getEmail() + "'";
-					ResultSet rs = st.executeQuery(script);
+				Statement st = con.createStatement();
+				Usuario user = (Usuario) sesion.getAttribute("usuario");
+				
+				String script = "SELECT * FROM compra where comprador like '"+user.getEmail()+"'";
+				
+				ResultSet rs = st.executeQuery(script);
+				
+				
+				
+				
+				while (rs.next()) {
+					String[] parts =  rs.getString(1).split("-");
+					for (int i = 0; i < parts.length; i++) {
+						Statement st2 = con.createStatement();
+						String script2 = "SELECT * FROM producto where referencia like '" + parts[i] + "'";
+						ResultSet rs2 = st2.executeQuery(script2);
+						while (rs2.next()) {
+							if (rs2.getBoolean(8) == true) {
+								Producto _producto = new Producto();
+								_producto.setReferencia(Integer.parseInt(parts[i]));
+								_producto.setTitulo(rs2.getString(2));
+								_producto.setDescripcion(rs2.getString(3));
+								_producto.setCategoria(rs2.getString(4));
+								Blob bytesImagen = rs2.getBlob(5);
+								byte[] imgData = bytesImagen.getBytes(1, (int) bytesImagen.length());
+								_producto.setImagen(imgData);
+								_producto.setPrecio(rs2.getFloat(6));
+								_producto.setUser(rs2.getString(7));
+								_producto.setEstado(rs2.getBoolean(8));
+								compras.add(_producto);
+							}
 
-					while (rs.next()) {
+						}
 
-						Compra _producto = new Compra();
-						_producto.setReferencia(rs.getInt(1));
-						_producto.setComprador(rs.getString(2));
-						_producto.setVendedor(rs.getString(3));
-						_producto.setPrecio(rs.getFloat(4));
-						_producto.setDireccion(rs.getString(5));
-						_producto.setFecha(rs.getString(6));
-						_producto.setReferencia_compra(rs.getInt(7));
-						_producto.setTitulo(rs.getString(8));
-						Blob bytesImagen = rs.getBlob(9);
-						byte[] imgData = bytesImagen.getBytes(1, (int) bytesImagen.length());
-						_producto.setImagen(imgData);
-						compras.add(_producto);
+						rs2.close();
+						st2.close();
+
 					}
 
-					sesion.setAttribute("compras", compras);
-					rs.close();
-					st.close();
-					con.close();
-
-					req.getRequestDispatcher("compras_realizadas.jsp").forward(req, resp);
-				} else {
-
-					req.getRequestDispatcher("error.jsp").forward(req, resp);
 				}
+
+				req.setAttribute("compras", compras);
+				rs.close();
+				st.close();
+				con.close();
+
+				req.getRequestDispatcher("compras_realizadas.jsp").forward(req, resp);
 
 			} catch (SQLException e) {
 
 				System.out.println("Error al Insertar " + e.getMessage());
 				req.getRequestDispatcher("error.jsp").forward(req, resp);
-			} // complete
+			} // complete catch
 			catch (NamingException e) {
 				req.getRequestDispatcher("error.jsp").forward(req, resp);
 			}
@@ -267,7 +284,8 @@ public class ControladorServlet extends HttpServlet {
 				if (con != null) {
 
 					Statement st = con.createStatement();
-					ResultSet rs = st.executeQuery("Select * from producto where vendedor like'" + req.getParameter("referenciaM") + "'");
+					ResultSet rs = st.executeQuery(
+							"Select * from producto where vendedor like'" + req.getParameter("referenciaM") + "'");
 
 					ArrayList<Producto> productoList = new ArrayList<Producto>();
 
@@ -799,18 +817,21 @@ public class ControladorServlet extends HttpServlet {
 					ArrayList<Producto> productoList = new ArrayList<Producto>();
 
 					while (rs.next()) {
-						Producto _producto = new Producto();
-						_producto.setReferencia(rs.getInt(1));
-						_producto.setTitulo(rs.getString(2));
-						_producto.setDescripcion(rs.getString(3));
-						_producto.setCategoria(rs.getString(4));
-						Blob bytesImagen = rs.getBlob(5);
-						byte[] imgData = bytesImagen.getBytes(1, (int) bytesImagen.length());
-						_producto.setImagen(imgData);
-						_producto.setPrecio(rs.getFloat(6));
-						_producto.setUser(rs.getString(7));
-						_producto.setEstado(rs.getBoolean(8));
-						productoList.add(_producto);
+						if (rs.getBoolean(8) == false) {
+							Producto _producto = new Producto();
+							_producto.setReferencia(rs.getInt(1));
+							_producto.setTitulo(rs.getString(2));
+							_producto.setDescripcion(rs.getString(3));
+							_producto.setCategoria(rs.getString(4));
+							Blob bytesImagen = rs.getBlob(5);
+							byte[] imgData = bytesImagen.getBytes(1, (int) bytesImagen.length());
+							_producto.setImagen(imgData);
+							_producto.setPrecio(rs.getFloat(6));
+							_producto.setUser(rs.getString(7));
+							_producto.setEstado(rs.getBoolean(8));
+							productoList.add(_producto);
+						}
+
 					}
 					sesion.setAttribute("producto_part", productoList);
 					rs.close();
@@ -994,18 +1015,21 @@ public class ControladorServlet extends HttpServlet {
 							+ req.getParameter("name") + "%' or descripcion like '%" + req.getParameter("name") + "%'");
 
 					while (rs.next()) {
-						Producto _producto = new Producto();
-						_producto.setReferencia(rs.getInt(1));
-						_producto.setTitulo(rs.getString(2));
-						_producto.setDescripcion(rs.getString(3));
-						_producto.setCategoria(rs.getString(4));
-						Blob bytesImagen = rs.getBlob(5);
-						byte[] imgData = bytesImagen.getBytes(1, (int) bytesImagen.length());
-						_producto.setImagen(imgData);
-						_producto.setPrecio(rs.getFloat(6));
-						_producto.setUser(rs.getString(7));
-						_producto.setEstado(rs.getBoolean(8));
-						producto_total.add(_producto);
+						if (rs.getBoolean(8) == false) {
+							Producto _producto = new Producto();
+							_producto.setReferencia(rs.getInt(1));
+							_producto.setTitulo(rs.getString(2));
+							_producto.setDescripcion(rs.getString(3));
+							_producto.setCategoria(rs.getString(4));
+							Blob bytesImagen = rs.getBlob(5);
+							byte[] imgData = bytesImagen.getBytes(1, (int) bytesImagen.length());
+							_producto.setImagen(imgData);
+							_producto.setPrecio(rs.getFloat(6));
+							_producto.setUser(rs.getString(7));
+							_producto.setEstado(rs.getBoolean(8));
+							producto_total.add(_producto);
+						}
+
 					}
 
 					sesion.setAttribute("productos-busqueda", producto_total);
@@ -1086,18 +1110,21 @@ public class ControladorServlet extends HttpServlet {
 							+ precio + "" + vendedor + "" + categoria);
 
 					while (rs.next()) {
-						Producto _producto = new Producto();
-						_producto.setReferencia(rs.getInt(1));
-						_producto.setTitulo(rs.getString(2));
-						_producto.setDescripcion(rs.getString(3));
-						_producto.setCategoria(rs.getString(4));
-						Blob bytesImagen = rs.getBlob(5);
-						byte[] imgData = bytesImagen.getBytes(1, (int) bytesImagen.length());
-						_producto.setImagen(imgData);
-						_producto.setPrecio(rs.getFloat(6));
-						_producto.setUser(rs.getString(7));
-						_producto.setEstado(rs.getBoolean(8));
-						producto_total.add(_producto);
+						if (rs.getBoolean(8) == false) {
+							Producto _producto = new Producto();
+							_producto.setReferencia(rs.getInt(1));
+							_producto.setTitulo(rs.getString(2));
+							_producto.setDescripcion(rs.getString(3));
+							_producto.setCategoria(rs.getString(4));
+							Blob bytesImagen = rs.getBlob(5);
+							byte[] imgData = bytesImagen.getBytes(1, (int) bytesImagen.length());
+							_producto.setImagen(imgData);
+							_producto.setPrecio(rs.getFloat(6));
+							_producto.setUser(rs.getString(7));
+							_producto.setEstado(rs.getBoolean(8));
+							producto_total.add(_producto);
+						}
+
 					}
 
 					sesion.setAttribute("productos-busqueda", producto_total);
@@ -1184,19 +1211,20 @@ public class ControladorServlet extends HttpServlet {
 					ArrayList<Producto> productoList = new ArrayList<Producto>();
 
 					while (rs.next()) {
-
-						Producto _producto = new Producto();
-						_producto.setReferencia(rs.getInt(1));
-						_producto.setTitulo(rs.getString(2));
-						_producto.setDescripcion(rs.getString(3));
-						_producto.setCategoria(rs.getString(4));
-						Blob bytesImagen = rs.getBlob(5);
-						byte[] imgData = bytesImagen.getBytes(1, (int) bytesImagen.length());
-						_producto.setImagen(imgData);
-						_producto.setPrecio(rs.getFloat(6));
-						_producto.setUser(rs.getString(7));
-						_producto.setEstado(rs.getBoolean(8));
-						productoList.add(_producto);
+						if (rs.getBoolean(8) == false) {
+							Producto _producto = new Producto();
+							_producto.setReferencia(rs.getInt(1));
+							_producto.setTitulo(rs.getString(2));
+							_producto.setDescripcion(rs.getString(3));
+							_producto.setCategoria(rs.getString(4));
+							Blob bytesImagen = rs.getBlob(5);
+							byte[] imgData = bytesImagen.getBytes(1, (int) bytesImagen.length());
+							_producto.setImagen(imgData);
+							_producto.setPrecio(rs.getFloat(6));
+							_producto.setUser(rs.getString(7));
+							_producto.setEstado(rs.getBoolean(8));
+							productoList.add(_producto);
+						}
 
 					}
 					sesion.setAttribute("producto", productoList);
@@ -1312,18 +1340,21 @@ public class ControladorServlet extends HttpServlet {
 						String script2 = "SELECT * FROM producto where referencia like  '" + rs.getInt(1) + "'";
 						ResultSet rs2 = st2.executeQuery(script2);
 						while (rs2.next()) {
-							Producto _producto = new Producto();
-							_producto.setReferencia(rs2.getInt(1));
-							_producto.setTitulo(rs2.getString(2));
-							_producto.setDescripcion(rs2.getString(3));
-							_producto.setCategoria(rs2.getString(4));
-							Blob bytesImagen = rs2.getBlob(5);
-							byte[] imgData = bytesImagen.getBytes(1, (int) bytesImagen.length());
-							_producto.setImagen(imgData);
-							_producto.setPrecio(rs2.getFloat(6));
-							_producto.setUser(rs2.getString(7));
-							_producto.setEstado(rs2.getBoolean(8));
-							productoList.add(_producto);
+							if (rs2.getBoolean(8) == false) {
+								Producto _producto = new Producto();
+								_producto.setReferencia(rs2.getInt(1));
+								_producto.setTitulo(rs2.getString(2));
+								_producto.setDescripcion(rs2.getString(3));
+								_producto.setCategoria(rs2.getString(4));
+								Blob bytesImagen = rs2.getBlob(5);
+								byte[] imgData = bytesImagen.getBytes(1, (int) bytesImagen.length());
+								_producto.setImagen(imgData);
+								_producto.setPrecio(rs2.getFloat(6));
+								_producto.setUser(rs2.getString(7));
+								_producto.setEstado(rs2.getBoolean(8));
+								productoList.add(_producto);
+							}
+
 						}
 						rs2.close();
 						st2.close();
@@ -1349,15 +1380,101 @@ public class ControladorServlet extends HttpServlet {
 			}
 
 		} else if (path.compareTo("/pago.html") == 0) {
+			ArrayList<String> usuarios = new ArrayList<String>();
+			ArrayList<Producto> productoList = new ArrayList<Producto>();
+			Usuario user = (Usuario) sesion.getAttribute("usuario");
+			try {
+				Context ctx = new InitialContext();
 
-			/*
-			 * String destino = req.getParameter("referenciaE"); String mensaje =
-			 * req.getParameter("mensaje"); Usuario user = (Usuario)
-			 * sesion.getAttribute("usuario"); Mensaje mensajeobj = new
-			 * Mensaje(user.getEmail(), destino, mensaje); SendJMS sendJMS = new SendJMS();
-			 * sendJMS.Send(mensajeobj); req.setAttribute("men", mensaje);
-			 * req.getRequestDispatcher("mensaje_enviado.jsp").forward(req, resp);
-			 */
+				DataSource ds = (DataSource) ctx.lookup("jdbc/practica");
+
+				Connection con = ds.getConnection();
+				if (con != null) {
+
+					Statement st = con.createStatement();
+					String script = "SELECT * FROM carro where usuario like  '" + user.getEmail() + "'";
+
+					ResultSet rs = st.executeQuery(script);
+
+					while (rs.next()) {
+						Statement st2 = con.createStatement();
+						String script2 = "SELECT * FROM producto where referencia like  '" + rs.getInt(1) + "'";
+						ResultSet rs2 = st2.executeQuery(script2);
+						while (rs2.next()) {
+							if (rs2.getBoolean(8) == false) {
+								Producto _producto = new Producto();
+								_producto.setReferencia(rs2.getInt(1));
+								_producto.setTitulo(rs2.getString(2));
+								_producto.setDescripcion(rs2.getString(3));
+								_producto.setCategoria(rs2.getString(4));
+								Blob bytesImagen = rs2.getBlob(5);
+								byte[] imgData = bytesImagen.getBytes(1, (int) bytesImagen.length());
+								_producto.setImagen(imgData);
+								_producto.setPrecio(rs2.getFloat(6));
+								_producto.setUser(rs2.getString(7));
+								if (usuarios.contains(rs2.getString(7)) == false) {
+									usuarios.add(rs2.getString(7));
+								}
+								_producto.setEstado(rs2.getBoolean(8));
+								productoList.add(_producto);
+							}
+
+						}
+						rs2.close();
+						st2.close();
+					}
+					req.setAttribute("producto", productoList);
+					rs.close();
+					st.close();
+					con.close();
+
+					for (int i = 0; i < usuarios.size(); i++) {
+						String referencia = "";
+						String vendedor = "";
+						String comprador = "";
+						Float total = (float) 0;
+						String direccion = "";
+						String tarjeta = "";
+						String fecha = "";
+						String vend = usuarios.get(i);
+						for (int x = 0; x < productoList.size(); x++) {
+							Producto p = productoList.get(x);
+							if (vend.compareTo(p.getUser()) == 0) {
+								referencia += p.getReferencia() + "-";
+								vendedor = p.getUser();
+								comprador = user.getEmail();
+								total += p.getPrecio();
+								tarjeta = req.getParameter("tarjeta");
+								direccion = req.getParameter("direccion");
+								Date objDate = new Date();
+								fecha = objDate.toString();
+							}
+						}
+
+						Comp comp = new Comp(referencia, vendedor, comprador, total, direccion, tarjeta, fecha);
+						PagoJMS sendJMS = new PagoJMS();
+						sendJMS.Send(comp);
+
+						ArrayList<Carro> carrito = new ArrayList<Carro>();
+
+						sesion.setAttribute("carro", carrito);
+
+					}
+
+					req.getRequestDispatcher("index.jsp").forward(req, resp);
+				} else {
+
+					req.getRequestDispatcher("error.jsp").forward(req, resp);
+				}
+
+			} catch (SQLException e) {
+
+				System.out.println("Error al Insertar " + e.getMessage());
+				req.getRequestDispatcher("error.jsp").forward(req, resp);
+			} // complete
+			catch (NamingException e) {
+				req.getRequestDispatcher("error.jsp").forward(req, resp);
+			}
 
 		} else if (path.compareTo("/abrir_chat.html") == 0) {
 

@@ -257,7 +257,7 @@
 	<!-- /HEADER -->
 
 
-
+	
 
 	<!-- section -->
 	<div class="section">
@@ -268,80 +268,28 @@
 				<!-- section-title -->
 				<div class="col-md-12">
 					<div class="section-title">
-						<%
-							if (login == true) {
-							if (usu.getRol().compareTo("Admin") != 0) {
-						%>
-						<h2 class="title">CHAT</h2>
-						<%
-							} else {
-						%>
-						<h2 class="title">CHAT</h2>
-
-						<%
-							}
-						} else {
-						%>
-						<h2 class="title">CHAT</h2>
-						<%
-							}
-						%>
-
-
+						<h2 class="title">Pago Correcto</h2>
 						<div class="pull-right">
 							<div class="product-slick-dots-1 custom-dots"></div>
 						</div>
 					</div>
 				</div>
 				<!-- /section-title -->
-				<div>
-					<%String receptor = (String) request.getAttribute("receptor"); 
-						
-					%>
-						<h3><%=receptor %></h3>
-					<jsp:useBean id="mensaje" scope="request"
-						type="java.util.ArrayList<model.Mensaje>"></jsp:useBean>
-					<div class="chatbox" id="chatbox">
-						<%
-						int correcto = 0;
-							for (Mensaje v : mensaje) {
-		
-							
-							correcto++;
-						
-							if (v.getEmisor().compareTo(usu.getEmail()) == 0 && v.getReceptor().compareTo(receptor) == 0){%>
-								<h5>Tu: <%=v.getMensaje() %></h5>
-							<%}%>
-							<% if(v.getEmisor().compareTo(receptor) == 0 && v.getReceptor().compareTo(usu.getEmail()) == 0) {%>
-								
-								<h5><%=v.getEmisor()%> : <%=v.getMensaje()%></h5>
-							<%}}%>
-						
-						
 
-					
-					</div>
-					<form  action="enviar_mensaje.html" action="ControladorServlet" method="post">
-					<input class="form-wt" type="hidden" name="referenciaE"
-						value=<%=request.getAttribute("receptor")%> required> <label
-						for="email">Mensaje:</label><br> <input class="form-wt"
-						type="text" name="mensaje" value="" required><br> <br></br>
-					<input type="submit" class="primary-btn add-to-cart" value="Enviar">
-					</form>
-
-				</div>
-
+				
+				
+				<!-- /Product Slick -->
 			</div>
 			<!-- /row -->
 
-
+			
 		</div>
 		<!-- /container -->
 	</div>
 	<!-- /section -->
 
 	<!-- section -->
-
+	
 
 	<!-- FOOTER -->
 	<footer id="footer" class="section section-grey">
@@ -354,19 +302,20 @@
 					<div class="footer">
 						<!-- footer logo -->
 						<div class="footer-logo">
-							<a class="logo" href="#"> <img src="./img/logo.png" alt="">
-							</a>
+							<a class="logo" href="#">
+		            <img src="./img/logo.png" alt="">
+		          </a>
 						</div>
 						<!-- /footer logo -->
 
 						<p>Somos los mejores</p>
 
 						<!-- footer social -->
-
+						
 						<!-- /footer social -->
 					</div>
 				</div>
-
+			
 
 				<div class="clearfix visible-sm visible-xs"></div>
 
@@ -392,13 +341,7 @@
 					<!-- footer copyright -->
 					<div class="footer-copyright">
 						<!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
-						Copyright &copy;
-						<script>
-							document.write(new Date().getFullYear());
-						</script>
-						All rights reserved | This template is made with <i
-							class="fa fa-heart-o" aria-hidden="true"></i> by <a
-							href="https://colorlib.com" target="_blank">Colorlib</a>
+						Copyright &copy;<script>document.write(new Date().getFullYear());</script> All rights reserved | This template is made with <i class="fa fa-heart-o" aria-hidden="true"></i> by <a href="https://colorlib.com" target="_blank">Colorlib</a>
 						<!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
 					</div>
 					<!-- /footer copyright -->

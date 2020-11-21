@@ -279,14 +279,14 @@
 
 				<% 
 						
-							ArrayList <Compra> p = (ArrayList<Compra>) session.getAttribute("compras");
+							ArrayList <Producto> p = (ArrayList<Producto>) request.getAttribute("compras");
 							
 							
 							if(login == true) {
 							
 							
 							for (int x = 0; x < p.size(); x++) {
-  							Compra product = p.get(x);
+  							Producto product = p.get(x);
   							byte[] photo = product.getImagen();
 	  						String bphoto = Base64.getEncoder().encodeToString(photo);
 	  								%>
@@ -302,7 +302,6 @@
 							<div class="product product-single">
 							<strong>Referencia Producto: <%=product.getReferencia()%></strong>
 							<br></br>
-							<strong>Referencia Compra: <%=product.getReferencia_compra()%></strong>
 								<div class="product-thumb">
 									
 									<img alt="" style="max-width:70%;width:auto;height:auto;"  src="data:image/png;base64,<%=bphoto%>" />
@@ -312,9 +311,8 @@
 									<br></br>
 									<h3 class="product-price"><%=product.getPrecio()%>$</h3>
 									<br></br>
-									<strong>Vendedor: <%=product.getVendedor()%></strong>
+									<strong>Vendedor: <%=product.getUser()%></strong>
 									<br></br>
-									<strong>Fecha Compra: <%=product.getFecha()%></strong>
 								</div>
 								
 							
@@ -328,7 +326,7 @@
 				</div>
 				<br></br>
 				<%}}
-				session.removeAttribute("producto");%>
+				%>
 			
 			<!-- /row -->
 			
