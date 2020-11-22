@@ -292,7 +292,8 @@
 								request.setAttribute("comp", c);%>
 									
 							 <div><form  action="confirmar_compra.html" action="ControladorServlet" method="post">
-							<label for="apellido"><%=c.getReferencia()%></label>
+							<label for="apellido">Oferta por producto: <%=c.getReferencia()%></label><br>
+							<label for="apellido">De: <%=c.getComprador()%></label><br>
 							<input class="form-wt" type="hidden" name="referencia" value="<%=c.getReferencia()%>" required>
 							<input class="form-wt" type="hidden" name="direccion" value="<%=c.getDireccion()%>" required>
 							<input class="form-wt" type="hidden" name="fecha" value="<%=c.getFecha()%>" required>
@@ -303,7 +304,7 @@
 							<input type="submit" class="primary-btn add-to-cart" value="Confirmar">
 							</form>
 							<form  action="cancelar_compra.html" action="ControladorServlet" method="post"> 
-							<input type="submit" class="primary-btn add-to-cart" value="Canelar">
+							<input type="submit" class="primary-btn add-to-cart" value="   Canelar  ">
 							</form></div>
 							
 							
