@@ -1607,7 +1607,20 @@ public class ControladorServlet extends HttpServlet {
 			cambiar_estado(referencia);
 			req.getRequestDispatcher("pago_aceptado.jsp").forward(req, resp);
 		} else if (path.compareTo("/cancelar_compra.html") == 0) {
-
+			String referencia = req.getParameter("referencia");
+			String comprador = req.getParameter("comprador");
+			int index = -1;
+			for (int i = 0; i < conf.size(); i++) {
+				Comp c = conf.get(i);
+				if(c.getReferencia().compareTo(referencia)==0) {
+					index = i;
+				}
+			}
+			if(index!=-1) {
+				conf.remove(index);
+			}
+			vaciar_carro(comprador);
+			
 			req.getRequestDispatcher("index.jsp").forward(req, resp);
 		}
 

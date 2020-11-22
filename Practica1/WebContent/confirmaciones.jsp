@@ -304,6 +304,8 @@
 							<input type="submit" class="primary-btn add-to-cart" value="Confirmar">
 							</form>
 							<form  action="cancelar_compra.html" action="ControladorServlet" method="post"> 
+							<input class="form-wt" type="hidden" name="comprador" value="<%=c.getComprador()%>" required>
+							<input class="form-wt" type="hidden" name="referencia" value="<%=c.getReferencia()%>" required>
 							<input type="submit" class="primary-btn add-to-cart" value="   Canelar  ">
 							</form></div>
 							
