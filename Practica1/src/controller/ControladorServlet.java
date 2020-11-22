@@ -1,17 +1,13 @@
 package controller;
 
 import java.util.List;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.File;
+
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintWriter;
+
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.Base64;
-import java.util.Hashtable;
+
 import java.util.Date;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
@@ -20,21 +16,18 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.RequestDispatcher;
 import javax.servlet.http.HttpSession;
-import javax.annotation.Resource;
-import javax.imageio.ImageIO;
 import javax.jms.ConnectionFactory;
 import javax.jms.Destination;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
+import javax.persistence.Query;
 import javax.sql.DataSource;
 import javax.sql.rowset.serial.SerialBlob;
-import javax.transaction.UserTransaction;
-
 import model.Carro;
 import model.Comp;
 import model.Compra;
@@ -47,7 +40,6 @@ import model.Usuario;
  */
 @WebServlet("/ControladorServlet")
 public class ControladorServlet extends HttpServlet {
-	boolean login = false;
 
 	private static final long serialVersionUID = 1L;
 
@@ -63,7 +55,7 @@ public class ControladorServlet extends HttpServlet {
 	HttpSession sesion;
 
 	public void init(ServletConfig config) throws ServletException {
-		login = false;
+		// login = false;
 		System.out.println("-------------Levantando listener-----------------");
 		Listener listener = new Listener();
 		listener.read();
@@ -81,7 +73,8 @@ public class ControladorServlet extends HttpServlet {
 	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
 		sesion = req.getSession(true);
-		sesion.setAttribute("sesion_iniciada", login);
+		// sesion.setAttribute("sesion_iniciada",false);
+		// sesion.setAttribute("usuario",null );
 		String path = req.getServletPath();
 
 		if (path.compareTo("/login.html") == 0) {
@@ -101,6 +94,7 @@ public class ControladorServlet extends HttpServlet {
 
 					Statement st = con.createStatement();
 					String script = "SELECT * FROM producto";
+
 					ResultSet rs = st.executeQuery(script);
 					while (rs.next()) {
 						if (rs.getBoolean(8) == false) {
@@ -119,7 +113,32 @@ public class ControladorServlet extends HttpServlet {
 						}
 
 					}
-					sesion.setAttribute("sesion_iniciada", login);
+					Boolean ini = (Boolean) sesion.getAttribute("sesion_iniciada");
+
+					
+					if (ini == null) {
+						sesion.setAttribute("sesion_iniciada", false);
+					} else if (ini == true) {
+						Usuario user = (Usuario) sesion.getAttribute("usuario");
+						ResultSet rs2 = st
+								.executeQuery("SELECT * FROM carro where usuario like  '" + user.getEmail() + "'");
+
+						ArrayList<Carro> carrito = new ArrayList<Carro>();
+
+						while (rs2.next()) {
+							Carro _carro = new Carro();
+							_carro.setReferencia(rs2.getInt(1));
+							_carro.setUser(rs2.getString(2));
+							_carro.setPrecio(rs2.getFloat(3));
+							_carro.setTitulo(rs2.getString(4));
+							Blob bytesImagen = rs2.getBlob(5);
+							byte[] imgData = bytesImagen.getBytes(1, (int) bytesImagen.length());
+							_carro.setImagen(imgData);
+							carrito.add(_carro);
+						}
+						sesion.setAttribute("carro", carrito);
+					}
+
 					sesion.setAttribute("productos", producto_total);
 					rs.close();
 					st.close();
@@ -144,8 +163,8 @@ public class ControladorServlet extends HttpServlet {
 			req.getRequestDispatcher("modificar_usuario.jsp").forward(req, resp);
 		} else if (path.compareTo("/cerrar_sesion.html") == 0) {
 			Usuario _usuario = new Usuario();
-			login = false;
-			sesion.setAttribute("sesion_iniciada", login);
+
+			sesion.setAttribute("sesion_iniciada", false);
 			sesion.setAttribute("usuario", _usuario);
 			try {
 				Context ctx = new InitialContext();
@@ -200,25 +219,37 @@ public class ControladorServlet extends HttpServlet {
 		} else if (path.compareTo("/cuenta.html") == 0) {
 			req.getRequestDispatcher("cuenta.jsp").forward(req, resp);
 		} else if (path.compareTo("/compras_realizadas.html") == 0) {
+			
+			
+
+			
+
+			
 
 			try {
 
-				Context ctx = new InitialContext();
-				DataSource ds = (DataSource) ctx.lookup("jdbc/practica");
-				Connection con = ds.getConnection();
-				ArrayList<Producto> compras = new ArrayList<Producto>();
-
-				Statement st = con.createStatement();
 				Usuario user = (Usuario) sesion.getAttribute("usuario");
+				EntityManagerFactory emf = Persistence.createEntityManagerFactory("Practica1");
 
-				String script = "SELECT * FROM compra where comprador like '" + user.getEmail() + "'";
+				EntityManager em = emf.createEntityManager();
+				em.getTransaction().begin();
+				
+				Query q = em.createQuery("SELECT c FROM Compra c WHERE c.comprador like ?1");
+				q.setParameter(1,user.getEmail());
+				
+				List<Compra> comp = q.getResultList(); 
+				ArrayList<Producto> compras = new ArrayList<Producto>();
+				for (int i = 0; i < comp.size(); i++) {
+					Compra c = comp.get(i);
+					String[] parts = c.getReferencia().split("-");
+					for (int x = 0; x < parts.length; x++) {
+						Context ctx = new InitialContext();
 
-				ResultSet rs = st.executeQuery(script);
+						DataSource ds = (DataSource) ctx.lookup("jdbc/practica");
 
-				while (rs.next()) {
-					String[] parts = rs.getString(1).split("-");
-					for (int i = 0; i < parts.length; i++) {
+						Connection con = ds.getConnection();
 						Statement st2 = con.createStatement();
+						
 						String script2 = "SELECT * FROM producto where referencia like '" + parts[i] + "'";
 						ResultSet rs2 = st2.executeQuery(script2);
 						while (rs2.next()) {
@@ -243,14 +274,11 @@ public class ControladorServlet extends HttpServlet {
 						st2.close();
 
 					}
-
 				}
+				req.setAttribute("compras", compras);
 
 				req.setAttribute("compras", compras);
-				rs.close();
-				st.close();
-				con.close();
-
+				
 				req.getRequestDispatcher("compras_realizadas.jsp").forward(req, resp);
 
 			} catch (SQLException e) {
@@ -377,8 +405,8 @@ public class ControladorServlet extends HttpServlet {
 					st.close();
 
 					if (usuario_existe == 1) {
-						login = true;
-						sesion.setAttribute("sesion_iniciada", login);
+
+						sesion.setAttribute("sesion_iniciada", true);
 						sesion.setAttribute("usuario", _usuario);
 						st = con.createStatement();
 
@@ -520,7 +548,6 @@ public class ControladorServlet extends HttpServlet {
 								_usuario.setContrasenia(rs.getString(5));
 								_usuario.setRol(rs.getString(6));
 							}
-							sesion.setAttribute("sesion_iniciada", true);
 							sesion.setAttribute("usuario", _usuario);
 						}
 						con.close();
@@ -570,10 +597,10 @@ public class ControladorServlet extends HttpServlet {
 						}
 
 						Usuario _usuario = new Usuario();
-						login = false;
+
 						_usuario.setRol("");
 						_usuario.setEmail("");
-						sesion.setAttribute("sesion_iniciada", login);
+						sesion.setAttribute("sesion_iniciada", false);
 						sesion.setAttribute("usuario", _usuario);
 						con.close();
 						req.getRequestDispatcher("eliminar-usuario-correcto.jsp").forward(req, resp);
@@ -852,46 +879,59 @@ public class ControladorServlet extends HttpServlet {
 
 				Connection con = ds.getConnection();
 				Producto _producto = new Producto();
+				Usuario us = (Usuario) sesion.getAttribute("usuario");
 				if (con != null) {
 
-					Statement st = con.createStatement();
-					ResultSet rs = st.executeQuery(
-							"SELECT * FROM producto where referencia like '" + req.getParameter("referenciaE") + "' ");
-
-					while (rs.next()) {
-
-						_producto.setReferencia(rs.getInt(1));
-						_producto.setTitulo(rs.getString(2));
-						_producto.setDescripcion(rs.getString(3));
-						_producto.setCategoria(rs.getString(4));
-						Blob bytesImagen = rs.getBlob(5);
-						byte[] imgData = bytesImagen.getBytes(1, (int) bytesImagen.length());
-						_producto.setImagen(imgData);
-						_producto.setPrecio(rs.getFloat(6));
-						_producto.setUser(rs.getString(7));
-						_producto.setEstado(rs.getBoolean(8));
+					Statement st1 = con.createStatement();
+					ResultSet rs1 = st1.executeQuery("SELECT * FROM carro where referencia like '" + req.getParameter("referenciaE") + "' ");
+					int cont = 0;
+					
+					if (rs1.next()) {
+						cont = 1;
 					}
+					rs1.close();
+					st1.close();
+					Statement st = con.createStatement();
+					if (cont == 0) {
+						ResultSet rs = st.executeQuery("SELECT * FROM producto where referencia like '"
+								+ req.getParameter("referenciaE") + "' ");
 
-					rs.close();
-					st.close();
+						while (rs.next()) {
+							if (rs.getBoolean(8) == false) {
+								_producto.setReferencia(rs.getInt(1));
+								_producto.setTitulo(rs.getString(2));
+								_producto.setDescripcion(rs.getString(3));
+								_producto.setCategoria(rs.getString(4));
+								Blob bytesImagen = rs.getBlob(5);
+								byte[] imgData = bytesImagen.getBytes(1, (int) bytesImagen.length());
+								_producto.setImagen(imgData);
+								_producto.setPrecio(rs.getFloat(6));
+								_producto.setUser(rs.getString(7));
+								_producto.setEstado(rs.getBoolean(8));
+							}
 
-					st = con.createStatement();
-					Usuario us = (Usuario) sesion.getAttribute("usuario");
+						}
+						rs.close();
 
-					String script = "insert into carro (referencia,usuario,precio,titulo,imagen) values (?,?,?,?,?)";
-					PreparedStatement ps = con.prepareStatement(script);
+						st.close();
 
-					ps.setInt(1, Integer.parseInt(req.getParameter("referenciaE")));
-					ps.setString(2, us.getEmail());
-					ps.setFloat(3, _producto.getPrecio());
-					ps.setString(4, _producto.getTitulo());
-					Blob blob = new SerialBlob(_producto.getImagen());
-					ps.setBlob(5, blob);
+						st = con.createStatement();
+						
 
-					ps.executeUpdate();
-					ps.close();
-					st.close();
+						String script = "insert into carro (referencia,usuario,precio,titulo,imagen) values (?,?,?,?,?)";
+						PreparedStatement ps = con.prepareStatement(script);
 
+						ps.setInt(1, Integer.parseInt(req.getParameter("referenciaE")));
+						ps.setString(2, us.getEmail());
+						ps.setFloat(3, _producto.getPrecio());
+						ps.setString(4, _producto.getTitulo());
+						Blob blob = new SerialBlob(_producto.getImagen());
+						ps.setBlob(5, blob);
+
+						ps.executeUpdate();
+						ps.close();
+						st.close();
+					}
 					st = con.createStatement();
 
 					ResultSet rs2 = st.executeQuery("SELECT * FROM carro where usuario like  '" + us.getEmail() + "'");
@@ -1222,7 +1262,7 @@ public class ControladorServlet extends HttpServlet {
 					st.close();
 					con.close();
 
-					req.getRequestDispatcher("cuenta-productos.jsp").forward(req, resp);
+					req.getRequestDispatcher("-productos.jsp").forward(req, resp);
 				} else {
 
 					req.getRequestDispatcher("error.jsp").forward(req, resp);
@@ -1450,7 +1490,7 @@ public class ControladorServlet extends HttpServlet {
 
 						ArrayList<Carro> carrito = new ArrayList<Carro>();
 
-						/*while (rs2.next()) {
+						while (rs2.next()) {
 							Carro _carro = new Carro();
 							_carro.setReferencia(rs2.getInt(1));
 							_carro.setUser(rs2.getString(2));
@@ -1461,17 +1501,16 @@ public class ControladorServlet extends HttpServlet {
 							_carro.setImagen(imgData);
 							carrito.add(_carro);
 						}
-						ArrayList<Producto> producto_total = new ArrayList<Producto>();*/
+						ArrayList<Producto> producto_total = new ArrayList<Producto>();
 
-						
-						/*String script3 = "SELECT * FROM producto";
+						String script3 = "SELECT * FROM producto";
 						ResultSet rs3 = st.executeQuery(script3);
 						while (rs3.next()) {
 							if (rs3.getBoolean(8) == false) {
 								Producto _producto = new Producto();
 								_producto.setReferencia(rs3.getInt(1));
 								_producto.setTitulo(rs3.getString(2));
-								System.out.println(_producto.getTitulo());
+								
 								_producto.setDescripcion(rs3.getString(3));
 								_producto.setCategoria(rs3.getString(4));
 								Blob bytesImagen = rs3.getBlob(5);
@@ -1484,12 +1523,12 @@ public class ControladorServlet extends HttpServlet {
 							}
 
 						}
-						
+
 						rs3.close();
 						st.close();
 						con.close();
 						sesion.setAttribute("productos", producto_total);
-						sesion.setAttribute("carro", carrito);*/
+						sesion.setAttribute("carro", carrito);
 					}
 
 					req.getRequestDispatcher("pago_correcto.jsp").forward(req, resp);

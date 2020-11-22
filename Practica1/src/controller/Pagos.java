@@ -1,11 +1,10 @@
 package controller;
 
-import java.io.FileInputStream;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
-
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
@@ -13,19 +12,15 @@ import javax.jms.ObjectMessage;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.EntityTransaction;
-import javax.persistence.Persistence;
 import javax.sql.DataSource;
 
 import model.Comp;
-import model.Compra;
+
 
 public class Pagos implements MessageListener {
 	
-	 private EntityManager em; 
-	 private EntityTransaction et;
+	/*private EntityManager em; 
+	private EntityTransaction et;*/
 	 
 
 	public void onMessage(Message message) {
@@ -35,12 +30,10 @@ public class Pagos implements MessageListener {
 			if (message != null) {
 				if (message instanceof ObjectMessage) {
 
-					System.out.println("Pago Recibido");
 					msg = (ObjectMessage) message;
-
+					
 					Comp c = (Comp) msg.getObject();
-					// System.out.println("Comprador" + c.getComprador());
-
+				
 					procesar_compraJDBC(c);
 					vaciar_carro(c.getComprador());
 					cambiar_estado(c.getReferencia());
@@ -57,7 +50,7 @@ public class Pagos implements MessageListener {
 		}
 	}
 
-	public void procesar_compra(Comp compra) {
+	/*public void procesar_compra(Comp compra) {
 
 		EntityManagerFactory emf = Persistence.createEntityManagerFactory("Practica1");
 
@@ -83,10 +76,10 @@ public class Pagos implements MessageListener {
 			}
 		}
 
-	}
+	}*/
 
 	public void procesar_compraJDBC(Comp compra) {
-		System.out.println("Procesamos compra");
+		
 		try {
 			Context ctx = new InitialContext();
 
@@ -123,7 +116,7 @@ public class Pagos implements MessageListener {
 	}
 
 	public void vaciar_carro(String comprador) {
-		System.out.println("Borramos carro");
+		
 		try {
 			Context ctx = new InitialContext();
 
@@ -147,7 +140,7 @@ public class Pagos implements MessageListener {
 	}
 
 	public void cambiar_estado(String referencia) {
-		System.out.println("Cambiamos estado");
+		
 		try {
 			Context ctx = new InitialContext();
 
@@ -158,13 +151,13 @@ public class Pagos implements MessageListener {
 			String[] parts = referencia.split("-");
 			for (int i = 0; i < parts.length; i++) {
 				Statement st = con.createStatement();
-				System.out.println(parts[i]);
+				
 				String script = "UPDATE producto SET estado='"+1+"' WHERE referencia ='" +parts[i]+"'";
 				st.executeUpdate(script);
 				st.close();
 			}
 			con.close();
-			System.out.println("Estado Cambiado");
+			
 		} catch (SQLException e) {
 
 			System.out.println("Error al Insertar " + e.getMessage());

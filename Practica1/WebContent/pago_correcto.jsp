@@ -67,111 +67,9 @@
 							alt="">
 						</a>
 					</div>
-					<!-- /Logo -->
-
-					<%
-					Boolean login = (Boolean) session.getAttribute("sesion_iniciada");
-
-					Usuario usu = (Usuario) session.getAttribute("usuario");
-					
-					if(login==null){
-						login = false;
-					}
-					if(usu==null){
-						login = false;
-					}
-					if (login == true) {
-						if(usu.getRol().compareTo("Cliente") == 0){
-					%>
-					<!-- Search -->
-					<div class="header-search">
-						<form action="busqueda.html" action="ControladorServlet"
-							method="post">
-							<input class="input search-input" name="name" type="text"
-								placeholder="Busqueda">
-							<button class="search-btn">
-								<i class="fa fa-search"></i>
-							</button>
-						</form>
-					</div>
-					<a href="busqueda-avanzada.html">Busqueda Avanzada</a>
-
-					<%
-					}}
-					%>
-					<!-- /Search -->
+		
 				</div>
-				<div class="pull-right">
-					<ul class="header-btns">
-						<!-- Account -->
-						<li class="header-account dropdown default-dropdown">
-							<div class="dropdown-toggle" role="button" data-toggle="dropdown"
-								aria-expanded="true">
-								<div class="header-btns-icon">
-									<i class="fa fa-user-o"></i>
-								</div>
-								<%
-									if (login == false) {
-								%>
-								<strong class="text-uppercase">Mi Cuenta <i
-									class="fa fa-caret-down"></i></strong>
-								<%
-									} else {
-								%>
-								<strong class="text-uppercase"><%=usu.getEmail()%> <i
-									class="fa fa-caret-down"></i></strong>
-								<%
-									}
-								%>
-							</div>
-
-
-							<ul class="custom-menu">
-								<%
-									if (login == false) {
-								%>
-								<li><a href="login.html"><i class="fa fa-unlock-alt"></i>Login</a></li>
-								<li><a href="registro.html"><i class="fa fa-user-plus"></i>
-										Crear Cuenta</a></li>
-								<%
-									} else {
-								%>
-								<li><a href="cuenta.html"><i class="fa fa-user-o"></i>
-										Mi Cuenta</a></li>
-								<li><a href="modificar_usuario.html"><i
-										class="fa fa-unlock-alt"></i>Modificar Usuario</a></li>
-								<li><a href="cerrar_sesion.html"><i
-										class="fa fa-user-plus"></i> Cerrar Sesion</a></li>
-								<%
-									}
-								%>
-
-
-							</ul>
-						</li>
-						<!-- /Account -->
-
-						
-
-					
-						<li class="header-account dropdown default-dropdown">
-							<%
-								if (login == true) {
-									if (usu.getRol().compareTo("Vendedor") == 0) {
-							%> <strong><a href="add_producto.html">Nuevo
-									Producto</a></strong> <%
- 							}}
- 							%> <%
- 							if (login == true) {
- 							%><strong><a href="mensajes.html">Mensajes</a></strong> <%
- 							}
- 							%>
-
-						</li>
-
-
-					</ul>
-				</div>
+			
 			</div>
 			<!-- header -->
 		</div>
@@ -199,7 +97,10 @@
 				</div>
 				<!-- /section-title -->
 
-				
+				<form action="index.html" action="ControladorServlet" method="get">
+											
+					<input type="submit" class="primary-btn add-to-cart" value="Inicio">
+				</form>
 				
 				<!-- /Product Slick -->
 			</div>

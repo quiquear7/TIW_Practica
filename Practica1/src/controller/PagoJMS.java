@@ -11,7 +11,7 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
 import model.Comp;
-import model.Mensaje;
+
 
 public class PagoJMS {
 	public PagoJMS() {

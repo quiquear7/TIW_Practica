@@ -9,8 +9,6 @@ import javax.jms.ObjectMessage;
 import javax.jms.Session;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
-
-import model.Comp;
 import model.Mensaje;
 
 public class SendJMS {

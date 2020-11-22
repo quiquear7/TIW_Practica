@@ -1,23 +1,17 @@
 package controller;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+
 
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
 import javax.jms.Destination;
 import javax.jms.JMSException;
-import javax.jms.Message;
 import javax.jms.MessageConsumer;
-import javax.jms.ObjectMessage;
-import javax.jms.Queue;
-import javax.jms.QueueBrowser;
+
 import javax.jms.Session;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
-import model.Mensaje;
 
 public class Listener {
 	private InitialContext ic = null;
