@@ -61,7 +61,7 @@ public class ControladorServlet extends HttpServlet {
 
 	String strAutor;
 	HttpSession sesion;
-	
+	ArrayList<Comp> conf = new ArrayList<Comp>();
 	public void init(ServletConfig config) throws ServletException {
 		// login = false;
 		System.out.println("-------------Levantando listener-----------------");
@@ -368,8 +368,11 @@ public class ControladorServlet extends HttpServlet {
 				Destination d = (Destination) ic.lookup("jms/queueConfpractica");
 				ReadConfJMS rc = new ReadConfJMS(cf, d);
 				List<Comp> contenidos = rc.read();
-
-				req.setAttribute("confirmaciones", contenidos);
+				for (int i = 0; i < contenidos.size(); i++) {
+					Comp c = contenidos.get(i);
+					conf.add(c);
+				}
+				req.setAttribute("confirmaciones", conf);
 
 				req.setAttribute("receptor", req.getParameter("referenciaE"));
 
@@ -1588,7 +1591,16 @@ public class ControladorServlet extends HttpServlet {
 			String fecha = req.getParameter("fecha");
 			String tarjeta = req.getParameter("tarjeta");
 			String direccion = req.getParameter("direccion");
-
+			int index = -1;
+			for (int i = 0; i < conf.size(); i++) {
+				Comp c = conf.get(i);
+				if(c.getReferencia().compareTo(referencia)==0) {
+					index = i;
+				}
+			}
+			if(index!=-1) {
+				conf.remove(index);
+			}
 			Comp c = new Comp(referencia, vendedor, comprador, precio, tarjeta, direccion, fecha);
 			procesar_compraJDBC(c);
 			vaciar_carro(comprador);
