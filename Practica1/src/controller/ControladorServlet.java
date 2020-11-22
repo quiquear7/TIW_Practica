@@ -1,7 +1,9 @@
 package controller;
 
 import java.util.List;
-
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 
@@ -9,14 +11,18 @@ import java.sql.*;
 import java.util.ArrayList;
 
 import java.util.Date;
+import javax.servlet.*;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
+import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.servlet.http.Part;
+import javax.imageio.ImageIO;
 import javax.jms.ConnectionFactory;
 import javax.jms.Destination;
 import javax.naming.Context;
@@ -28,6 +34,7 @@ import javax.persistence.Persistence;
 import javax.persistence.Query;
 import javax.sql.DataSource;
 import javax.sql.rowset.serial.SerialBlob;
+
 import model.Carro;
 import model.Comp;
 import model.Compra;
@@ -39,6 +46,7 @@ import model.Usuario;
  * Servlet implementation class ControladorServlet
  */
 @WebServlet("/ControladorServlet")
+@MultipartConfig
 public class ControladorServlet extends HttpServlet {
 
 	private static final long serialVersionUID = 1L;
@@ -53,7 +61,7 @@ public class ControladorServlet extends HttpServlet {
 
 	String strAutor;
 	HttpSession sesion;
-
+	
 	public void init(ServletConfig config) throws ServletException {
 		// login = false;
 		System.out.println("-------------Levantando listener-----------------");
@@ -119,23 +127,19 @@ public class ControladorServlet extends HttpServlet {
 						sesion.setAttribute("sesion_iniciada", false);
 					} else if (ini == true) {
 						Usuario user = (Usuario) sesion.getAttribute("usuario");
-						ResultSet rs2 = st
-								.executeQuery("SELECT * FROM carro where usuario like  '" + user.getEmail() + "'");
-
-						ArrayList<Carro> carrito = new ArrayList<Carro>();
-
-						while (rs2.next()) {
-							Carro _carro = new Carro();
-							_carro.setReferencia(rs2.getInt(1));
-							_carro.setUser(rs2.getString(2));
-							_carro.setPrecio(rs2.getFloat(3));
-							_carro.setTitulo(rs2.getString(4));
-							Blob bytesImagen = rs2.getBlob(5);
-							byte[] imgData = bytesImagen.getBytes(1, (int) bytesImagen.length());
-							_carro.setImagen(imgData);
-							carrito.add(_carro);
-						}
-						sesion.setAttribute("carro", carrito);
+						/*
+						 * ResultSet rs2 = st .executeQuery("SELECT * FROM carro where usuario like  '"
+						 * + user.getEmail() + "'");
+						 * 
+						 * ArrayList<Carro> carrito = new ArrayList<Carro>();
+						 * 
+						 * while (rs2.next()) { Carro _carro = new Carro();
+						 * _carro.setReferencia(rs2.getInt(1)); _carro.setUser(rs2.getString(2));
+						 * _carro.setPrecio(rs2.getFloat(3)); _carro.setTitulo(rs2.getString(4)); Blob
+						 * bytesImagen = rs2.getBlob(5); byte[] imgData = bytesImagen.getBytes(1, (int)
+						 * bytesImagen.length()); _carro.setImagen(imgData); carrito.add(_carro); }
+						 */
+						sesion.setAttribute("carro", obtener_carro(user.getEmail()));
 					}
 
 					sesion.setAttribute("productos", producto_total);
@@ -226,34 +230,29 @@ public class ControladorServlet extends HttpServlet {
 
 				EntityManager em = emf.createEntityManager();
 				em.getTransaction().begin();
-				
+
 				Query q = em.createQuery("SELECT c FROM Compra c WHERE c.comprador like ?1");
 				q.setParameter(1, user.getEmail());
 				List<Compra> comp = q.getResultList();
-				
-				
-				
+
 				Context ctx = new InitialContext();
-				
+
 				DataSource ds = (DataSource) ctx.lookup("jdbc/practica");
 				Connection con = ds.getConnection();
-				
-				
+
 				ArrayList<Producto> compras = new ArrayList<Producto>();
 				for (int i = 0; i < comp.size(); i++) {
 					Compra c = comp.get(i);
 					String[] parts = c.getReferencia().split("-");
-					
-					for (int x = 0; x < parts.length; x++) {
-						
 
-						
+					for (int x = 0; x < parts.length; x++) {
+
 						Statement st2 = con.createStatement();
-						
+
 						String script2 = "SELECT * FROM producto where referencia like '" + parts[x] + "'";
 						ResultSet rs2 = st2.executeQuery(script2);
 						while (rs2.next()) {
-							
+
 							if (rs2.getBoolean(8) == true) {
 								Producto _producto = new Producto();
 								_producto.setReferencia(Integer.parseInt(parts[x]));
@@ -277,7 +276,7 @@ public class ControladorServlet extends HttpServlet {
 					}
 				}
 				con.close();
-
+				sesion.setAttribute("carro", obtener_carro(user.getEmail()));
 				req.setAttribute("compras", compras);
 
 				req.getRequestDispatcher("compras_realizadas.jsp").forward(req, resp);
@@ -650,7 +649,7 @@ public class ControladorServlet extends HttpServlet {
 				if (con != null) {
 
 					Statement st = con.createStatement();
-					ResultSet rs = st.executeQuery("Select referencia from producto");
+					ResultSet rs = st.executeQuery("Select referencia from producto order by referencia");
 
 					while (rs.next()) {
 						referencia = rs.getInt(1);
@@ -662,12 +661,13 @@ public class ControladorServlet extends HttpServlet {
 					st = con.createStatement();
 					String script = "insert into producto (referencia,nombre,descripcion,categoria,imagen,precio,vendedor, estado) values (?,?,?,?,?,?,?,?)";
 					PreparedStatement ps = con.prepareStatement(script);
+					
 					ps.setInt(1, referencia + 1);
 					ps.setString(2, req.getParameter("nombreProd"));
 					ps.setString(3, req.getParameter("descripcionProd"));
 					ps.setString(4, req.getParameter("categoriaProd"));
-					FileInputStream fis = new FileInputStream(req.getParameter("fotoproducto"));
-					ps.setBlob(5, fis);
+					Part imagen = req.getPart("fotoproducto");
+					ps.setBlob(5, imagen.getInputStream());
 					ps.setString(6, req.getParameter("precioProd"));
 					Usuario usu = (Usuario) sesion.getAttribute("usuario");
 					ps.setString(7, usu.getEmail());
@@ -681,21 +681,21 @@ public class ControladorServlet extends HttpServlet {
 					if (correcto == 1)
 						req.getRequestDispatcher("registrar_producto-correctamente.jsp").forward(req, resp);
 					else {
-						req.getRequestDispatcher("registrar_podructo-incorrecto.jsp").forward(req, resp);
+						req.getRequestDispatcher("registrar_producto-incorrecto.jsp").forward(req, resp);
 					}
 
 				} else {
 
-					req.getRequestDispatcher("registrar_podructo-incorrecto.jsp").forward(req, resp);
+					req.getRequestDispatcher("registrar_producto-incorrecto.jsp").forward(req, resp);
 				}
 
 			} catch (SQLException e) {
 
 				System.out.println("Error al Insertar " + e.getMessage());
-				req.getRequestDispatcher("registrar_podructo-incorrecto.jsp").forward(req, resp);
+				req.getRequestDispatcher("registrar_producto-incorrecto.jsp").forward(req, resp);
 			} // complete
 			catch (NamingException e) {
-				req.getRequestDispatcher("registrar_podructo-incorrecto.jsp").forward(req, resp);
+				req.getRequestDispatcher("registrar_producto-incorrecto.jsp").forward(req, resp);
 			}
 
 		} else if (path.compareTo("/eliminar-producto.html") == 0) {
@@ -1258,28 +1258,27 @@ public class ControladorServlet extends HttpServlet {
 					ArrayList<Producto> productoList = new ArrayList<Producto>();
 
 					while (rs.next()) {
-						if (rs.getBoolean(8) == false) {
-							Producto _producto = new Producto();
-							_producto.setReferencia(rs.getInt(1));
-							_producto.setTitulo(rs.getString(2));
-							_producto.setDescripcion(rs.getString(3));
-							_producto.setCategoria(rs.getString(4));
-							Blob bytesImagen = rs.getBlob(5);
-							byte[] imgData = bytesImagen.getBytes(1, (int) bytesImagen.length());
-							_producto.setImagen(imgData);
-							_producto.setPrecio(rs.getFloat(6));
-							_producto.setUser(rs.getString(7));
-							_producto.setEstado(rs.getBoolean(8));
-							productoList.add(_producto);
-						}
+
+						Producto _producto = new Producto();
+						_producto.setReferencia(rs.getInt(1));
+						_producto.setTitulo(rs.getString(2));
+						_producto.setDescripcion(rs.getString(3));
+						_producto.setCategoria(rs.getString(4));
+						Blob bytesImagen = rs.getBlob(5);
+						byte[] imgData = bytesImagen.getBytes(1, (int) bytesImagen.length());
+						_producto.setImagen(imgData);
+						_producto.setPrecio(rs.getFloat(6));
+						_producto.setUser(rs.getString(7));
+						_producto.setEstado(rs.getBoolean(8));
+						productoList.add(_producto);
 
 					}
-					sesion.setAttribute("producto", productoList);
+					req.setAttribute("producto", productoList);
 					rs.close();
 					st.close();
 					con.close();
-
-					req.getRequestDispatcher("-productos.jsp").forward(req, resp);
+					
+					req.getRequestDispatcher("cuenta-productos.jsp").forward(req, resp);
 				} else {
 
 					req.getRequestDispatcher("error.jsp").forward(req, resp);
@@ -1589,14 +1588,13 @@ public class ControladorServlet extends HttpServlet {
 			String fecha = req.getParameter("fecha");
 			String tarjeta = req.getParameter("tarjeta");
 			String direccion = req.getParameter("direccion");
-			
-			Comp c = new Comp(referencia,vendedor,comprador,precio,tarjeta,direccion,fecha);
+
+			Comp c = new Comp(referencia, vendedor, comprador, precio, tarjeta, direccion, fecha);
 			procesar_compraJDBC(c);
 			vaciar_carro(comprador);
 			cambiar_estado(referencia);
 			req.getRequestDispatcher("pago_aceptado.jsp").forward(req, resp);
-		}
-		else if (path.compareTo("/cancelar_compra.html") == 0) {
+		} else if (path.compareTo("/cancelar_compra.html") == 0) {
 
 			req.getRequestDispatcher("index.jsp").forward(req, resp);
 		}
@@ -1662,6 +1660,42 @@ public class ControladorServlet extends HttpServlet {
 
 		}
 
+	}
+
+	public ArrayList<Carro> obtener_carro(String user) {
+		ArrayList<Carro> carrito = new ArrayList<Carro>();
+		try {
+			Context ctx = new InitialContext();
+
+			DataSource ds = (DataSource) ctx.lookup("jdbc/practica");
+
+			Connection con = ds.getConnection();
+
+			Statement st = con.createStatement();
+			con = ds.getConnection();
+			st = con.createStatement();
+
+			ResultSet rs2 = st.executeQuery("SELECT * FROM carro where usuario like  '" + user + "'");
+
+			while (rs2.next()) {
+				Carro _carro = new Carro();
+				_carro.setReferencia(rs2.getInt(1));
+				_carro.setUser(rs2.getString(2));
+				_carro.setPrecio(rs2.getFloat(3));
+				_carro.setTitulo(rs2.getString(4));
+				Blob bytesImagen = rs2.getBlob(5);
+				byte[] imgData = bytesImagen.getBytes(1, (int) bytesImagen.length());
+				_carro.setImagen(imgData);
+				carrito.add(_carro);
+			}
+
+		} catch (SQLException e) {
+
+		} // complete
+		catch (NamingException e) {
+
+		}
+		return carrito;
 	}
 
 	public void cambiar_estado(String referencia) {

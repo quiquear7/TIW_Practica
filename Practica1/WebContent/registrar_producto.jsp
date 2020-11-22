@@ -281,7 +281,7 @@
 				<!-- Produc Slick -->
 				<div class="col-md-9 col-sm-6 col-xs-6">
 					
-					<form  action="agregar_producto.html" action="ControladorServlet" method="post">
+					<form  action="agregar_producto.html" action="ControladorServlet" method="post" enctype="multipart/form-data">
 						<label for="name">Titulo del Producto:</label><br>
 						<input class="form-wt" type="text" name="nombreProd" value="" required><br>
 						<label for="apellido">Descripción</label><br>

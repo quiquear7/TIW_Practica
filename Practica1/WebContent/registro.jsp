@@ -296,11 +296,7 @@
 						<select name="rol" required>
 							<option value="Cliente">Cliente</option>
 							<option value="Vendedor">Vendedor</option>
-							<option value="Admin">Administrador</option>
 						</select>
-						<br></br>
-						<label for="contrasenia">Contraseña Admin:</label><br>
-						<input class="form-wt" type="password" name="contraAdmin" value="">
 						<br></br>
 					<input type="submit" class="primary-btn add-to-cart" value="Aceptar">
 					</form>	

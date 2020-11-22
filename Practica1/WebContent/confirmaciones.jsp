@@ -291,8 +291,8 @@
 								if(c.getVendedor().compareTo(usu.getEmail())==0){
 								request.setAttribute("comp", c);%>
 									
-							<label for="apellido"><%=c.getReferencia()%></label> 
-							<form  action="confirmar_compra.html" action="ControladorServlet" method="post">
+							 <div><form  action="confirmar_compra.html" action="ControladorServlet" method="post">
+							<label for="apellido"><%=c.getReferencia()%></label>
 							<input class="form-wt" type="hidden" name="referencia" value="<%=c.getReferencia()%>" required>
 							<input class="form-wt" type="hidden" name="direccion" value="<%=c.getDireccion()%>" required>
 							<input class="form-wt" type="hidden" name="fecha" value="<%=c.getFecha()%>" required>
@@ -304,7 +304,8 @@
 							</form>
 							<form  action="cancelar_compra.html" action="ControladorServlet" method="post"> 
 							<input type="submit" class="primary-btn add-to-cart" value="Canelar">
-							</form>
+							</form></div>
+							
 							
 								<% }
 						}%>
