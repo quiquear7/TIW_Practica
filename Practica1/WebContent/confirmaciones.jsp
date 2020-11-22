@@ -4,6 +4,7 @@
 <%@page import="model.Producto"%>
 <%@page import="model.Carro"%>
 <%@page import="model.Compra"%>
+<%@page import="model.Comp"%>
 <%@page import="model.Mensaje"%>
 <%@page import="java.sql.ResultSet" import="javax.naming.InitialContext"
 	import="javax.naming.Context" import=" java.io.OutputStream"
@@ -257,6 +258,9 @@
 	</header>
 	<!-- /HEADER -->
 
+
+
+
 	<!-- section -->
 	<div class="section">
 		<!-- container -->
@@ -266,55 +270,63 @@
 				<!-- section-title -->
 				<div class="col-md-12">
 					<div class="section-title">
-						<h2 class="title">Registro</h2>
+			
+						<h2 class="title">Confirmaciones de Compra</h2>
+						
+
+
 						<div class="pull-right">
 							<div class="product-slick-dots-1 custom-dots"></div>
 						</div>
 					</div>
 				</div>
 				<!-- /section-title -->
+				<div>
+	
+					<jsp:useBean id="confirmaciones" scope="request" type="java.util.ArrayList<model.Comp>"></jsp:useBean>
+					
+						<%
+						int correcto = 0;
+							for (Comp c : confirmaciones) {
+								if(c.getVendedor().compareTo(usu.getEmail())==0){
+								request.setAttribute("comp", c);%>
+									
+							<label for="apellido"><%=c.getReferencia()%></label> 
+							<form  action="confirmar_compra.html" action="ControladorServlet" method="post">
+							<input class="form-wt" type="hidden" name="referencia" value="<%=c.getReferencia()%>" required>
+							<input class="form-wt" type="hidden" name="direccion" value="<%=c.getDireccion()%>" required>
+							<input class="form-wt" type="hidden" name="fecha" value="<%=c.getFecha()%>" required>
+							<input class="form-wt" type="hidden" name="comprador" value="<%=c.getComprador()%>" required>
+							<input class="form-wt" type="hidden" name="vendedor" value="<%=c.getVendedor()%>" required>
+							<input class="form-wt" type="hidden" name="tarjeta" value="<%=c.getTarjeta()%>" required>
+							<input class="form-wt" type="hidden" name="precio" value="<%=c.getPrecio()%>" required>
+							<input type="submit" class="primary-btn add-to-cart" value="Confirmar">
+							</form>
+							<form  action="cancelar_compra.html" action="ControladorServlet" method="post"> 
+							<input type="submit" class="primary-btn add-to-cart" value="Canelar">
+							</form>
+							
+								<% }
+						}%>
+						
+						
 
+					
 				
-				<!-- Produc Slick -->
-				<div class="col-md-9 col-sm-6 col-xs-6">
-					<p>No se ha podido realizar el registro correctamente</p>
-					<form  action="analizar-registro.html" action="ControladorServlet" method="post">
-						<label for="name">Nombre:</label><br>
-						<input class="form-wt" type="text" name="nombre" value="" required><br>
-						<label for="apellido">Apellido:</label><br>
-						<input class="form-wt" type="text" name="apellido" value="" required><br>
-						<label for="email">Email:</label><br>    
-						<input class="form-wt" type="email" name="email" value="" required><br>
-						<label for="direccion">Dirección:</label><br>
-						<input class="form-wt" type="text" name="direccion" value="" required><br>
-						<label for="contrasenia">Contraseña:</label><br>
-						<input class="form-wt" type="password" name="contrasenia" value="" required>
-						<h4>Tipo de Usuario:</h4>
-						<select name="rol" required>
-							<option value="Cliente">Cliente</option>
-							<option value="Vendedor">Vendedor</option>
-							<option value="Admin">Administrador</option>
-						</select>
-						<br></br>
-						<label for="contrasenia">Contraseña Admin:</label><br>
-						<input class="form-wt" type="password" name="contraAdmin" value="">
-						<br></br>
-					<input type="submit" class="primary-btn add-to-cart" value="Aceptar">
-					</form>	
 
 				</div>
-				<!-- /Product Slick -->
+
 			</div>
 			<!-- /row -->
 
-			
+
 		</div>
 		<!-- /container -->
 	</div>
 	<!-- /section -->
 
 	<!-- section -->
-	
+
 
 	<!-- FOOTER -->
 	<footer id="footer" class="section section-grey">
@@ -327,20 +339,19 @@
 					<div class="footer">
 						<!-- footer logo -->
 						<div class="footer-logo">
-							<a class="logo" href="#">
-		            <img src="./img/logo.png" alt="">
-		          </a>
+							<a class="logo" href="#"> <img src="./img/logo.png" alt="">
+							</a>
 						</div>
 						<!-- /footer logo -->
 
 						<p>Somos los mejores</p>
 
 						<!-- footer social -->
-						
+
 						<!-- /footer social -->
 					</div>
 				</div>
-			
+
 
 				<div class="clearfix visible-sm visible-xs"></div>
 
@@ -366,7 +377,13 @@
 					<!-- footer copyright -->
 					<div class="footer-copyright">
 						<!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
-						Copyright &copy;<script>document.write(new Date().getFullYear());</script> All rights reserved | This template is made with <i class="fa fa-heart-o" aria-hidden="true"></i> by <a href="https://colorlib.com" target="_blank">Colorlib</a>
+						Copyright &copy;
+						<script>
+							document.write(new Date().getFullYear());
+						</script>
+						All rights reserved | This template is made with <i
+							class="fa fa-heart-o" aria-hidden="true"></i> by <a
+							href="https://colorlib.com" target="_blank">Colorlib</a>
 						<!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
 					</div>
 					<!-- /footer copyright -->

@@ -236,7 +236,8 @@
 								if (login == true) {
 									if (usu.getRol().compareTo("Vendedor") == 0) {
 							%> <strong><a href="add_producto.html">Nuevo
-									Producto</a></strong> <%
+									Producto</a></strong>
+									<strong><a href="conf_compras.html">Confirmaciones de Ventas</a></strong> <%
  							}}
  							%> <%
  							if (login == true) {

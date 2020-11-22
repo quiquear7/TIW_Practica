@@ -115,7 +115,6 @@ public class ControladorServlet extends HttpServlet {
 					}
 					Boolean ini = (Boolean) sesion.getAttribute("sesion_iniciada");
 
-					
 					if (ini == null) {
 						sesion.setAttribute("sesion_iniciada", false);
 					} else if (ini == true) {
@@ -219,12 +218,6 @@ public class ControladorServlet extends HttpServlet {
 		} else if (path.compareTo("/cuenta.html") == 0) {
 			req.getRequestDispatcher("cuenta.jsp").forward(req, resp);
 		} else if (path.compareTo("/compras_realizadas.html") == 0) {
-			
-			
-
-			
-
-			
 
 			try {
 
@@ -235,27 +228,35 @@ public class ControladorServlet extends HttpServlet {
 				em.getTransaction().begin();
 				
 				Query q = em.createQuery("SELECT c FROM Compra c WHERE c.comprador like ?1");
-				q.setParameter(1,user.getEmail());
+				q.setParameter(1, user.getEmail());
+				List<Compra> comp = q.getResultList();
 				
-				List<Compra> comp = q.getResultList(); 
+				
+				
+				Context ctx = new InitialContext();
+				
+				DataSource ds = (DataSource) ctx.lookup("jdbc/practica");
+				Connection con = ds.getConnection();
+				
+				
 				ArrayList<Producto> compras = new ArrayList<Producto>();
 				for (int i = 0; i < comp.size(); i++) {
 					Compra c = comp.get(i);
 					String[] parts = c.getReferencia().split("-");
+					
 					for (int x = 0; x < parts.length; x++) {
-						Context ctx = new InitialContext();
+						
 
-						DataSource ds = (DataSource) ctx.lookup("jdbc/practica");
-
-						Connection con = ds.getConnection();
+						
 						Statement st2 = con.createStatement();
 						
-						String script2 = "SELECT * FROM producto where referencia like '" + parts[i] + "'";
+						String script2 = "SELECT * FROM producto where referencia like '" + parts[x] + "'";
 						ResultSet rs2 = st2.executeQuery(script2);
 						while (rs2.next()) {
+							
 							if (rs2.getBoolean(8) == true) {
 								Producto _producto = new Producto();
-								_producto.setReferencia(Integer.parseInt(parts[i]));
+								_producto.setReferencia(Integer.parseInt(parts[x]));
 								_producto.setTitulo(rs2.getString(2));
 								_producto.setDescripcion(rs2.getString(3));
 								_producto.setCategoria(rs2.getString(4));
@@ -275,10 +276,10 @@ public class ControladorServlet extends HttpServlet {
 
 					}
 				}
-				req.setAttribute("compras", compras);
+				con.close();
 
 				req.setAttribute("compras", compras);
-				
+
 				req.getRequestDispatcher("compras_realizadas.jsp").forward(req, resp);
 
 			} catch (SQLException e) {
@@ -361,6 +362,22 @@ public class ControladorServlet extends HttpServlet {
 			}
 
 			req.getRequestDispatcher("mensajes.jsp").forward(req, resp);
+		} else if (path.compareTo("/conf_compras.html") == 0) {
+			try {
+				InitialContext ic = new InitialContext();
+				ConnectionFactory cf = (ConnectionFactory) ic.lookup("jms/practica");
+				Destination d = (Destination) ic.lookup("jms/queueConfpractica");
+				ReadConfJMS rc = new ReadConfJMS(cf, d);
+				List<Comp> contenidos = rc.read();
+
+				req.setAttribute("confirmaciones", contenidos);
+
+				req.setAttribute("receptor", req.getParameter("referenciaE"));
+
+			} catch (NamingException e) {
+				e.printStackTrace();
+			}
+			req.getRequestDispatcher("confirmaciones.jsp").forward(req, resp);
 		}
 
 	}
@@ -883,9 +900,10 @@ public class ControladorServlet extends HttpServlet {
 				if (con != null) {
 
 					Statement st1 = con.createStatement();
-					ResultSet rs1 = st1.executeQuery("SELECT * FROM carro where referencia like '" + req.getParameter("referenciaE") + "' ");
+					ResultSet rs1 = st1.executeQuery(
+							"SELECT * FROM carro where referencia like '" + req.getParameter("referenciaE") + "' ");
 					int cont = 0;
-					
+
 					if (rs1.next()) {
 						cont = 1;
 					}
@@ -916,7 +934,6 @@ public class ControladorServlet extends HttpServlet {
 						st.close();
 
 						st = con.createStatement();
-						
 
 						String script = "insert into carro (referencia,usuario,precio,titulo,imagen) values (?,?,?,?,?)";
 						PreparedStatement ps = con.prepareStatement(script);
@@ -1510,7 +1527,7 @@ public class ControladorServlet extends HttpServlet {
 								Producto _producto = new Producto();
 								_producto.setReferencia(rs3.getInt(1));
 								_producto.setTitulo(rs3.getString(2));
-								
+
 								_producto.setDescripcion(rs3.getString(3));
 								_producto.setCategoria(rs3.getString(4));
 								Blob bytesImagen = rs3.getBlob(5);
@@ -1564,8 +1581,116 @@ public class ControladorServlet extends HttpServlet {
 			}
 
 			req.getRequestDispatcher("chat_unico.jsp").forward(req, resp);
+		} else if (path.compareTo("/confirmar_compra.html") == 0) {
+			String referencia = req.getParameter("referencia");
+			String comprador = req.getParameter("comprador");
+			String vendedor = req.getParameter("vendedor");
+			float precio = Float.parseFloat(req.getParameter("precio"));
+			String fecha = req.getParameter("fecha");
+			String tarjeta = req.getParameter("tarjeta");
+			String direccion = req.getParameter("direccion");
+			
+			Comp c = new Comp(referencia,vendedor,comprador,precio,tarjeta,direccion,fecha);
+			procesar_compraJDBC(c);
+			vaciar_carro(comprador);
+			cambiar_estado(referencia);
+			req.getRequestDispatcher("pago_aceptado.jsp").forward(req, resp);
+		}
+		else if (path.compareTo("/cancelar_compra.html") == 0) {
+
+			req.getRequestDispatcher("index.jsp").forward(req, resp);
 		}
 
+	}
+
+	public void procesar_compraJDBC(Comp compra) {
+
+		try {
+			Context ctx = new InitialContext();
+
+			DataSource ds = (DataSource) ctx.lookup("jdbc/practica");
+
+			Connection con = ds.getConnection();
+
+			Statement st = con.createStatement();
+
+			String script = "insert into compra (referencia,vendedor,comprador,precio,direccion,tarjeta,fecha) values (?,?,?,?,?,?,?)";
+			PreparedStatement ps = con.prepareStatement(script);
+			ps.setString(1, compra.getReferencia());
+			ps.setString(2, compra.getVendedor());
+			ps.setString(3, compra.getComprador());
+			ps.setFloat(4, compra.getPrecio());
+			ps.setString(5, compra.getDireccion());
+			ps.setString(6, compra.getTarjeta());
+			ps.setString(7, compra.getFecha());
+			ps.executeUpdate();
+			ps.close();
+			st.close();
+			con.close();
+
+		} catch (
+
+		SQLException e) {
+
+			System.out.println("Error al Insertar " + e.getMessage());
+
+		} // complete
+		catch (NamingException e) {
+
+		}
+	}
+
+	public void vaciar_carro(String comprador) {
+
+		try {
+			Context ctx = new InitialContext();
+
+			DataSource ds = (DataSource) ctx.lookup("jdbc/practica");
+
+			Connection con = ds.getConnection();
+
+			Statement st = con.createStatement();
+			String script = "delete from carro where usuario like '" + comprador + "'";
+			st.executeUpdate(script);
+			st.close();
+			con.close();
+
+		} catch (SQLException e) {
+
+		} // complete
+		catch (NamingException e) {
+
+		}
+
+	}
+
+	public void cambiar_estado(String referencia) {
+
+		try {
+			Context ctx = new InitialContext();
+
+			DataSource ds = (DataSource) ctx.lookup("jdbc/practica");
+
+			Connection con = ds.getConnection();
+
+			String[] parts = referencia.split("-");
+			for (int i = 0; i < parts.length; i++) {
+				Statement st = con.createStatement();
+
+				String script = "UPDATE producto SET estado='" + 1 + "' WHERE referencia ='" + parts[i] + "'";
+				st.executeUpdate(script);
+				st.close();
+			}
+			con.close();
+
+		} catch (SQLException e) {
+
+			System.out.println("Error al Insertar " + e.getMessage());
+
+		} // complete
+		catch (NamingException e) {
+
+		}
 	}
 
 }

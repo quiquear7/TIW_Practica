@@ -19,8 +19,7 @@ import model.Comp;
 
 public class Pagos implements MessageListener {
 	
-	/*private EntityManager em; 
-	private EntityTransaction et;*/
+
 	 
 
 	public void onMessage(Message message) {
@@ -34,9 +33,11 @@ public class Pagos implements MessageListener {
 					
 					Comp c = (Comp) msg.getObject();
 				
-					procesar_compraJDBC(c);
+					SendConfJMS sc = new SendConfJMS();
+					sc.Send(c);
+					/*procesar_compraJDBC(c);
 					vaciar_carro(c.getComprador());
-					cambiar_estado(c.getReferencia());
+					cambiar_estado(c.getReferencia());*/
 
 				}
 			}
