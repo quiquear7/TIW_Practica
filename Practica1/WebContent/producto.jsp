@@ -209,7 +209,7 @@
 			<!-- /row -->
 			<div class="row">
 			<p>Para modificar un producto ingresa su número de referencia</p>
-			<form  action="modificar-producto.html" action="ControladorServlet" method="post">
+			<form  action="modificar-producto.html" action="ControladorServlet" method="post" enctype="multipart/form-data">
 						<label for="name">Referencia:</label><br>
 						<input class="form-wt" type="text" name="referenciaProd" value="" required><br>
 						<label for="name">Titulo del Producto:</label><br>

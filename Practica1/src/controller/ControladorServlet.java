@@ -757,8 +757,8 @@ public class ControladorServlet extends HttpServlet {
 					ps.setString(1, req.getParameter("nombreProd"));
 					ps.setString(2, req.getParameter("descripcionProd"));
 					ps.setString(3, req.getParameter("categoriaProd"));
-					FileInputStream fis = new FileInputStream(req.getParameter("fotoproducto"));
-					ps.setBlob(4, fis);
+					Part imagen = req.getPart("fotoproducto");
+					ps.setBlob(4, imagen.getInputStream());
 					ps.setString(5, req.getParameter("precioProd"));
 
 					ps.setInt(6, Integer.parseInt(req.getParameter("referenciaProd")));
