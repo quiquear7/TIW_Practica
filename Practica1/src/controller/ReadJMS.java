@@ -41,9 +41,11 @@ public class ReadJMS {
 			List<Message> men = Collections.list(qb.getEnumeration());
 
 			for (Message m : men) {
-				if (m instanceof ObjectMessage) {
-					ObjectMessage aux = (ObjectMessage) m;
-					contenidos.add((Mensaje) aux.getObject());
+				if(m!=null) {
+					if (m instanceof ObjectMessage) {
+						ObjectMessage aux = (ObjectMessage) m;
+						contenidos.add((Mensaje) aux.getObject());
+					}
 				}
 			}
 		} catch (JMSException e) {

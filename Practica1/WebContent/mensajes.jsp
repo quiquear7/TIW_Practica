@@ -301,7 +301,12 @@
 						type="java.util.ArrayList<model.Mensaje>"></jsp:useBean>
 					<%
 						ArrayList<String> chats = new ArrayList<String>();
+						
+							
+						
 						for (Mensaje v : mensaje) {
+							
+							if(v!=null){
 							int correcto=0;
 							
 						if (v.getEmisor().compareTo(usu.getEmail()) == 0 || v.getReceptor().compareTo(usu.getEmail()) == 0) {
@@ -344,7 +349,7 @@
 						}
 					%>
 					<%
-						}
+						}}
 					%>
 
 				</div>

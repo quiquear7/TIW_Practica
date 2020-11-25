@@ -359,7 +359,7 @@ public class ControladorServlet extends HttpServlet {
 			} catch (NamingException e) {
 				e.printStackTrace();
 			}
-
+			System.out.println("llamamos a mensajes");
 			req.getRequestDispatcher("mensajes.jsp").forward(req, resp);
 		} else if (path.compareTo("/conf_compras.html") == 0) {
 			try {
