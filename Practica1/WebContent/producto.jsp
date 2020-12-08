@@ -163,8 +163,8 @@
 							
 							for (int x = 0; x < p.size(); x++) {
   							Producto product = p.get(x);
-  							byte[] photo = product.getImagen().readAllBytes();
-							String bphoto = Base64.getEncoder().encodeToString(photo);
+  							byte[] photo = product.getImagen();
+  							String bphoto = Base64.getEncoder().encodeToString(photo);
   							String estado;
   							email = product.getVendedor();
   							referencia = product.getReferencia();

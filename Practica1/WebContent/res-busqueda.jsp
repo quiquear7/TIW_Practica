@@ -325,7 +325,7 @@
 									</h3>
 
 									<h2 class="product-name">
-										<%=product.getTitulo()%></h2>
+										<%=product.getNombre()%></h2>
 									<div class="product-btns">
 										<form action="producto_index.html" action="ControladorServlet"
 											method="post">

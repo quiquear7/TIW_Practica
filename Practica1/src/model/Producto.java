@@ -1,8 +1,11 @@
 package model;
 
-import java.io.InputStream;
+
 import java.io.Serializable;
-import java.sql.Blob;
+import javax.json.bind.annotation.JsonbTypeDeserializer;
+import javax.json.bind.annotation.JsonbTypeSerializer;
+
+import controller.BytesSerializerDeserializer;
 
 public class Producto implements Serializable{
 	/**
@@ -67,7 +70,8 @@ public class Producto implements Serializable{
 	public void setCategoria(String categoria) {
 		this.categoria = categoria;
 	}
-
+	@JsonbTypeDeserializer(BytesSerializerDeserializer.class)
+	@JsonbTypeSerializer(BytesSerializerDeserializer.class)
 	public byte[] getImagen() {
 		return imagen;
 	}

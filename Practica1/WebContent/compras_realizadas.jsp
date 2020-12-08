@@ -308,11 +308,11 @@
 									<img alt="" style="max-width:70%;width:auto;height:auto;"  src="data:image/png;base64,<%=bphoto%>" />
 								</div>
 								<div class="product-body">
-									<h2 class="product-name"> <%=product.getTitulo()%></h2>
+									<h2 class="product-name"> <%=product.getNombre()%></h2>
 									<br></br>
 									<h3 class="product-price"><%=product.getPrecio()%>$</h3>
 									<br></br>
-									<strong>Vendedor: <%=product.getUser()%></strong>
+									<strong>Vendedor: <%=product.getVendedor()%></strong>
 									<br></br>
 								</div>
 								

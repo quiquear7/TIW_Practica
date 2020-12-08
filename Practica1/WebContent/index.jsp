@@ -322,9 +322,8 @@
 					for (int j = 0; j < res; j++) {
 						
 						Producto product = p.get(cont);
-						Blob photo = product.getImagen();
-						byte[] imgData = photo.getBytes(1, (int) photo.length());
-						String bphoto = Base64.getEncoder().encodeToString(imgData);
+						byte[] photo = product.getImagen();
+						String bphoto = Base64.getEncoder().encodeToString(photo);
 						cont++;
 					%>
 
@@ -430,9 +429,8 @@
 					for (int j = 0; j < res; j++) {
 						
 						Producto product = p.get(cont2);
-						Blob photo = product.getImagen();
-						byte[] imgData = photo.getBytes(1, (int) photo.length());
-						String bphoto = Base64.getEncoder().encodeToString(imgData);
+						byte[] photo = product.getImagen();
+						String bphoto = Base64.getEncoder().encodeToString(photo);
 						cont2++;
 					%>
 

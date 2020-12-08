@@ -308,7 +308,7 @@
 								<div class="product-body">
 									<h3 class="product-price"><%=product.getPrecio()%>$</h3>
 									
-									<h2 class="product-name"> <%=product.getTitulo()%></h2>
+									<h2 class="product-name"> <%=product.getNombre()%></h2>
 								</div>
 								<form  action="producto.html" action="ControladorServlet" method="post">
 									<input class="form-wt" type="hidden" name="referenciaM" value=<%=product.getReferencia()%> required>

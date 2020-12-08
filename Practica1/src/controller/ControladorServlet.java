@@ -212,7 +212,7 @@ public class ControladorServlet extends HttpServlet {
 		} else if (path.compareTo("/cuenta-productos.html") == 0) {
 			
 			Client client = ClientBuilder.newClient();
-			WebTarget webResource = client.target("http://localhost:12504").path("produc").queryParam("vendedor",
+			WebTarget webResource = client.target("http://localhost:12503").path("produc").queryParam("vendedor",
 					req.getParameter("referenciaM"));
 			Response r = webResource.request().accept("application/json").get();
 			int cop = r.getStatus();
@@ -373,8 +373,9 @@ public class ControladorServlet extends HttpServlet {
 			producto.setDescripcion(req.getParameter("descripcionProd"));
 			producto.setCategoria(req.getParameter("categoriaProd"));
 			Part imagen = req.getPart("fotoproducto");
-			
-			producto.setImagen(imagen.getInputStream());
+			byte array[] = new byte[(int)imagen.getSize()];
+			imagen.getInputStream().read(array);
+			producto.setImagen(array);
 			producto.setPrecio(Float.parseFloat(req.getParameter("precioProd")));
 			Usuario usu = (Usuario) sesion.getAttribute("usuario");
 			producto.setVendedor(usu.getEmail());
@@ -382,13 +383,12 @@ public class ControladorServlet extends HttpServlet {
 			
 
 			Client client = ClientBuilder.newClient();
-			WebTarget webResource = client.target("http://localhost:12504").path("producto");
+			WebTarget webResource = client.target("http://localhost:12503").path("producto");
 			Response r = webResource.request().accept("application/json")
 					.post(Entity.entity(producto, MediaType.APPLICATION_JSON));
 			int cop = r.getStatus();
 
 			if (cop == 201) {
-
 				req.getRequestDispatcher("registrar_producto-correctamente.jsp").forward(req, resp);
 			} else {
 				req.getRequestDispatcher("registrar_producto-incorrecto.jsp").forward(req, resp);
@@ -397,7 +397,7 @@ public class ControladorServlet extends HttpServlet {
 			
 			
 			Client client = ClientBuilder.newClient();
-			WebTarget webResource = client.target("http://localhost:12504").path("producto").queryParam("referencia",
+			WebTarget webResource = client.target("http://localhost:12503").path("producto").queryParam("referencia",
 					req.getParameter("referenciaE"));
 			Response r = webResource.request().accept("application/json").delete();
 			int cop = r.getStatus();
@@ -414,10 +414,10 @@ public class ControladorServlet extends HttpServlet {
 			producto.setDescripcion(req.getParameter("descripcionProd"));
 			producto.setCategoria(req.getParameter("categoriaProd"));
 			Part imagen = req.getPart("fotoproducto");
-			byte[] imgData = imagen.getBytes(1, (int) imagen.length());
-			producto.setImagen(imgData);
+			byte array[] = new byte[(int)imagen.getSize()];
+			imagen.getInputStream().read(array);
+			producto.setImagen(array);
 			producto.setPrecio(Float.parseFloat(req.getParameter("precioProd")));
-			Usuario usu = (Usuario) sesion.getAttribute("usuario");
 			producto.setVendedor(req.getParameter("referenciaM"));
 			producto.setEstado(false);
 			
@@ -436,7 +436,7 @@ public class ControladorServlet extends HttpServlet {
 			
 			
 			Client client = ClientBuilder.newClient();
-			WebTarget webResource = client.target("http://localhost:12504").path("producto").queryParam("referencia", req.getParameter("referenciaM"));
+			WebTarget webResource = client.target("http://localhost:12503").path("producto").queryParam("referencia", req.getParameter("referenciaM"));
 			Response r = webResource.request().accept("application/json").get();
 			int cop = r.getStatus();
 
@@ -453,7 +453,7 @@ public class ControladorServlet extends HttpServlet {
 		} else if (path.compareTo("/producto_index.html") == 0) {
 			
 			Client client = ClientBuilder.newClient();
-			WebTarget webResource = client.target("http://localhost:12504").path("producto").queryParam("referencia", req.getParameter("referenciaM"));
+			WebTarget webResource = client.target("http://localhost:12503").path("producto").queryParam("referencia", req.getParameter("referenciaM"));
 			Response r = webResource.request().accept("application/json").get();
 			int cop = r.getStatus();
 			Respuesta res = new Respuesta();
@@ -473,7 +473,7 @@ public class ControladorServlet extends HttpServlet {
 			List<Producto> carro = (List<Producto>) sesion.getAttribute("carro");
 			
 			Client client = ClientBuilder.newClient();
-			WebTarget webResource = client.target("http://localhost:12504").path("producto").queryParam("referencia", req.getParameter("referenciaE"));
+			WebTarget webResource = client.target("http://localhost:12503").path("producto").queryParam("referencia", req.getParameter("referenciaE"));
 			Response r = webResource.request().accept("application/json").get();
 			int cop = r.getStatus();
 			Respuesta res = new Respuesta();
@@ -524,9 +524,9 @@ public class ControladorServlet extends HttpServlet {
 							_producto.setNombre(rs.getString(2));
 							_producto.setDescripcion(rs.getString(3));
 							_producto.setCategoria(rs.getString(4));
-							Blob bytesImagen = rs.getBlob(5);
-							byte[] imgData = bytesImagen.getBytes(1, (int) bytesImagen.length());
-							_producto.setImagen(imgData);
+							//Blob bytesImagen = rs.getBlob(5);
+							//byte[] imgData = bytesImagen.getBytes(1, (int) bytesImagen.length());
+							//_producto.setImagen(imgData);
 							_producto.setPrecio(rs.getFloat(6));
 							_producto.setVendedor(rs.getString(7));
 							_producto.setEstado(rs.getBoolean(8));
@@ -1141,7 +1141,7 @@ public class ControladorServlet extends HttpServlet {
 	
 	public Respuesta productoTotal(){
 		Client client = ClientBuilder.newClient();
-		WebTarget webResource = client.target("http://localhost:12504").path("productos");
+		WebTarget webResource = client.target("http://localhost:12503").path("productos");
 		Response r = webResource.request().accept("application/json").get();
 		int cop = r.getStatus();
 		Respuesta res = new Respuesta();
