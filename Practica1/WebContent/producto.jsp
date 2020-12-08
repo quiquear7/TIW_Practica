@@ -8,9 +8,11 @@
         import="javax.naming.Context"
         import="java.sql.Statement"
         import="javax.sql.DataSource"
-        import="java.sql.SQLException"%>
+        import="java.sql.SQLException"
+        import="sun.misc.IOUtils"%>
 <%@page import="java.util.*"%>
 <%@page import="java.util.ArrayList"%>
+<%@page import="sun.misc.IOUtils"%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -84,6 +86,7 @@
 							Object user = (Object) session.getAttribute("usuario");
 							Usuario usu = (Usuario) user;
 							String email = "";
+							Integer referencia = 0;
 							
 							
 							
@@ -152,7 +155,7 @@
 
 				<% 
 						
-							ArrayList <Producto> p = (ArrayList<Producto>) session.getAttribute("producto_info");
+							ArrayList <Producto> p = (ArrayList<Producto>) request.getAttribute("producto_info");
 							
 							
 							if(login == true) {
@@ -160,10 +163,11 @@
 							
 							for (int x = 0; x < p.size(); x++) {
   							Producto product = p.get(x);
-  							byte[] photo = product.getImagen();
+  							byte[] photo = product.getImagen().readAllBytes();
 							String bphoto = Base64.getEncoder().encodeToString(photo);
   							String estado;
-  							email = product.getUser();
+  							email = product.getVendedor();
+  							referencia = product.getReferencia();
   							if(product.getEstado()==false){
   								estado = "En venta";
   							}else{
@@ -187,7 +191,7 @@
 								<div class="product-body">
 									<h3 class="product-price"><%=product.getPrecio()%>$</h3>
 									
-									<h2 class="product-name"> <%=product.getTitulo()%></h2>
+									<h2 class="product-name"> <%=product.getNombre()%></h2>
 								</div>
 								<div>
 								<p>Descripcion:<%=product.getDescripcion()%> </p>
@@ -208,10 +212,8 @@
 			
 			<!-- /row -->
 			<div class="row">
-			<p>Para modificar un producto ingresa su número de referencia</p>
 			<form  action="modificar-producto.html" action="ControladorServlet" method="post" enctype="multipart/form-data">
-						<label for="name">Referencia:</label><br>
-						<input class="form-wt" type="text" name="referenciaProd" value="" required><br>
+						<input class="form-wt" type="hidden" name="referenciaProd" value=<%=referencia%> required><br>
 						<label for="name">Titulo del Producto:</label><br>
 						<input class="form-wt" type="text" name="nombreProd" value="" required><br>
 						<label for="apellido">Descripción</label><br>

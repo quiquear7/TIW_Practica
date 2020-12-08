@@ -285,7 +285,7 @@
 
 				<% if(login == true && usu.getRol().compareTo("Admin")==0){
 
-							ArrayList <Usuario> u = (ArrayList<Usuario>) session.getAttribute("usuario-admin");
+							ArrayList <Usuario> u = (ArrayList<Usuario>) request.getAttribute("usuario-admin");
 
 							for (int x = 0; x < u.size(); x++) {
   								Usuario us = u.get(x);

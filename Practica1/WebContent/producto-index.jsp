@@ -280,7 +280,7 @@
 
 			<% 
 						
-							ArrayList <Producto> p = (ArrayList<Producto>) session.getAttribute("producto_part");
+							ArrayList <Producto> p = (ArrayList<Producto>) request.getAttribute("producto_part");
 						
 							
 							
@@ -319,7 +319,7 @@
 								</h3>
 
 								<h2 class="product-name">
-									<%=product.getTitulo()%></h2>
+									<%=product.getNombre()%></h2>
 							</div>
 							<div>
 								<strong>Descripcion: <%=product.getDescripcion()%></strong>
@@ -337,7 +337,7 @@
 							</form>
 							<form action="chat.html" action="ControladorServlet" method="post">
 							<input class="form-wt" type="hidden" name="referenciaE"
-								value=<%=product.getUser()%> required> <input
+								value=<%=product.getVendedor()%> required> <input
 								type="submit" class="primary-btn add-to-cart"
 								value="Enviar   Mensaje">
 							</form>

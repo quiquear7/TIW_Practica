@@ -1,6 +1,8 @@
 package model;
 
+import java.io.InputStream;
 import java.io.Serializable;
+import java.sql.Blob;
 
 public class Producto implements Serializable{
 	/**
@@ -10,7 +12,7 @@ public class Producto implements Serializable{
 	private int referencia;
 
 	  // El atributo apellido del usuario
-	 private String titulo;
+	 private String nombre;
 
 	//El atributo direccion del usuario
 	 private String descripcion;
@@ -23,7 +25,7 @@ public class Producto implements Serializable{
 	 private Float precio;
 
 	//El atributo rol del usuario
-	  private String user;
+	  private String vendedor;
 
 	  private Boolean estado;
 	  // Crea el nuevo Usuario
@@ -32,12 +34,12 @@ public class Producto implements Serializable{
 
 	  public Producto(int referencia,String titulo,String descripcion, String categoria, byte[] imagen, Float precio, String user, Boolean estado) {
 	    this.referencia = referencia;
-	    this.titulo = titulo;
+	    this.vendedor = titulo;
 	    this.descripcion = descripcion;
 	    this.categoria = categoria;
 	    this.imagen = imagen;
 	    this.precio = precio;
-	    this.user = user;
+	    this.nombre = user;
 	    this.estado = estado;
 	  }
 
@@ -49,13 +51,6 @@ public class Producto implements Serializable{
 		this.referencia = referencia;
 	}
 
-	public String getTitulo() {
-		return titulo;
-	}
-
-	public void setTitulo(String titulo) {
-		this.titulo = titulo;
-	}
 
 	public String getDescripcion() {
 		return descripcion;
@@ -77,8 +72,8 @@ public class Producto implements Serializable{
 		return imagen;
 	}
 
-	public void setImagen(byte[] imagen) {
-		this.imagen = imagen;
+	public void setImagen(byte[] inputStream) {
+		this.imagen = inputStream;
 	}
 
 	public Float getPrecio() {
@@ -89,13 +84,6 @@ public class Producto implements Serializable{
 		this.precio = precio;
 	}
 
-	public String getUser() {
-		return user;
-	}
-
-	public void setUser(String user) {
-		this.user = user;
-	}
 
 	public Boolean getEstado() {
 		return estado;
@@ -103,5 +91,21 @@ public class Producto implements Serializable{
 
 	public void setEstado(Boolean estado) {
 		this.estado = estado;
+	}
+
+	public String getVendedor() {
+		return vendedor;
+	}
+
+	public void setVendedor(String vendedor) {
+		this.vendedor = vendedor;
+	}
+
+	public String getNombre() {
+		return nombre;
+	}
+
+	public void setNombre(String nombre) {
+		this.nombre = nombre;
 	}
 }

@@ -10,7 +10,8 @@
 	import="java.sql.Statement" import=" java.util.Base64"
 	import="javax.sql.DataSource" import="java.sql.SQLException"
 	import=" java.sql.Connection" import="java.sql.ResultSet"
-	import="java.sql.Statement"%>
+	import="java.sql.Statement"
+	import="java.sql.Blob"%>
 <%@page import="java.util.*"%>
 
 <!DOCTYPE html>
@@ -321,8 +322,9 @@
 					for (int j = 0; j < res; j++) {
 						
 						Producto product = p.get(cont);
-						byte[] photo = product.getImagen();
-						String bphoto = Base64.getEncoder().encodeToString(photo);
+						Blob photo = product.getImagen();
+						byte[] imgData = photo.getBytes(1, (int) photo.length());
+						String bphoto = Base64.getEncoder().encodeToString(imgData);
 						cont++;
 					%>
 
@@ -344,7 +346,7 @@
 									</h3>
 
 									<h2 class="product-name">
-										<%=product.getTitulo()%></h2>
+										<%=product.getNombre()%></h2>
 									<div class="product-btns">
 										<form action="producto_index.html" action="ControladorServlet"
 											method="post">
@@ -428,8 +430,9 @@
 					for (int j = 0; j < res; j++) {
 						
 						Producto product = p.get(cont2);
-						byte[] photo = product.getImagen();
-						String bphoto = Base64.getEncoder().encodeToString(photo);
+						Blob photo = product.getImagen();
+						byte[] imgData = photo.getBytes(1, (int) photo.length());
+						String bphoto = Base64.getEncoder().encodeToString(imgData);
 						cont2++;
 					%>
 
@@ -451,7 +454,7 @@
 									</h3>
 
 									<h2 class="product-name">
-										<%=product.getTitulo()%></h2>
+										<%=product.getNombre()%></h2>
 									<div class="product-btns">
 										<form action="producto_index.html" action="ControladorServlet"
 											method="post">
