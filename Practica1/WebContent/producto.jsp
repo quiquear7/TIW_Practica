@@ -166,9 +166,10 @@
   							byte[] photo = product.getImagen();
   							String bphoto = Base64.getEncoder().encodeToString(photo);
   							String estado;
-  							email = product.getVendedor();
+  							Usuario vendedor = product.getUsuario();
+  							email = vendedor.getEmail();
   							referencia = product.getReferencia();
-  							if(product.getEstado()==false){
+  							if(product.getEstado()==0){
   								estado = "En venta";
   							}else{
   								estado = "Vendido";

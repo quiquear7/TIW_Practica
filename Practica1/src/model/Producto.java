@@ -2,114 +2,110 @@ package model;
 
 
 import java.io.Serializable;
+import controller.BytesSerializerDeserializer;
 import javax.json.bind.annotation.JsonbTypeDeserializer;
 import javax.json.bind.annotation.JsonbTypeSerializer;
+import javax.persistence.*;
 
-import controller.BytesSerializerDeserializer;
 
-public class Producto implements Serializable{
-	/**
-	 * 
-	 */
+/**
+ * The persistent class for the producto database table.
+ * 
+ */
+@Entity
+@NamedQuery(name="Producto.findAll", query="SELECT p FROM Producto p")
+public class Producto implements Serializable {
 	private static final long serialVersionUID = 1L;
+
+	@Id
+	@GeneratedValue(strategy=GenerationType.AUTO)
 	private int referencia;
 
-	  // El atributo apellido del usuario
-	 private String nombre;
+	private String categoria;
 
-	//El atributo direccion del usuario
-	 private String descripcion;
+	private String descripcion;
 
-	  //El atributo email del usuario
-	  private String categoria;
+	private byte estado;
 
-	  private byte[] imagen;
-	//El atributo contraseña del usuario
-	 private Float precio;
+	@Lob
+	@JsonbTypeDeserializer(BytesSerializerDeserializer.class)
+	@JsonbTypeSerializer(BytesSerializerDeserializer.class)
+	private byte[] imagen;
 
-	//El atributo rol del usuario
-	  private String vendedor;
+	private String nombre;
 
-	  private Boolean estado;
-	  // Crea el nuevo Usuario
-	  public Producto() {
-	  }
+	private float precio;
 
-	  public Producto(int referencia,String titulo,String descripcion, String categoria, byte[] imagen, Float precio, String user, Boolean estado) {
-	    this.referencia = referencia;
-	    this.vendedor = titulo;
-	    this.descripcion = descripcion;
-	    this.categoria = categoria;
-	    this.imagen = imagen;
-	    this.precio = precio;
-	    this.nombre = user;
-	    this.estado = estado;
-	  }
+	//bi-directional many-to-one association to Usuario
+	@ManyToOne
+	@JoinColumn(name="vendedor")
+	private Usuario usuario;
+
+	public Producto() {
+	}
 
 	public int getReferencia() {
-		return referencia;
+		return this.referencia;
 	}
 
 	public void setReferencia(int referencia) {
 		this.referencia = referencia;
 	}
 
+	public String getCategoria() {
+		return this.categoria;
+	}
+
+	public void setCategoria(String categoria) {
+		this.categoria = categoria;
+	}
 
 	public String getDescripcion() {
-		return descripcion;
+		return this.descripcion;
 	}
 
 	public void setDescripcion(String descripcion) {
 		this.descripcion = descripcion;
 	}
 
-	public String getCategoria() {
-		return categoria;
+	public byte getEstado() {
+		return this.estado;
 	}
 
-	public void setCategoria(String categoria) {
-		this.categoria = categoria;
-	}
-	@JsonbTypeDeserializer(BytesSerializerDeserializer.class)
-	@JsonbTypeSerializer(BytesSerializerDeserializer.class)
-	public byte[] getImagen() {
-		return imagen;
-	}
-
-	public void setImagen(byte[] inputStream) {
-		this.imagen = inputStream;
-	}
-
-	public Float getPrecio() {
-		return precio;
-	}
-
-	public void setPrecio(Float precio) {
-		this.precio = precio;
-	}
-
-
-	public Boolean getEstado() {
-		return estado;
-	}
-
-	public void setEstado(Boolean estado) {
+	public void setEstado(byte estado) {
 		this.estado = estado;
 	}
 
-	public String getVendedor() {
-		return vendedor;
+	public byte[] getImagen() {
+		return this.imagen;
 	}
 
-	public void setVendedor(String vendedor) {
-		this.vendedor = vendedor;
+	public void setImagen(byte[] imagen) {
+		this.imagen = imagen;
 	}
 
 	public String getNombre() {
-		return nombre;
+		return this.nombre;
 	}
 
 	public void setNombre(String nombre) {
 		this.nombre = nombre;
 	}
+
+	public float getPrecio() {
+		return this.precio;
+	}
+
+	public void setPrecio(float precio) {
+		this.precio = precio;
+	}
+
+	public Usuario getUsuario() {
+		return this.usuario;
+	}
+
+	public void setUsuario(Usuario usuario) {
+		this.usuario = usuario;
+	}
+
 }

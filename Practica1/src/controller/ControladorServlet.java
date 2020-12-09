@@ -104,7 +104,7 @@ public class ControladorServlet extends HttpServlet {
 			Respuesta res = productoTotal();
 
 			if (res.getCop() == 200) {
-	
+				
 				sesion.setAttribute("productos", res.getLista());
 				Boolean ini = (Boolean) sesion.getAttribute("sesion_iniciada");
 
@@ -214,6 +214,7 @@ public class ControladorServlet extends HttpServlet {
 			Client client = ClientBuilder.newClient();
 			WebTarget webResource = client.target("http://localhost:12503").path("produc").queryParam("vendedor",
 					req.getParameter("referenciaM"));
+			Usuario user = (Usuario) sesion.getAttribute("usuario");
 			Response r = webResource.request().accept("application/json").get();
 			int cop = r.getStatus();
 
@@ -378,8 +379,8 @@ public class ControladorServlet extends HttpServlet {
 			producto.setImagen(array);
 			producto.setPrecio(Float.parseFloat(req.getParameter("precioProd")));
 			Usuario usu = (Usuario) sesion.getAttribute("usuario");
-			producto.setVendedor(usu.getEmail());
-			producto.setEstado(false);
+			producto.setUsuario(usu);
+			producto.setEstado((byte) 0);
 			
 
 			Client client = ClientBuilder.newClient();
@@ -418,11 +419,12 @@ public class ControladorServlet extends HttpServlet {
 			imagen.getInputStream().read(array);
 			producto.setImagen(array);
 			producto.setPrecio(Float.parseFloat(req.getParameter("precioProd")));
-			producto.setVendedor(req.getParameter("referenciaM"));
-			producto.setEstado(false);
+			Usuario usu = (Usuario) sesion.getAttribute("usuario");
+			producto.setUsuario(usu);
+			producto.setEstado((byte) 0);
 			
 			Client client = ClientBuilder.newClient();
-			WebTarget webResource = client.target("http://localhost:12502").path("usuario");
+			WebTarget webResource = client.target("http://localhost:12503").path("producto");
 			Response r = webResource.request().accept("application/json")
 					.put(Entity.entity(producto, MediaType.APPLICATION_JSON));
 			int cop = r.getStatus();
@@ -441,8 +443,10 @@ public class ControladorServlet extends HttpServlet {
 			int cop = r.getStatus();
 
 			if (cop == 200) {
-				List<Producto> productoList = webResource.request().accept("application/json").get(new GenericType<List<Producto>>() {
+				Producto producto = webResource.request().accept("application/json").get(new GenericType<Producto>() {
 				});
+				List<Producto> productoList = new ArrayList<Producto>();
+				productoList.add(producto);
 				req.setAttribute("producto_info", productoList);
 				req.getRequestDispatcher("producto.jsp").forward(req, resp);
 			}
@@ -459,8 +463,10 @@ public class ControladorServlet extends HttpServlet {
 			Respuesta res = new Respuesta();
 			res.setCop(cop);
 			if (cop == 200) {
-				List<Producto> productoList =  webResource.request().accept("application/json").get(new GenericType<List<Producto>>() {
+				Producto producto =  webResource.request().accept("application/json").get(new GenericType<Producto>() {
 				});
+				List<Producto> productoList = new ArrayList<Producto>();
+				productoList.add(producto);
 				req.setAttribute("producto_part", productoList);
 				req.getRequestDispatcher("producto-index.jsp").forward(req, resp);
 			}
@@ -471,7 +477,9 @@ public class ControladorServlet extends HttpServlet {
 		} else if (path.compareTo("/agregar_carro.html") == 0) {
 			
 			List<Producto> carro = (List<Producto>) sesion.getAttribute("carro");
-			
+			if(carro == null) {
+				carro = new ArrayList<Producto>();
+			}
 			Client client = ClientBuilder.newClient();
 			WebTarget webResource = client.target("http://localhost:12503").path("producto").queryParam("referencia", req.getParameter("referenciaE"));
 			Response r = webResource.request().accept("application/json").get();
@@ -479,13 +487,19 @@ public class ControladorServlet extends HttpServlet {
 			Respuesta res = new Respuesta();
 			res.setCop(cop);
 			if (cop == 200) {
-				List<Producto> productoList =  webResource.request().accept("application/json").get(new GenericType<List<Producto>>() {
+				Producto producto =  webResource.request().accept("application/json").get(new GenericType<Producto>() {
 				});
-				for (int i = 0; i < productoList.size(); i++) {
-					carro.add(productoList.get(i));
-					
-				}
 				
+				
+				int existe = 0;
+				for (int i = 0; i < carro.size(); i++) {
+					Producto p = carro.get(i);
+					if(p.getReferencia()==producto.getReferencia()) {
+						existe = 1;
+					}
+				}
+				if(existe == 0) carro.add(producto);
+					
 				sesion.setAttribute("carro", carro);
 				
 				req.getRequestDispatcher("index.jsp").forward(req, resp);
@@ -528,8 +542,8 @@ public class ControladorServlet extends HttpServlet {
 							//byte[] imgData = bytesImagen.getBytes(1, (int) bytesImagen.length());
 							//_producto.setImagen(imgData);
 							_producto.setPrecio(rs.getFloat(6));
-							_producto.setVendedor(rs.getString(7));
-							_producto.setEstado(rs.getBoolean(8));
+							//_producto.setVendedor(rs.getString(7));
+							//_producto.setEstado(rs.getBoolean(8));
 							producto_total.add(_producto);
 						}
 
@@ -623,8 +637,8 @@ public class ControladorServlet extends HttpServlet {
 							byte[] imgData = bytesImagen.getBytes(1, (int) bytesImagen.length());
 							//_producto.setImagen(imgData);
 							_producto.setPrecio(rs.getFloat(6));
-							_producto.setVendedor(rs.getString(7));
-							_producto.setEstado(rs.getBoolean(8));
+							//_producto.setVendedor(rs.getString(7));
+							//_producto.setEstado(rs.getBoolean(8));
 							producto_total.add(_producto);
 						}
 
@@ -786,8 +800,8 @@ public class ControladorServlet extends HttpServlet {
 								byte[] imgData = bytesImagen.getBytes(1, (int) bytesImagen.length());
 								//_producto.setImagen(imgData);
 								_producto.setPrecio(rs2.getFloat(6));
-								_producto.setVendedor(rs2.getString(7));
-								_producto.setEstado(rs2.getBoolean(8));
+								//_producto.setVendedor(rs2.getString(7));
+								//_producto.setEstado(rs2.getBoolean(8));
 								productoList.add(_producto);
 							}
 
@@ -847,11 +861,11 @@ public class ControladorServlet extends HttpServlet {
 								byte[] imgData = bytesImagen.getBytes(1, (int) bytesImagen.length());
 								//_producto.setImagen(imgData);
 								_producto.setPrecio(rs2.getFloat(6));
-								_producto.setVendedor(rs2.getString(7));
+								//_producto.setVendedor(rs2.getString(7));
 								if (usuarios.contains(rs2.getString(7)) == false) {
 									usuarios.add(rs2.getString(7));
 								}
-								_producto.setEstado(rs2.getBoolean(8));
+								//_producto.setEstado(rs2.getBoolean(8));
 								productoList.add(_producto);
 							}
 
@@ -923,8 +937,8 @@ public class ControladorServlet extends HttpServlet {
 								byte[] imgData = bytesImagen.getBytes(1, (int) bytesImagen.length());
 								//_producto.setImagen(imgData);
 								_producto.setPrecio(rs3.getFloat(6));
-								_producto.setVendedor(rs3.getString(7));
-								_producto.setEstado(rs3.getBoolean(8));
+								//_producto.setVendedor(rs3.getString(7));
+								//_producto.setEstado(rs3.getBoolean(8));
 								producto_total.add(_producto);
 							}
 

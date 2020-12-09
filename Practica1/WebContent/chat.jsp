@@ -54,6 +54,7 @@
 
 <body>
 	<!-- HEADER -->
+		<!-- HEADER -->
 	<header>
 
 
@@ -155,7 +156,7 @@
 						<%
 							if (login == true ) {
 								if(usu.getRol().compareTo("Cliente") == 0){
-							ArrayList<Carro> c = (ArrayList<Carro>) session.getAttribute("carro");
+							ArrayList<Producto> c = (ArrayList<Producto>) session.getAttribute("carro");
 							float total = 0;
 
 							if (c != null) {
@@ -177,7 +178,7 @@
 										<%
 											for (int x = 0; x < c.size(); x++) {
 
-											Carro carrito = c.get(x);
+											Producto carrito = c.get(x);
 
 											byte[] photo = carrito.getImagen();
 											String bphoto = Base64.getEncoder().encodeToString(photo);
@@ -192,7 +193,7 @@
 											<div class="product-body">
 												<h3 class="product-price"><%=carrito.getPrecio()%>$
 												</h3>
-												<h2 class="product-name"><%=carrito.getTitulo()%></h2>
+												<h2 class="product-name"><%=carrito.getNombre()%></h2>
 												<form action="producto_index.html"
 													action="ControladorServlet" method="post">
 													<input class="form-wt" type="hidden" name="referenciaM"
@@ -236,8 +237,8 @@
 								if (login == true) {
 									if (usu.getRol().compareTo("Vendedor") == 0) {
 							%> <strong><a href="add_producto.html">Nuevo
-									Producto</a></strong>
-									<strong><a href="conf_compras.html">Confirmaciones de Ventas</a></strong> <%
+									Producto</a></strong> 
+								<strong><a href="conf_compras.html">Confirmaciones de Ventas</a></strong><%
  							}}
  							%> <%
  							if (login == true) {

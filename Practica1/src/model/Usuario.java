@@ -1,120 +1,108 @@
 package model;
 
 import java.io.Serializable;
+import javax.persistence.*;
+import java.util.List;
 
-public class Usuario  implements Serializable{
-	/**
-	 * 
-	 */
+
+/**
+ * The persistent class for the usuario database table.
+ * 
+ */
+@Entity
+@NamedQuery(name="Usuario.findAll", query="SELECT u FROM Usuario u")
+public class Usuario implements Serializable {
 	private static final long serialVersionUID = 1L;
-	// El atributo nombre del usuario
-		  private String nombre;
 
-		  // El atributo apellido del usuario
-		  private String apellido;
+	@Id
+	@GeneratedValue(strategy=GenerationType.AUTO)
+	private String email;
 
-		//El atributo direccion del usuario
-		 private String direccion;
+	private String apellido;
 
-		  //El atributo email del usuario
-		  private String email;
+	private String contrasenia;
 
+	private String direccion;
 
-		//El atributo contraseña del usuario
-		 private String contrasenia;
+	private String nombre;
 
-		//El atributo rol del usuario
-		  private String rol;
+	private String rol;
 
-		  // Crea el nuevo Usuario
-		  public Usuario() {
-		  }
+	//bi-directional many-to-one association to Producto
+	@OneToMany(mappedBy="usuario")
+	private List<Producto> productos;
 
-		  public Usuario(String nombre,String apellido,String direccion, String email, String contrasenia, String rol) {
-		    this.nombre = nombre;
-		    this.apellido = apellido;
-		    this.direccion = direccion;
-		    this.email = email;
-		    this.contrasenia = contrasenia;
-		    this.rol = rol;
-		  }
+	public Usuario() {
+	}
 
-		  /** Getter for property nombre
-		   *  @return Value of property nombre.
-		   */
-		  public String getNombre() {
-		    return nombre;
-		  }
+	public String getEmail() {
+		return this.email;
+	}
 
+	public void setEmail(String email) {
+		this.email = email;
+	}
 
-		  /** Setter for property nombre
-		   *  @param nombre New value of property nombre.
-		   */
-		  public void setNombre(String nombre) {
-		    this.nombre = nombre;
-		  }
+	public String getApellido() {
+		return this.apellido;
+	}
 
-		  /** Getter for property apellido.
-		   * @return Value of property apellido.
-		   */
-		  public String getApellido() {
-		    return apellido;
-		  }
+	public void setApellido(String apellido) {
+		this.apellido = apellido;
+	}
 
-		  /** Setter for property apellido.
-		   * @param apellido New value of property apellido.
-		   */
-		  public void setApellido(String apellido) {
-		    this.apellido = apellido;
-		  }
+	public String getContrasenia() {
+		return this.contrasenia;
+	}
 
-		  /** Getter for property direccion.
-		   * @return Value of property direccion.
-		   */
-		  public String getDireccion() {
-		    return direccion;
-		  }
+	public void setContrasenia(String contrasenia) {
+		this.contrasenia = contrasenia;
+	}
 
-		  /** Setter for property direccion.
-		   * @param direccion New value of property direccion.
-		   */
-		  public void setDireccion(String direccion) {
-		    this.direccion = direccion;
-		  }
+	public String getDireccion() {
+		return this.direccion;
+	}
 
-		  /** Getter for property email.
-		   * @return Value of property email.
-		   */
-		  public String getEmail() {
-		    return email;
-		  }
+	public void setDireccion(String direccion) {
+		this.direccion = direccion;
+	}
 
-		  /** Setter for property email.
-		   * @param email New value of property email.
-		   */
-		  public void setEmail(String email) {
-		    this.email = email;
-		  }
+	public String getNombre() {
+		return this.nombre;
+	}
 
-		  /** Getter for property contraseña.
-		   * @return Value of property contraseña.
-		   */
-		  public String getContrasenia() {
-		    return contrasenia;
-		  }
+	public void setNombre(String nombre) {
+		this.nombre = nombre;
+	}
 
-		  /** Setter for property contraseña.
-		   * @param contraseña New value of property contraseña.
-		   */
-		  public void setContrasenia(String contrasenia) {
-		    this.contrasenia = contrasenia;
-		  }
+	public String getRol() {
+		return this.rol;
+	}
 
-		  public String getRol() {
-			    return rol;
-		  }
+	public void setRol(String rol) {
+		this.rol = rol;
+	}
 
-		  public void setRol(String rol) {
-				this.rol = rol;
-		  }
+	public List<Producto> getProductos() {
+		return this.productos;
+	}
+
+	public void setProductos(List<Producto> productos) {
+		this.productos = productos;
+	}
+
+	public Producto addProducto(Producto producto) {
+		getProductos().add(producto);
+		producto.setUsuario(this);
+
+		return producto;
+	}
+
+	public Producto removeProducto(Producto producto) {
+		getProductos().remove(producto);
+		producto.setUsuario(null);
+
+		return producto;
+	}
+
 }
