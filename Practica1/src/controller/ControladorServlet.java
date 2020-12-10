@@ -119,6 +119,9 @@ public class ControladorServlet extends HttpServlet {
 
 		} else if (path.compareTo("/modificar_usuario.html") == 0) {
 			req.getRequestDispatcher("modificar_usuario.jsp").forward(req, resp);
+		} else if (path.compareTo("/modificar_usuario_admin.html") == 0) {
+			req.setAttribute("usuario", req.getParameter("referenciaM"));
+			req.getRequestDispatcher("modificar_usuario_admin.jsp").forward(req, resp);
 		} else if (path.compareTo("/cerrar_sesion.html") == 0) {
 			Usuario _usuario = new Usuario();
 
@@ -138,83 +141,51 @@ public class ControladorServlet extends HttpServlet {
 
 		} else if (path.compareTo("/cuenta.html") == 0) {
 			req.getRequestDispatcher("cuenta.jsp").forward(req, resp);
-		}/* else if (path.compareTo("/compras_realizadas.html") == 0) {
+		} else if (path.compareTo("/compras_realizadas.html") == 0) {
+			
+			Client client = ClientBuilder.newClient();
+			Usuario user = (Usuario) sesion.getAttribute("usuario");
+			WebTarget webResource = client.target("http://localhost:12504").path("compras").queryParam("comprador",
+					user.getEmail());
+			Response r = webResource.request().accept("application/json").get();
+			int cop = r.getStatus();
 
-			try {
-
-				Usuario user = (Usuario) sesion.getAttribute("usuario");
-				EntityManagerFactory emf = Persistence.createEntityManagerFactory("Practica1");
-
-				EntityManager em = emf.createEntityManager();
-				em.getTransaction().begin();
-
-				Query q = em.createQuery("SELECT c FROM Compra c WHERE c.comprador like ?1");
-				q.setParameter(1, user.getEmail());
-				List<Compra> comp = q.getResultList();
-
-				Context ctx = new InitialContext();
-
-				DataSource ds = (DataSource) ctx.lookup("jdbc/practica");
-				Connection con = ds.getConnection();
-
+			if (cop == 200) {
+				
+				List<Compra> compra = webResource.request().accept("application/json").get(new GenericType<List<Compra>>() {
+				});
 				ArrayList<Producto> compras = new ArrayList<Producto>();
-				for (int i = 0; i < comp.size(); i++) {
-					Compra c = comp.get(i);
+				for (int i = 0; i < compra.size(); i++) {
+					Compra c = compra.get(i);
 					String[] parts = c.getReferencia().split("-");
 
 					for (int x = 0; x < parts.length; x++) {
 
-						Statement st2 = con.createStatement();
+						Client client2 = ClientBuilder.newClient();
+						
+						WebTarget webResource2 = client2.target("http://localhost:12503").path("producto").queryParam("referencia",parts[x]);
+						Response r2 = webResource2.request().accept("application/json").get();
+						int cop2 = r2.getStatus();
 
-						String script2 = "SELECT * FROM producto where referencia like '" + parts[x] + "'";
-						ResultSet rs2 = st2.executeQuery(script2);
-						while (rs2.next()) {
-
-							if (rs2.getBoolean(8) == true) {
-								Producto _producto = new Producto();
-								_producto.setReferencia(Integer.parseInt(parts[x]));
-								_producto.setTitulo(rs2.getString(2));
-								_producto.setDescripcion(rs2.getString(3));
-								_producto.setCategoria(rs2.getString(4));
-								Blob bytesImagen = rs2.getBlob(5);
-								byte[] imgData = bytesImagen.getBytes(1, (int) bytesImagen.length());
-								_producto.setImagen(imgData);
-								_producto.setPrecio(rs2.getFloat(6));
-								_producto.setVendedor(rs2.getString(7));
-								_producto.setEstado(rs2.getBoolean(8));
-								compras.add(_producto);
-							}
-
+						if (cop2 == 200) {
+							Producto producto = webResource2.request().accept("application/json").get(new GenericType<Producto>() {
+							});
+							compras.add(producto);
 						}
-
-						rs2.close();
-						st2.close();
-
 					}
 				}
-				con.close();
-				sesion.setAttribute("carro", obtener_carro(user.getEmail()));
 				req.setAttribute("compras", compras);
-
 				req.getRequestDispatcher("compras_realizadas.jsp").forward(req, resp);
-
-			} catch (SQLException e) {
-
-				System.out.println("Error al Insertar " + e.getMessage());
-				req.getRequestDispatcher("error.jsp").forward(req, resp);
-			} // complete catch
-			catch (NamingException e) {
+			} else {
 				req.getRequestDispatcher("error.jsp").forward(req, resp);
 			}
-
-		}*/ else if (path.compareTo("/add_producto.html") == 0) {
+		} else if (path.compareTo("/add_producto.html") == 0) {
 			req.getRequestDispatcher("registrar_producto.jsp").forward(req, resp);
 		} else if (path.compareTo("/cuenta-productos.html") == 0) {
 			
 			Client client = ClientBuilder.newClient();
 			WebTarget webResource = client.target("http://localhost:12503").path("produc").queryParam("vendedor",
 					req.getParameter("referenciaM"));
-			Usuario user = (Usuario) sesion.getAttribute("usuario");
 			Response r = webResource.request().accept("application/json").get();
 			int cop = r.getStatus();
 
@@ -322,31 +293,39 @@ public class ControladorServlet extends HttpServlet {
 
 		} else if (path.compareTo("/modificar_usuario-correcto.html") == 0) {
 
-			Usuario userActual = (Usuario) sesion.getAttribute("usuario");
-			if (userActual.getEmail().compareTo(req.getParameter("email")) == 0) {
+			Client client = ClientBuilder.newClient();
+			WebTarget webResource = client.target("http://localhost:12502").path("usuario").queryParam("email",
+					req.getParameter("email"));
+			Response r = webResource.request().accept("application/json").get();
+			int cop = r.getStatus();
+
+			if (cop == 200) {
+				Usuario u = webResource.request().accept("application/json").get(new GenericType<Usuario>() {
+				});
 				Usuario user = new Usuario();
 				user.setEmail(req.getParameter("email"));
 				user.setNombre(req.getParameter("nombre"));
 				user.setApellido(req.getParameter("apellido"));
 				user.setDireccion(req.getParameter("direccion"));
 				user.setContrasenia(req.getParameter("contrasenia"));
-				user.setRol(userActual.getRol());
-
-				Client client = ClientBuilder.newClient();
-				WebTarget webResource = client.target("http://localhost:12502").path("usuario");
-				Response r = webResource.request().accept("application/json")
+				user.setRol(u.getRol());
+				Client client2 = ClientBuilder.newClient();
+				WebTarget webResource2 = client2.target("http://localhost:12502").path("usuario");
+				Response r2 = webResource2.request().accept("application/json")
 						.put(Entity.entity(user, MediaType.APPLICATION_JSON));
-				int cop = r.getStatus();
+				int cop2 = r2.getStatus();
 
-				if (cop == 200) {
-					sesion.setAttribute("usuario", user);
+				if (cop2 == 200) {
 					req.getRequestDispatcher("modificar_usuario-correcto.jsp").forward(req, resp);
 				} else {
 					req.getRequestDispatcher("modificar-usuario-incorrecto.jsp").forward(req, resp);
 				}
+			
+
 			} else {
 				req.getRequestDispatcher("modificar-usuario-incorrecto.jsp").forward(req, resp);
 			}
+				
 
 		} else if (path.compareTo("/eliminar-usuario.html") == 0) {
 
@@ -476,6 +455,7 @@ public class ControladorServlet extends HttpServlet {
 
 		} else if (path.compareTo("/agregar_carro.html") == 0) {
 			
+			@SuppressWarnings("unchecked")
 			List<Producto> carro = (List<Producto>) sesion.getAttribute("carro");
 			if(carro == null) {
 				carro = new ArrayList<Producto>();
@@ -509,6 +489,7 @@ public class ControladorServlet extends HttpServlet {
 			}
 
 		} else if (path.compareTo("/eliminar_carro.html") == 0) {
+			@SuppressWarnings("unchecked")
 			List<Producto> carro = (List<Producto>) sesion.getAttribute("carro");
 			for (int i = 0; i < carro.size(); i++) {
 				Producto p = carro.get(i);
@@ -517,152 +498,37 @@ public class ControladorServlet extends HttpServlet {
 			sesion.setAttribute("carro", carro);
 			req.getRequestDispatcher("index.jsp").forward(req, resp);
 		} else if (path.compareTo("/busqueda.html") == 0) {
-
-			try {
-				Context ctx = new InitialContext();
-
-				DataSource ds = (DataSource) ctx.lookup("jdbc/practica");
-
-				Connection con = ds.getConnection();
-				ArrayList<Producto> producto_total = new ArrayList<Producto>();
-				if (con != null) {
-
-					Statement st = con.createStatement();
-					ResultSet rs = st.executeQuery("SELECT * FROM producto where nombre like '%"
-							+ req.getParameter("name") + "%' or descripcion like '%" + req.getParameter("name") + "%'");
-
-					while (rs.next()) {
-						if (rs.getBoolean(8) == false) {
-							Producto _producto = new Producto();
-							_producto.setReferencia(rs.getInt(1));
-							_producto.setNombre(rs.getString(2));
-							_producto.setDescripcion(rs.getString(3));
-							_producto.setCategoria(rs.getString(4));
-							//Blob bytesImagen = rs.getBlob(5);
-							//byte[] imgData = bytesImagen.getBytes(1, (int) bytesImagen.length());
-							//_producto.setImagen(imgData);
-							_producto.setPrecio(rs.getFloat(6));
-							//_producto.setVendedor(rs.getString(7));
-							//_producto.setEstado(rs.getBoolean(8));
-							producto_total.add(_producto);
-						}
-
-					}
-
-					sesion.setAttribute("productos-busqueda", producto_total);
-
-					rs.close();
-					st.close();
-					con.close();
-
-					req.getRequestDispatcher("res-busqueda.jsp").forward(req, resp);
-
-				} else {
-
-					req.getRequestDispatcher("index.jsp").forward(req, resp);
-				}
-
-			} catch (SQLException e) {
-
-				System.out.println("Error al Insertar " + e.getMessage());
-				req.getRequestDispatcher("index.jsp").forward(req, resp);
-			} // complete
-			catch (NamingException e) {
+			
+			Client client = ClientBuilder.newClient();
+			WebTarget webResource = client.target("http://localhost:12503").path("productosb").queryParam("busqueda", req.getParameter("name"));
+			Response r = webResource.request().accept("application/json").get();
+			int cop = r.getStatus();
+			Respuesta res = new Respuesta();
+			res.setCop(cop);
+			if (cop == 200) {
+				List<Producto> productos =  webResource.request().accept("application/json").get(new GenericType<List<Producto>>() {
+				});
+				req.setAttribute("productos-busqueda", productos);
+				req.getRequestDispatcher("res-busqueda.jsp").forward(req, resp);
+			}
+			else {
 				req.getRequestDispatcher("index.jsp").forward(req, resp);
 			}
+
 		} else if (path.compareTo("/buscar_producto.html") == 0) {
-
-			try {
-				Context ctx = new InitialContext();
-
-				DataSource ds = (DataSource) ctx.lookup("jdbc/practica");
-
-				Connection con = ds.getConnection();
-				ArrayList<Producto> producto_total = new ArrayList<Producto>();
-				if (con != null) {
-
-					Statement st = con.createStatement();
-					String name = "";
-					String descripcion = "";
-					String categoria = "";
-					String vendedor = "";
-					String precio = "";
-					int cont = 0;
-					if (req.getParameter("nombreProd").compareTo("") != 0) {
-						name = "nombre like '%" + req.getParameter("nombreProd") + "%'";
-						cont++;
-					}
-					if (req.getParameter("descripcionProd").compareTo("") != 0) {
-
-						if (cont > 0)
-							descripcion = " and descripcion like '%" + req.getParameter("descripcionProd") + "%'";
-						else
-							descripcion = " descripcion like '%" + req.getParameter("descripcionProd") + "%'";
-						cont++;
-
-					}
-					if (req.getParameter("precioProd").compareTo("") != 0) {
-						if (cont > 0)
-							precio = " and precio like '%" + req.getParameter("precioProd") + "%'";
-						else
-							precio = " precio like '%" + req.getParameter("precioProd") + "%'";
-						cont++;
-					}
-					if (req.getParameter("vendedorProd").compareTo("") != 0) {
-						if (cont > 0)
-							vendedor = " and vendedor like '%" + req.getParameter("vendedorProd") + "%'";
-						else
-							vendedor = " vendedor like '%" + req.getParameter("vendedorProd") + "%'";
-						cont++;
-					}
-					if (req.getParameter("categoriaProd").compareTo("") != 0) {
-						if (cont > 0)
-							categoria = " and categoria like '%" + req.getParameter("categoriaProd") + "%'";
-						else
-							categoria = " categoria like '%" + req.getParameter("categoriaProd") + "%'";
-						cont++;
-					}
-
-					ResultSet rs = st.executeQuery("SELECT * FROM producto where " + name + "" + descripcion + ""
-							+ precio + "" + vendedor + "" + categoria);
-
-					while (rs.next()) {
-						if (rs.getBoolean(8) == false) {
-							Producto _producto = new Producto();
-							_producto.setReferencia(rs.getInt(1));
-							_producto.setNombre(rs.getString(2));
-							_producto.setDescripcion(rs.getString(3));
-							_producto.setCategoria(rs.getString(4));
-							Blob bytesImagen = rs.getBlob(5);
-							byte[] imgData = bytesImagen.getBytes(1, (int) bytesImagen.length());
-							//_producto.setImagen(imgData);
-							_producto.setPrecio(rs.getFloat(6));
-							//_producto.setVendedor(rs.getString(7));
-							//_producto.setEstado(rs.getBoolean(8));
-							producto_total.add(_producto);
-						}
-
-					}
-
-					sesion.setAttribute("productos-busqueda", producto_total);
-
-					rs.close();
-					st.close();
-					con.close();
-
-					req.getRequestDispatcher("res-busqueda.jsp").forward(req, resp);
-
-				} else {
-
-					req.getRequestDispatcher("index.jsp").forward(req, resp);
-				}
-
-			} catch (SQLException e) {
-
-				System.out.println("Error al Insertar " + e.getMessage());
-				req.getRequestDispatcher("index.jsp").forward(req, resp);
-			} // complete
-			catch (NamingException e) {
+			Client client = ClientBuilder.newClient();
+			WebTarget webResource = client.target("http://localhost:12503").path("productosba").queryParam("nombre", req.getParameter("nombreProd")).queryParam("categoria", req.getParameter("categoriaProd")).queryParam("precio", req.getParameter("precioProd"));
+			Response r = webResource.request().accept("application/json").get();
+			int cop = r.getStatus();
+			Respuesta res = new Respuesta();
+			res.setCop(cop);
+			if (cop == 200) {
+				List<Producto> productos =  webResource.request().accept("application/json").get(new GenericType<List<Producto>>() {
+				});
+				req.setAttribute("productos-busqueda", productos);
+				req.getRequestDispatcher("res-busqueda.jsp").forward(req, resp);
+			}
+			else {
 				req.getRequestDispatcher("index.jsp").forward(req, resp);
 			}
 		} else if (path.compareTo("/usuarios_admin.html") == 0) {
@@ -688,7 +554,7 @@ public class ControladorServlet extends HttpServlet {
 
 			if (res.getCop() == 200) {
 	
-				req.setAttribute("productos", res.getLista());
+				req.setAttribute("producto", res.getLista());
 				
 
 				req.getRequestDispatcher("cuenta-productos.jsp").forward(req, resp);
@@ -700,39 +566,17 @@ public class ControladorServlet extends HttpServlet {
 		} else if (path.compareTo("/eliminar-usuario-admin.html") == 0)
 
 		{
-			try {
-				Context ctx = new InitialContext();
-				DataSource ds = (DataSource) ctx.lookup("jdbc/practica");
-
-				Connection con = ds.getConnection();
-				if (con != null) {
-					Statement st = con.createStatement();
-
-					String script = "DELETE FROM usuario where email like '" + req.getParameter("referenciaM") + "'";
-
-					st.executeUpdate(script);
-					st.close();
-
-					if (req.getParameter("rol").compareTo("Vendedor") == 0) {
-						st = con.createStatement();
-						script = "DELETE FROM producto where vendedor like '" + req.getParameter("email") + "'";
-						st.executeUpdate(script);
-						st.close();
-					}
-					con.close();
-					req.getRequestDispatcher("eliminar-usuario-correcto.jsp").forward(req, resp);
-				} else {
-					req.getRequestDispatcher("error.jsp").forward(req, resp);
-				}
-
-			} catch (SQLException e) {
-
-				System.out.println("Error al Insertar " + e.getMessage());
-				req.getRequestDispatcher("error.jsp").forward(req, resp);
-			} // complete
-			catch (NamingException e) {
-				req.getRequestDispatcher("error.jsp").forward(req, resp);
+			Client client = ClientBuilder.newClient();
+			WebTarget webResource = client.target("http://localhost:12502").path("usuario").queryParam("email",
+					req.getParameter("referenciaM"));
+			Response r = webResource.request().accept("application/json").delete();
+			int cop = r.getStatus();
+			if (cop == 200) {
+				req.getRequestDispatcher("eliminar-usuario-correcto.jsp").forward(req, resp);
+			} else {
+				req.getRequestDispatcher("eliminar-usuario-incorrecto.jsp").forward(req, resp);
 			}
+
 		} else if (path.compareTo("/chat.html") == 0) {
 			req.setAttribute("destino", req.getParameter("referenciaE"));
 

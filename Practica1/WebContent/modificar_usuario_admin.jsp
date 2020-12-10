@@ -53,7 +53,7 @@
 </head>
 
 <body>
-	<!-- HEADER -->
+		<!-- HEADER -->
 	<header>
 
 
@@ -155,7 +155,7 @@
 						<%
 							if (login == true ) {
 								if(usu.getRol().compareTo("Cliente") == 0){
-							ArrayList<Carro> c = (ArrayList<Carro>) session.getAttribute("carro");
+							ArrayList<Producto> c = (ArrayList<Producto>) session.getAttribute("carro");
 							float total = 0;
 
 							if (c != null) {
@@ -177,7 +177,7 @@
 										<%
 											for (int x = 0; x < c.size(); x++) {
 
-											Carro carrito = c.get(x);
+											Producto carrito = c.get(x);
 
 											byte[] photo = carrito.getImagen();
 											String bphoto = Base64.getEncoder().encodeToString(photo);
@@ -192,7 +192,7 @@
 											<div class="product-body">
 												<h3 class="product-price"><%=carrito.getPrecio()%>$
 												</h3>
-												<h2 class="product-name"><%=carrito.getTitulo()%></h2>
+												<h2 class="product-name"><%=carrito.getNombre()%></h2>
 												<form action="producto_index.html"
 													action="ControladorServlet" method="post">
 													<input class="form-wt" type="hidden" name="referenciaM"
@@ -236,7 +236,8 @@
 								if (login == true) {
 									if (usu.getRol().compareTo("Vendedor") == 0) {
 							%> <strong><a href="add_producto.html">Nuevo
-									Producto</a></strong> <%
+									Producto</a></strong> 
+								<strong><a href="conf_compras.html">Confirmaciones de Ventas</a></strong><%
  							}}
  							%> <%
  							if (login == true) {
@@ -256,8 +257,7 @@
 	</header>
 	<!-- /HEADER -->
 
-
-
+	
 
 	<!-- section -->
 	<div class="section">
@@ -268,10 +268,7 @@
 				<!-- section-title -->
 				<div class="col-md-12">
 					<div class="section-title">
-
-						<h2 class="title">Opciones Administrador</h2>
-
-
+						<h2 class="title">Modificar Información</h2>
 						<div class="pull-right">
 							<div class="product-slick-dots-1 custom-dots"></div>
 						</div>
@@ -279,80 +276,38 @@
 				</div>
 				<!-- /section-title -->
 
-
+				
 				<!-- Produc Slick -->
+				<div class="col-md-9 col-sm-6 col-xs-6">
+					
+					<form  action="modificar_usuario-correcto.html" action="ControladorServlet" method="post">
+					<%String email = (String) request.getAttribute("usuario");%>   
+						<input class="form-wt" type="hidden" name="email" value="<%=email%>" required><br>
+						<label for="name"> Nuevo Nombre:</label><br>
+						<input class="form-wt" type="text" name="nombre" value="" required><br>
+						<label for="apellido"> Nuevo Apellido:</label><br>
+						<input class="form-wt" type="text" name="apellido" value="" required><br>
+						<label for="direccion">Nueva Dirección:</label><br>
+						<input class="form-wt" type="text" name="direccion" value="" required><br>
+						<label for="contrasenia">Nueva Contraseña:</label><br>
+						<input class="form-wt" type="password" name="contrasenia" value="" required>
+						<br></br>
+					<input type="submit" class="primary-btn add-to-cart" value="Aceptar">
+					</form>	
 
-
-				<% if(login == true && usu.getRol().compareTo("Admin")==0){
-
-							ArrayList <Usuario> u = (ArrayList<Usuario>) request.getAttribute("usuario-admin");
-
-							for (int x = 0; x < u.size(); x++) {
-  								Usuario us = u.get(x);
-  								
-  							%>
-
-				<!-- Produc Slick -->
-				<div class="row">
-					<div class="col-md-9 col-sm-6 col-xs-6">
-						<div class="row">
-
-							<!-- Product Single -->
-
-							<div class="product product-single">
-								<div class="product-body">
-									<h3 class="product-price"><%=us.getEmail()%></h3>
-
-									<form action="eliminar-usuario-admin.html" action="ControladorServlet" method="post">
-										<input class="form-wt" type="hidden" name="referenciaM" value=<%=us.getEmail()%> required>
-										<input class="form-wt" type="hidden" name="rol" value=<%=us.getRol()%> required> 
-										<input type="submit" class="primary-btn add-to-cart" value="Eliminar          usuario">
-									</form>
-									<br>
-									<form action="modificar_usuario_admin.html" action="ControladorServlet" method="get">
-										<input class="form-wt" type="hidden" name="referenciaM" value=<%=us.getEmail()%> required>
-										<input type="submit" class="primary-btn add-to-cart" value="Modificar       usuario">
-									</form>
-									<br>
-									<form action="chat.html" action="ControladorServlet" method="post">
-										<input class="form-wt" type="hidden" name="referenciaE"
-										value=<%=us.getEmail()%> required> <input
-										type="submit" class="primary-btn add-to-cart"
-										value="Enviar              Mensaje">
-									</form>
-									
-									<% if(us.getRol().compareTo("Vendedor")==0){%>
-									<br>
-									<form action="cuenta-productos.html" action="ControladorServlet"
-										method="get">
-										<input class="form-wt" type="hidden" name="referenciaM" value=<%=us.getEmail()%> required>
-										<input type="submit" class="primary-btn add-to-cart" value="Mostrar    Productos">
-									</form>
-
-									<%} %>
-
-
-								</div>
-
-							</div>
-						</div>
-					</div>
 				</div>
-				<br></br>
-				<%}}%>
-
 				<!-- /Product Slick -->
 			</div>
 			<!-- /row -->
 
-
+			
 		</div>
 		<!-- /container -->
 	</div>
 	<!-- /section -->
 
 	<!-- section -->
-
+	
 
 	<!-- FOOTER -->
 	<footer id="footer" class="section section-grey">
@@ -365,19 +320,20 @@
 					<div class="footer">
 						<!-- footer logo -->
 						<div class="footer-logo">
-							<a class="logo" href="#"> <img src="./img/logo.png" alt="">
-							</a>
+							<a class="logo" href="#">
+		            <img src="./img/logo.png" alt="">
+		          </a>
 						</div>
 						<!-- /footer logo -->
 
 						<p>Somos los mejores</p>
 
 						<!-- footer social -->
-
+						
 						<!-- /footer social -->
 					</div>
 				</div>
-
+			
 
 				<div class="clearfix visible-sm visible-xs"></div>
 
@@ -403,11 +359,7 @@
 					<!-- footer copyright -->
 					<div class="footer-copyright">
 						<!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
-						Copyright &copy;
-						<script>document.write(new Date().getFullYear());</script>
-						All rights reserved | This template is made with <i
-							class="fa fa-heart-o" aria-hidden="true"></i> by <a
-							href="https://colorlib.com" target="_blank">Colorlib</a>
+						Copyright &copy;<script>document.write(new Date().getFullYear());</script> All rights reserved | This template is made with <i class="fa fa-heart-o" aria-hidden="true"></i> by <a href="https://colorlib.com" target="_blank">Colorlib</a>
 						<!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
 					</div>
 					<!-- /footer copyright -->

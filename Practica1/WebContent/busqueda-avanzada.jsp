@@ -282,14 +282,10 @@
 				<div class="col-md-9 col-sm-6 col-xs-6">
 					
 					<form  action="buscar_producto.html" action="ControladorServlet" method="post">
-						<label for="name">Titulo del Producto:</label><br>
+						<label for="name">Titulo del Producto</label><br>
 						<input class="form-wt" type="text" name="nombreProd"  ><br>
-						<label for="apellido">Descripción</label><br>
-						<input class="form-wt" type="text" name="descripcionProd" ><br>
 						<label for="email">Precio:</label><br>    
 						<input class="form-wt" type="text" name="precioProd"  ><br>
-						<label for="email">Vendedor:</label><br>    
-						<input class="form-wt" type="text" name="vendedorProd"  ><br>
 						<h4>Categoría:</h4>
 						<select name="categoriaProd" >
 							<option value="Ropa">Ropa</option>

@@ -3,24 +3,18 @@ package model;
 import java.io.Serializable;
 
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.NamedQuery;
 
-
-/**
- * The persistent class for the compra database table.
- * 
- */
 @Entity
 @NamedQuery(name="Compra.findAll", query="SELECT c FROM Compra c")
 public class Compra implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
 	private String referencia;
+
+	private String comprador;
 
 	private String direccion;
 
@@ -32,9 +26,6 @@ public class Compra implements Serializable {
 
 	private String vendedor;
 
-
-	private String comprador;
-
 	public Compra() {
 	}
 
@@ -44,6 +35,14 @@ public class Compra implements Serializable {
 
 	public void setReferencia(String referencia) {
 		this.referencia = referencia;
+	}
+
+	public String getComprador() {
+		return this.comprador;
+	}
+
+	public void setComprador(String comprador) {
+		this.comprador = comprador;
 	}
 
 	public String getDireccion() {
@@ -82,16 +81,8 @@ public class Compra implements Serializable {
 		return this.vendedor;
 	}
 
-	public void setVendedor(String usuario1) {
-		this.vendedor = usuario1;
-	}
-
-	public String getComprador() {
-		return this.comprador;
-	}
-
-	public void setComprador(String usuario2) {
-		this.comprador = usuario2;
+	public void setVendedor(String vendedor) {
+		this.vendedor = vendedor;
 	}
 
 }

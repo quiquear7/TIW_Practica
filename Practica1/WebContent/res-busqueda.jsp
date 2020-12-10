@@ -285,7 +285,7 @@
 					<%
 					
 
-					ArrayList<Producto> p = (ArrayList<Producto>) session.getAttribute("productos-busqueda");
+					ArrayList<Producto> p = (ArrayList<Producto>) request.getAttribute("productos-busqueda");
 					int cont = 0;
 
 					for (int x = 0; x < (p.size() / 2)+1; x++) {
