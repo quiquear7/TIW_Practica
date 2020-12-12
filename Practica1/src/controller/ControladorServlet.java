@@ -44,6 +44,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import model.Carro;
+import model.Chat;
 import model.Comp;
 import model.Compra;
 import model.Mensaje;
@@ -201,23 +202,20 @@ public class ControladorServlet extends HttpServlet {
 
 		} else if (path.compareTo("/busqueda-avanzada.html") == 0) {
 			req.getRequestDispatcher("busqueda-avanzada.jsp").forward(req, resp);
-		} /*else if (path.compareTo("/mensajes.html") == 0) {
+		} else if (path.compareTo("/mensajes.html") == 0) {
+			Respuesta res = leerMensaje();
+		
+			if (res.getCop() == 200) {
+				List<Chat> mensaje = (List<Chat>) res.getLista();
+				req.setAttribute("mensaje", mensaje);
 
-			try {
-				InitialContext ic = new InitialContext();
-				ConnectionFactory cf = (ConnectionFactory) ic.lookup("jms/practica");
-				Destination d = (Destination) ic.lookup("jms/queuepractica");
-				ReadJMS readJMS = new ReadJMS(cf, d);
-				List<Mensaje> contenidos = readJMS.read();
+				req.getRequestDispatcher("mensajes.jsp").forward(req, resp);
 
-				req.setAttribute("mensaje", contenidos);
-
-			} catch (NamingException e) {
-				e.printStackTrace();
+			} else {
+				req.getRequestDispatcher("error.jsp").forward(req, resp);
 			}
-			System.out.println("llamamos a mensajes");
-			req.getRequestDispatcher("mensajes.jsp").forward(req, resp);
-		} else if (path.compareTo("/conf_compras.html") == 0) {
+
+		} /*else if (path.compareTo("/conf_compras.html") == 0) {
 			try {
 				InitialContext ic = new InitialContext();
 				ConnectionFactory cf = (ConnectionFactory) ic.lookup("jms/practica");
@@ -236,8 +234,8 @@ public class ControladorServlet extends HttpServlet {
 				e.printStackTrace();
 			}
 			req.getRequestDispatcher("confirmaciones.jsp").forward(req, resp);
-		}
-*/
+		}*/
+
 	}
 
 	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -585,34 +583,43 @@ public class ControladorServlet extends HttpServlet {
 		} else if (path.compareTo("/enviar_mensaje.html") == 0)
 
 		{
-
-			String destino = req.getParameter("referenciaE");
-
-			String mensaje = req.getParameter("mensaje");
+			Chat conver = new Chat();
 			Usuario user = (Usuario) sesion.getAttribute("usuario");
-			Mensaje mensajeobj = new Mensaje(user.getEmail(), destino, mensaje);
-			SendJMS sendJMS = new SendJMS();
+			conver.setEmisor(user.getEmail());
+			conver.setReceptor(req.getParameter("referenciaE"));
+			conver.setMensaje(req.getParameter("mensaje"));
+			
+			Client client = ClientBuilder.newClient();
+			WebTarget webResource = client.target("http://localhost:12505").path("chat");
+			Response r = webResource.request().accept("application/json")
+					.post(Entity.entity(conver, MediaType.APPLICATION_JSON));
+			int cop = r.getStatus();
 
-			sendJMS.Send(mensajeobj);
+			if (cop == 201) {
+				
+				
+				Client client2 = ClientBuilder.newClient();
+				WebTarget webResource2 = client2.target("http://localhost:12505").path("chat").queryParam("usuario",
+						user.getEmail());
+				Response r2 = webResource2.request().accept("application/json").get();
+				int cop2 = r2.getStatus();
 
-			try {
-				InitialContext ic = new InitialContext();
-				ConnectionFactory cf = (ConnectionFactory) ic.lookup("jms/practica");
-				Destination d = (Destination) ic.lookup("jms/queuepractica");
-				ReadJMS readJMS = new ReadJMS(cf, d);
-				List<Mensaje> contenidos = readJMS.read();
+				if (cop2 == 200) {
+					List<Chat> mens = webResource2.request().accept("application/json").get(new GenericType<List<Chat>>() {
+					});
+					req.setAttribute("mensaje", mens);
+					req.setAttribute("receptor", req.getParameter("referenciaE"));
+					req.getRequestDispatcher("chat_unico.jsp").forward(req, resp);
 
-				req.setAttribute("mensaje", contenidos);
-				req.setAttribute("receptor", destino);
-
-			} catch (NamingException e) {
-				e.printStackTrace();
+				} else {
+					req.getRequestDispatcher("error.jsp").forward(req, resp);
+				}
+				
+				
+			} else {
+				req.getRequestDispatcher("error.jsp").forward(req, resp);
 			}
-
-			req.getRequestDispatcher("chat_unico.jsp").forward(req, resp);
-
-			// req.getRequestDispatcher("mensaje_enviado.jsp").forward(req, resp);
-
+			
 		} else if (path.compareTo("/pagar.html") == 0) {
 			try {
 				Context ctx = new InitialContext();
@@ -811,23 +818,23 @@ public class ControladorServlet extends HttpServlet {
 			}
 
 		} else if (path.compareTo("/abrir_chat.html") == 0) {
-
-			try {
-				InitialContext ic = new InitialContext();
-				ConnectionFactory cf = (ConnectionFactory) ic.lookup("jms/practica");
-				Destination d = (Destination) ic.lookup("jms/queuepractica");
-				ReadJMS readJMS = new ReadJMS(cf, d);
-				List<Mensaje> contenidos = readJMS.read();
-
-				req.setAttribute("mensaje", contenidos);
+			
+			Respuesta res = leerMensaje();
+			
+			if (res.getCop() == 200) {
+				List<Chat> mensaje = (List<Chat>) res.getLista();
+				req.setAttribute("mensaje", mensaje);
 
 				req.setAttribute("receptor", req.getParameter("referenciaE"));
-
-			} catch (NamingException e) {
-				e.printStackTrace();
+				req.getRequestDispatcher("chat_unico.jsp").forward(req, resp);
+			}
+			else {
+				req.getRequestDispatcher("error.jsp").forward(req, resp);
 			}
 
-			req.getRequestDispatcher("chat_unico.jsp").forward(req, resp);
+			
+
+			
 		} else if (path.compareTo("/confirmar_compra.html") == 0) {
 			String referencia = req.getParameter("referencia");
 			String comprador = req.getParameter("comprador");
@@ -1006,6 +1013,22 @@ public class ControladorServlet extends HttpServlet {
 		res.setCop(cop);
 		if (cop == 200) {
 			res.setLista(webResource.request().accept("application/json").get(new GenericType<List<Producto>>() {
+			}));
+		}
+		return res;
+	}
+	
+	public Respuesta leerMensaje(){
+		Client client = ClientBuilder.newClient();
+		Usuario user = (Usuario) sesion.getAttribute("usuario");
+		WebTarget webResource = client.target("http://localhost:12505").path("chat").queryParam("usuario",
+				user.getEmail());
+		Response r = webResource.request().accept("application/json").get();
+		int cop = r.getStatus();
+		Respuesta res = new Respuesta();
+		res.setCop(cop);
+		if (cop == 200) {
+			res.setLista(webResource.request().accept("application/json").get(new GenericType<List<Chat>>() {
 			}));
 		}
 		return res;

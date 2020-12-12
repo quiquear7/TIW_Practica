@@ -4,7 +4,7 @@
 <%@page import="model.Producto"%>
 <%@page import="model.Carro"%>
 <%@page import="model.Compra"%>
-<%@page import="model.Mensaje"%>
+<%@page import="model.Chat"%>
 <%@page import="java.sql.ResultSet" import="javax.naming.InitialContext"
 	import="javax.naming.Context" import=" java.io.OutputStream"
 	import="java.sql.Statement" import=" java.util.Base64"
@@ -297,14 +297,15 @@
 				<!-- /section-title -->
 				<div>
 
-					<jsp:useBean id="mensaje" scope="request"
-						type="java.util.ArrayList<model.Mensaje>"></jsp:useBean>
+					
+						
 					<%
 						ArrayList<String> chats = new ArrayList<String>();
 						
-							
+						ArrayList<Chat> mensaje = (ArrayList<Chat>) request.getAttribute("mensaje");	
 						
-						for (Mensaje v : mensaje) {
+						for (Chat v : mensaje) {
+						
 							
 							if(v!=null){
 							int correcto=0;

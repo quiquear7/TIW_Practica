@@ -4,13 +4,13 @@ import java.util.List;
 
 public class Respuesta {
 	
-	private List<Producto> lista;
+	private List<?> lista;
 	private int cop;
-	public List<Producto> getLista() {
+	public List<?> getLista() {
 		return lista;
 	}
-	public void setLista(List<Producto> lista) {
-		this.lista = lista;
+	public void setLista(List<?> list) {
+		this.lista = list;
 	}
 	public int getCop() {
 		return cop;
