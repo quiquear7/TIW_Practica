@@ -1,11 +1,14 @@
 package model;
 
+
 import java.io.Serializable;
+import javax.persistence.*;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.NamedQuery;
 
+/**
+ * The persistent class for the compra database table.
+ * 
+ */
 @Entity
 @NamedQuery(name="Compra.findAll", query="SELECT c FROM Compra c")
 public class Compra implements Serializable {
@@ -16,9 +19,13 @@ public class Compra implements Serializable {
 
 	private String comprador;
 
+	private String cv2;
+
 	private String direccion;
 
 	private String fecha;
+
+	private String fechatarjeta;
 
 	private float precio;
 
@@ -45,6 +52,14 @@ public class Compra implements Serializable {
 		this.comprador = comprador;
 	}
 
+	public String getCv2() {
+		return this.cv2;
+	}
+
+	public void setCv2(String cv2) {
+		this.cv2 = cv2;
+	}
+
 	public String getDireccion() {
 		return this.direccion;
 	}
@@ -59,6 +74,14 @@ public class Compra implements Serializable {
 
 	public void setFecha(String fecha) {
 		this.fecha = fecha;
+	}
+
+	public String getFechatarjeta() {
+		return this.fechatarjeta;
+	}
+
+	public void setFechatarjeta(String fechatarjeta) {
+		this.fechatarjeta = fechatarjeta;
 	}
 
 	public float getPrecio() {
@@ -84,5 +107,20 @@ public class Compra implements Serializable {
 	public void setVendedor(String vendedor) {
 		this.vendedor = vendedor;
 	}
+
+	public Compra(String referencia, String comprador, String cv2, String direccion, String fecha, String fechatarjeta,
+			float precio, String tarjeta, String vendedor) {
+		super();
+		this.referencia = referencia;
+		this.comprador = comprador;
+		this.cv2 = cv2;
+		this.direccion = direccion;
+		this.fecha = fecha;
+		this.fechatarjeta = fechatarjeta;
+		this.precio = precio;
+		this.tarjeta = tarjeta;
+		this.vendedor = vendedor;
+	}
+	
 
 }

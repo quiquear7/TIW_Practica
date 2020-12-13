@@ -343,6 +343,10 @@
 						<input class="form-wt" type="text" name="direccion" value="" required><br></br>
 						<label for="email">Tarjeta:</label><br> 
 						<input class="form-wt" type="text" name="tarjeta" value="" required><br></br>
+						<label for="email">CV2:</label><br> 
+						<input class="form-wt" type="text" name="cv2" value="" required><br></br>
+						<label for="email">Fecha:</label><br> 
+						<input class="form-wt" type="date" name="fecha" value="" required><br></br>
 					<input type="submit" class="primary-btn add-to-cart" value="Pagar">
 					</form>
 					
