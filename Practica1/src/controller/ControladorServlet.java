@@ -683,15 +683,16 @@ public class ControladorServlet extends HttpServlet {
 			if (res.getCop() == 200) {
 
 				req.setAttribute("productos", res.getLista());
-				ArrayList<Producto> carro_vacio = new ArrayList<Producto>();
-				sesion.setAttribute("carro", carro_vacio);
-
+				if(error==0) {
+					ArrayList<Producto> carro_vacio = new ArrayList<Producto>();
+					sesion.setAttribute("carro", carro_vacio);
+				}
 			} else {
 				error = 1;
 			}
 
 			if (error == 1) {
-				req.getRequestDispatcher("error.jsp").forward(req, resp);
+				req.getRequestDispatcher("errorpago.jsp").forward(req, resp);
 			} else {
 				req.getRequestDispatcher("pago_aceptado.jsp").forward(req, resp);
 			}
