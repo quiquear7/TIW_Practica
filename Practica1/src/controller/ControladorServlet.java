@@ -2,6 +2,7 @@ package controller;
 
 import java.util.List;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import javax.servlet.ServletConfig;
@@ -21,6 +22,9 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
+import com.sun.el.parser.ParseException;
+
 import model.Chat;
 import model.Compra;
 import model.Producto;
@@ -647,7 +651,7 @@ public class ControladorServlet extends HttpServlet {
 					for (int j = 0; j < ref.size(); j++) {
 						Client client2 = ClientBuilder.newClient();
 						WebTarget webResource2 = client2.target("http://localhost:12503").path("producto")
-								.queryParam("referencia",ref.get(j));
+								.queryParam("referencia", ref.get(j));
 						Response r2 = webResource2.request().accept("application/json").get();
 						int cop2 = r2.getStatus();
 
