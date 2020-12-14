@@ -112,7 +112,7 @@
 						<%if(login == true && usu.getRol().compareTo("Vendedor")==0 ){%>
 					
 							<strong><a href="add_producto.html">Nuevo Producto</a></strong>
-							<strong><a href="conf_compras.html">Confirmaciones de Ventas</a></strong>
+							
 						
 							<%}%>
 							

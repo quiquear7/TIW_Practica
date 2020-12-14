@@ -339,31 +339,42 @@ public class ControladorServlet extends HttpServlet {
 				req.getRequestDispatcher("producto-eliminar-incorrectamente.jsp").forward(req, resp);
 			}
 		} else if (path.compareTo("/modificar-producto.html") == 0) {
-
-			Producto producto = new Producto();
-			producto.setReferencia(Integer.parseInt(req.getParameter("referenciaProd")));
-			producto.setNombre(req.getParameter("nombreProd"));
-			producto.setDescripcion(req.getParameter("descripcionProd"));
-			producto.setCategoria(req.getParameter("categoriaProd"));
-			Part imagen = req.getPart("fotoproducto");
-			byte array[] = new byte[(int) imagen.getSize()];
-			imagen.getInputStream().read(array);
-			producto.setImagen(array);
-			producto.setPrecio(Float.parseFloat(req.getParameter("precioProd")));
-			Usuario usu = (Usuario) sesion.getAttribute("usuario");
-			producto.setUsuario(usu);
-			producto.setEstado((byte) 0);
-
 			Client client = ClientBuilder.newClient();
-			WebTarget webResource = client.target("http://localhost:12503").path("producto");
-			Response r = webResource.request().accept("application/json")
-					.put(Entity.entity(producto, MediaType.APPLICATION_JSON));
+			WebTarget webResource = client.target("http://localhost:12503").path("producto").queryParam("referencia",
+					req.getParameter("referenciaProd"));
+			Response r = webResource.request().accept("application/json").get();
 			int cop = r.getStatus();
 
 			if (cop == 200) {
-				req.getRequestDispatcher("modificar_producto-correcto.jsp").forward(req, resp);
+				Producto p = webResource.request().accept("application/json").get(new GenericType<Producto>() {
+				});
+				Producto producto = new Producto();
+				producto.setReferencia(Integer.parseInt(req.getParameter("referenciaProd")));
+				producto.setNombre(req.getParameter("nombreProd"));
+				producto.setDescripcion(req.getParameter("descripcionProd"));
+				producto.setCategoria(req.getParameter("categoriaProd"));
+				Part imagen = req.getPart("fotoproducto");
+				byte array[] = new byte[(int) imagen.getSize()];
+				imagen.getInputStream().read(array);
+				producto.setImagen(array);
+				producto.setPrecio(Float.parseFloat(req.getParameter("precioProd")));
+				producto.setUsuario(p.getUsuario());
+				producto.setEstado((byte) 0);
+
+				Client client2 = ClientBuilder.newClient();
+				WebTarget webResource2 = client2.target("http://localhost:12503").path("producto");
+				Response r2 = webResource2.request().accept("application/json")
+						.put(Entity.entity(producto, MediaType.APPLICATION_JSON));
+				int cop2 = r2.getStatus();
+
+				if (cop2 == 200) {
+					req.getRequestDispatcher("modificar_producto-correcto.jsp").forward(req, resp);
+				} else {
+					req.getRequestDispatcher("modificar_producto-incorrecto.jsp").forward(req, resp);
+				}
+
 			} else {
-				req.getRequestDispatcher("modificar_producto-incorrecto.jsp").forward(req, resp);
+				req.getRequestDispatcher("error.jsp").forward(req, resp);
 			}
 		} else if (path.compareTo("/producto.html") == 0) {
 
@@ -683,7 +694,7 @@ public class ControladorServlet extends HttpServlet {
 			if (res.getCop() == 200) {
 
 				req.setAttribute("productos", res.getLista());
-				if(error==0) {
+				if (error == 0) {
 					ArrayList<Producto> carro_vacio = new ArrayList<Producto>();
 					sesion.setAttribute("carro", carro_vacio);
 				}
